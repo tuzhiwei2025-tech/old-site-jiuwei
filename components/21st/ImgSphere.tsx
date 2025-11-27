@@ -27,6 +27,7 @@ function Sphere({ imageUrl, radius = 1, speed = 0.5 }: { imageUrl: string; radiu
       },
       undefined,
       (err) => {
+        // eslint-disable-next-line no-console
         console.error("Failed to load texture:", err);
         setError(true);
       }

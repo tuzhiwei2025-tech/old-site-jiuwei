@@ -158,20 +158,6 @@ export function HeroContent() {
           }}
         >
           <div className="absolute top-0 right-1 left-1 h-px bg-gradient-to-r from-transparent to-transparent rounded-full via-white/20" />
-          <VerticalCutReveal
-            splitBy="words"
-            staggerDuration={0.1}
-            staggerFrom="first"
-            autoStart={true}
-            transition={{
-              type: "spring",
-              stiffness: 190,
-              damping: 22,
-            }}
-            containerClassName="relative z-10 text-sm font-light text-white/90 sm:text-base"
-          >
-            ✨ 专业数字员工团队
-          </VerticalCutReveal>
         </div>
 
         {/* Main Heading */}
@@ -311,12 +297,6 @@ export function Header({ onLoginClick }: HeaderProps) {
           className="px-3 py-1.5 text-sm font-medium rounded-full transition-all duration-200 text-white/80 hover:text-white hover:bg-white/10"
         >
           解决方案
-        </a>
-        <a
-          href="#pricing"
-          className="px-3 py-1.5 text-sm font-medium rounded-full transition-all duration-200 text-white/80 hover:text-white hover:bg-white/10"
-        >
-          价格
         </a>
         <a
           href="#docs"

@@ -103,7 +103,7 @@ export const TestimonialSlider = ({
               {String(reviews.length).padStart(2, "0")}
             </span>
             {/* Vertical "Reviews" Text */}
-            <h2 className="text-sm font-medium tracking-widest uppercase [writing-mode:vertical-rl] md:rotate-180 hidden md:block">
+            <h2 className="text-sm font-medium tracking-widest uppercase [writing-mode:vertical-rl] hidden md:block">
               数字员工
             </h2>
           </div>
@@ -118,7 +118,7 @@ export const TestimonialSlider = ({
                 <button
                   key={review.id}
                   onClick={() => handleThumbnailClick(originalIndex)}
-                  className="overflow-hidden w-16 h-20 rounded-md opacity-70 transition-opacity duration-300 md:w-20 md:h-24 hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
+                  className="overflow-hidden w-12 h-12 rounded-full opacity-70 transition-opacity duration-300 md:w-14 md:h-14 hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
                   aria-label={`View review from ${review.name}`}
                 >
                   <img

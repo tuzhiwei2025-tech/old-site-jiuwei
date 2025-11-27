@@ -3,10 +3,7 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { VerticalCutReveal, VerticalCutRevealRef } from "@/components/ui/vertical-cut-reveal";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { BookOpen, Code2, Video, FileText, MessageCircle, Github } from "lucide-react";
+import { BookOpen, Code2, Video, FileText, MessageCircle, Github, ArrowRight } from "lucide-react";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -53,23 +50,10 @@ const docCategories = [
 
 export default function Docs() {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const titleRevealRef = useRef<VerticalCutRevealRef>(null);
-  const descRevealRef = useRef<VerticalCutRevealRef>(null);
   const cardsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      if (titleRevealRef.current) {
-        ScrollTrigger.create({
-          trigger: sectionRef.current,
-          start: "top 75%",
-          onEnter: () => {
-            titleRevealRef.current?.startAnimation();
-            setTimeout(() => descRevealRef.current?.startAnimation(), 300);
-          },
-        });
-      }
-
       const cards = cardsRef.current?.children;
       if (cards) {
         Array.from(cards).forEach((card, index) => {
@@ -80,7 +64,7 @@ export default function Docs() {
               opacity: 1,
               y: 0,
               duration: 0.6,
-              delay: index * 0.1,
+              delay: index * 0.08,
               ease: "power2.out",
               scrollTrigger: {
                 trigger: card,
@@ -100,74 +84,59 @@ export default function Docs() {
     <section
       id="docs"
       ref={sectionRef}
-      className="overflow-hidden relative px-4 py-24 bg-white sm:px-6 lg:px-8"
+      className="relative px-4 py-24 bg-white sm:px-6 lg:px-8"
     >
-      <div className="relative z-10 mx-auto max-w-7xl">
-        <div className="mb-16 text-center">
-          <h2 className="mb-4 text-4xl font-bold sm:text-5xl lg:text-6xl">
-            <VerticalCutReveal
-              ref={titleRevealRef}
-              splitBy="words"
-              staggerDuration={0.12}
-              staggerFrom="first"
-              autoStart={false}
-              transition={{
-                type: "spring",
-                stiffness: 190,
-                damping: 22,
-              }}
-              containerClassName="block"
-              wordLevelClassName="inline-block"
-            >
-              文档与资源
-            </VerticalCutReveal>
+      <div className="mx-auto max-w-7xl">
+        <div className="mb-20 text-center">
+          <h2 className="mb-4 text-4xl font-semibold tracking-tight sm:text-5xl lg:text-6xl text-gray-900">
+            文档与资源
           </h2>
-          <div className="mx-auto mt-6 max-w-3xl text-xl text-gray-600">
-            <VerticalCutReveal
-              ref={descRevealRef}
-              splitBy="words"
-              staggerDuration={0.08}
-              staggerFrom="first"
-              autoStart={false}
-              transition={{
-                type: "spring",
-                stiffness: 190,
-                damping: 22,
-              }}
-              containerClassName="block"
-              wordLevelClassName="inline-block"
-            >
-              全面的文档、教程和资源，帮助您快速上手并充分利用平台的所有功能
-            </VerticalCutReveal>
-          </div>
+          <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-gray-600">
+            全面的文档、教程和资源，帮助您快速上手并充分利用平台的所有功能
+          </p>
         </div>
 
-        <div ref={cardsRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div ref={cardsRef} className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {docCategories.map((category, index) => {
             const Icon = category.icon;
             return (
-              <Card
+              <a
                 key={index}
-                className="border-2 hover:border-[#4932cc] transition-all duration-300 hover:shadow-xl hover:shadow-[#4932cc]/10 hover:-translate-y-2 bg-white cursor-pointer group"
+                href={category.link}
+                className="group relative bg-white rounded-xl border border-gray-200 p-6 transition-all duration-300 block"
+                style={{
+                  boxShadow:
+                    "0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05)",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow =
+                    "0 32px 56px -12px rgba(0, 0, 0, 0.06), 0 6px 12px -3px rgba(0, 0, 0, 0.02), 0 3px 6px -1.5px rgba(0, 0, 0, 0.01), 0 0 0 0.75px rgba(0, 0, 0, 0.04)";
+                  e.currentTarget.style.borderColor = "rgba(73, 50, 204, 0.2)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow =
+                    "0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05)";
+                  e.currentTarget.style.borderColor = "#e5e7eb";
+                }}
               >
-                <CardHeader>
-                  <div className="w-12 h-12 rounded-lg bg-[#4932cc]/10 flex items-center justify-center mb-4 group-hover:bg-[#4932cc] transition-colors">
-                    <Icon className="w-6 h-6 text-[#4932cc] group-hover:text-white transition-colors" />
+                <div className="flex items-start gap-4">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gray-50 group-hover:bg-[#4932cc]/5 transition-colors">
+                    <Icon className="h-5 w-5 text-[#4932cc]" />
                   </div>
-                  <CardTitle className="text-xl mb-2">{category.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="text-base mb-4">
-                    {category.description}
-                  </CardDescription>
-                  <Button
-                    variant="ghost"
-                    className="text-[#4932cc] hover:text-[#3d28a8] hover:bg-[#4932cc]/10 p-0 h-auto"
-                  >
-                    了解更多 →
-                  </Button>
-                </CardContent>
-              </Card>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-1.5 group-hover:text-[#4932cc] transition-colors">
+                      {category.title}
+                    </h3>
+                    <p className="text-sm text-gray-600 mb-4 leading-relaxed">
+                      {category.description}
+                    </p>
+                    <div className="inline-flex items-center text-sm font-medium text-[#4932cc] group-hover:text-[#3d28a8] transition-colors">
+                      了解更多
+                      <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    </div>
+                  </div>
+                </div>
+              </a>
             );
           })}
         </div>

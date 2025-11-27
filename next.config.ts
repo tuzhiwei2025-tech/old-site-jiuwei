@@ -21,6 +21,22 @@ const nextConfig: NextConfig = {
   },
   // 添加空的 turbopack 配置以避免警告
   turbopack: {},
+  // 配置 headers 以允许必要的脚本执行（仅在开发环境）
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'Content-Security-Policy',
+            value: process.env.NODE_ENV === 'development'
+              ? "script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline';"
+              : "script-src 'self'; style-src 'self' 'unsafe-inline';",
+          },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;

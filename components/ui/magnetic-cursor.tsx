@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, FC, ReactNode, useState } from 'react';
 import gsap from 'gsap';
-import { vec2, Vec2 } from 'vecteur';
+import { vec2, Vector2 } from 'vecteur';
 
 // Animation constants
 const ANIMATION_CONSTANTS = {
@@ -29,9 +29,9 @@ interface MagneticCursorProps {
 interface CursorState {
   el: HTMLDivElement | null;
   pos: {
-    current: Vec2;
-    target: Vec2;
-    previous: Vec2;
+    current: Vector2;
+    target: Vector2;
+    previous: Vector2;
   };
   hover: { isHovered: boolean };
 }

@@ -77,13 +77,6 @@ export default function Navbar() {
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#4932cc] transition-all group-hover:w-full" />
             </Link>
             <Link
-              href="#pricing"
-              className="text-sm font-medium text-gray-700 transition-colors hover:text-[#4932cc] relative group"
-            >
-              价格
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#4932cc] transition-all group-hover:w-full" />
-            </Link>
-            <Link
               href="#docs"
               className="text-sm font-medium text-gray-700 transition-colors hover:text-[#4932cc] relative group"
             >
