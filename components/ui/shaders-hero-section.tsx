@@ -76,7 +76,6 @@ export function ShaderBackground({ children }: ShaderBackgroundProps) {
           className="w-full h-full"
           colors={["#000000", "#ffffff", "#8B4513", "#000000"]}
           speed={0.2}
-          wireframe="true"
           style={{ backgroundColor: "transparent" }}
         />
       </div>

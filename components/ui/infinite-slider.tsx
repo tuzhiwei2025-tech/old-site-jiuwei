@@ -1,6 +1,8 @@
 'use client';
 import { cn } from '@/lib/utils';
-import { useState, useEffect, useRef } from 'react';
+import { useMotionValue, animate, motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
+import useMeasure from 'react-use-measure';
 
 type InfiniteSliderProps = {
   children: React.ReactNode;
@@ -25,142 +27,107 @@ export function InfiniteSlider({
   reverse = false,
   className,
 }: InfiniteSliderProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
+  const [ref, { width, height }] = useMeasure();
+  const translation = useMotionValue(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [key, setKey] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
-  const styleIdRef = useRef<string | null>(null);
-  const animationNameRef = useRef<string | null>(null);
-
-  // 初始化唯一的 ID
-  if (!styleIdRef.current) {
-    styleIdRef.current = `infinite-slider-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    animationNameRef.current = `slide-${styleIdRef.current}`;
-  }
 
   useEffect(() => {
-    if (!contentRef.current || !containerRef.current) return;
+    if (!width && !height) return;
+    
+    let controls: ReturnType<typeof animate>;
+    const size = direction === 'horizontal' ? width : height;
+    const contentSize = size + gap;
+    const distance = contentSize / 2;
+    const from = reverse ? -distance : 0;
+    const to = reverse ? 0 : -distance;
 
-    const updateAnimation = () => {
-      const content = contentRef.current;
-      const container = containerRef.current;
-      if (!content || !container) return;
+    // 计算 duration：如果提供了 speed，则根据速度计算 duration；否则使用 duration 参数
+    let currentDuration: number;
+    if (speed !== undefined) {
+      const currentSpeed = isHovered && speedOnHover !== undefined ? speedOnHover : speed;
+      // speed 是像素/秒，distance 是像素，所以 duration = distance / speed
+      currentDuration = distance / currentSpeed;
+    } else if (duration !== undefined) {
+      currentDuration = isHovered && durationOnHover !== undefined ? durationOnHover : duration;
+    } else {
+      currentDuration = 25;
+    }
 
-      const size = direction === 'horizontal' 
-        ? content.offsetWidth 
-        : content.offsetHeight;
-      
-      if (size === 0) {
-        // 延迟重试
-        setTimeout(updateAnimation, 50);
-        return;
-      }
-
-      const contentSize = size + gap;
-      const distance = contentSize / 2;
-      
-      // 计算 duration
-      let currentDuration: number;
-      if (speed !== undefined) {
-        const currentSpeed = isHovered && speedOnHover !== undefined ? speedOnHover : speed;
-        currentDuration = distance / currentSpeed;
-      } else if (duration !== undefined) {
-        currentDuration = isHovered && durationOnHover !== undefined ? durationOnHover : duration;
-      } else {
-        currentDuration = 25;
-      }
-
-      const transformProperty = direction === 'horizontal' ? 'translateX' : 'translateY';
-      const fromValue = reverse ? -distance : 0;
-      const toValue = reverse ? 0 : -distance;
-
-      const styleId = styleIdRef.current;
-      const animationName = animationNameRef.current;
-      if (!styleId || !animationName) return;
-
-      // 创建或获取样式表
-      let styleElement = document.getElementById(styleId) as HTMLStyleElement;
-      if (!styleElement) {
-        styleElement = document.createElement('style');
-        styleElement.id = styleId;
-        document.head.appendChild(styleElement);
-      }
-
-      // 更新 keyframes
-      const keyframes = `
-        @keyframes ${animationName} {
-          from {
-            ${transformProperty}: ${fromValue}px;
-          }
-          to {
-            ${transformProperty}: ${toValue}px;
-          }
-        }
-      `;
-
-      styleElement.textContent = keyframes;
-
-      // 应用动画
-      container.style.animation = `${animationName} ${currentDuration}s linear infinite`;
-    };
-
-    updateAnimation();
-
-    // 监听尺寸变化
-    const resizeObserver = new ResizeObserver(() => {
-      updateAnimation();
-    });
-
-    resizeObserver.observe(contentRef.current);
-
-    // 保存 styleId 用于清理
-    const styleId = styleIdRef.current;
+    if (isTransitioning) {
+      const currentValue = translation.get();
+      controls = animate(translation, [currentValue, to], {
+        ease: 'linear',
+        duration: currentDuration * Math.abs((currentValue - to) / distance),
+        onComplete: () => {
+          setIsTransitioning(false);
+          setKey((prevKey) => prevKey + 1);
+        },
+      });
+    } else {
+      // 重置位置并开始无限循环动画
+      translation.set(from);
+      controls = animate(translation, [from, to], {
+        ease: 'linear',
+        duration: currentDuration,
+        repeat: Infinity,
+        repeatType: 'loop',
+        repeatDelay: 0,
+      });
+    }
 
     return () => {
-      resizeObserver.disconnect();
-      if (styleId) {
-        const styleElement = document.getElementById(styleId);
-        if (styleElement) {
-          styleElement.remove();
-        }
+      if (controls) {
+        controls.stop();
       }
     };
-  }, [direction, reverse, duration, durationOnHover, speed, speedOnHover, isHovered, gap]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    key,
+    width,
+    height,
+    gap,
+    isTransitioning,
+    direction,
+    reverse,
+    duration,
+    durationOnHover,
+    speed,
+    speedOnHover,
+    isHovered,
+  ]);
 
   const hoverProps = (speedOnHover !== undefined || durationOnHover !== undefined)
     ? {
-        onMouseEnter: () => setIsHovered(true),
-        onMouseLeave: () => setIsHovered(false),
+        onHoverStart: () => {
+          setIsHovered(true);
+          setIsTransitioning(true);
+        },
+        onHoverEnd: () => {
+          setIsHovered(false);
+          setIsTransitioning(true);
+        },
       }
     : {};
 
-  const flexDirection = direction === 'horizontal' ? 'row' : 'column';
-  const gapStyle = `${gap}px`;
-
   return (
-    <div className={cn('overflow-hidden', className)} {...hoverProps}>
-      <div
-        ref={containerRef}
+    <div className={cn('overflow-hidden', className)}>
+      <motion.div
         className='flex w-max'
         style={{
-          gap: gapStyle,
-          flexDirection,
-          willChange: 'transform',
+          ...(direction === 'horizontal'
+            ? { x: translation }
+            : { y: translation }),
+          gap: `${gap}px`,
+          flexDirection: direction === 'horizontal' ? 'row' : 'column',
         }}
+        ref={ref}
+        {...hoverProps}
       >
-        <div 
-          ref={contentRef} 
-          className="flex" 
-          style={{ gap: gapStyle, flexDirection }}
-        >
-          {children}
-        </div>
-        <div 
-          className="flex" 
-          style={{ gap: gapStyle, flexDirection }}
-        >
-          {children}
-        </div>
-      </div>
+        {children}
+        {children}
+      </motion.div>
     </div>
   );
 }
