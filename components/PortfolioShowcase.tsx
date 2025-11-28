@@ -1180,25 +1180,46 @@ export default function PortfolioShowcase() {
           {/* ========== PARALLAX FLOATING HERO SECTION ========== */}
           <section className="overflow-hidden relative w-full h-screen bg-gradient-to-br from-black via-gray-900 to-black">
               <Floating className="relative w-full h-full" sensitivity={1.2} easingFactor={0.08}>
-                  {/* 背景装饰元素 - 大尺寸模糊圆形，放在边缘避免重叠 */}
-                  <FloatingElement depth={0.3} className="top-0 left-0 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+                  {/* 背景装饰元素 - 大尺寸模糊圆形，放在边缘避免重叠，z-index 最低 */}
+                  <FloatingElement depth={0.3} className="top-0 left-0 z-0 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
                       <div className="w-64 h-64 bg-gradient-to-br rounded-full blur-3xl from-purple-500/20 to-pink-500/20" />
                   </FloatingElement>
 
-                  <FloatingElement depth={0.5} className="right-0 top-1/2 translate-x-1/2 -translate-y-1/2 pointer-events-none">
+                  <FloatingElement depth={0.5} className="right-0 top-1/2 z-0 translate-x-1/2 -translate-y-1/2 pointer-events-none">
                       <div className="w-80 h-80 bg-gradient-to-br rounded-full blur-3xl from-blue-500/20 to-cyan-500/20" />
                   </FloatingElement>
 
-                  <FloatingElement depth={0.7} className="bottom-0 left-1/4 -translate-x-1/2 translate-y-1/2 pointer-events-none">
+                  <FloatingElement depth={0.7} className="bottom-0 left-1/4 z-0 -translate-x-1/2 translate-y-1/2 pointer-events-none">
                       <div className="w-48 h-48 bg-gradient-to-br rounded-full blur-3xl from-yellow-500/20 to-orange-500/20" />
                   </FloatingElement>
 
-                  <FloatingElement depth={0.4} className="top-0 right-1/3 translate-x-1/2 -translate-y-1/2 pointer-events-none">
+                  <FloatingElement depth={0.4} className="top-0 right-1/3 z-0 translate-x-1/2 -translate-y-1/2 pointer-events-none">
                       <div className="w-56 h-56 bg-gradient-to-br rounded-full blur-3xl from-indigo-500/20 to-purple-500/20" />
                   </FloatingElement>
 
-                  {/* 主要内容区域 */}
-                  <div className="flex relative z-20 flex-col justify-center items-center px-8 h-full text-center">
+                  {/* 装饰性几何元素 - 调整位置避免与内容重叠，z-index 中等，更分散 */}
+                  <FloatingElement depth={1.2} className="top-[15%] pointer-events-none right-[8%] z-10">
+                      <div className="w-16 h-16 bg-gradient-to-br rounded-lg border backdrop-blur-sm rotate-45 from-green-500/20 to-emerald-500/20 border-white/10" />
+                  </FloatingElement>
+
+                  <FloatingElement depth={1.5} className="bottom-[20%] pointer-events-none left-[8%] z-10">
+                      <div className="w-20 h-20 bg-gradient-to-br rounded-lg border backdrop-blur-sm from-indigo-500/20 to-purple-500/20 border-white/10" />
+                  </FloatingElement>
+
+                  <FloatingElement depth={1} className="top-[70%] pointer-events-none right-[10%] z-10">
+                      <div className="w-14 h-14 bg-gradient-to-br rounded-full border backdrop-blur-sm from-pink-500/20 to-rose-500/20 border-white/10" />
+                  </FloatingElement>
+
+                  <FloatingElement depth={1.3} className="top-[25%] pointer-events-none left-[5%] z-10">
+                      <div className="w-10 h-10 bg-gradient-to-br rounded-lg border backdrop-blur-sm rotate-12 from-cyan-500/20 to-blue-500/20 border-white/10" />
+                  </FloatingElement>
+
+                  <FloatingElement depth={0.9} className="bottom-[30%] pointer-events-none right-[5%] z-10">
+                      <div className="w-12 h-12 bg-gradient-to-br rounded-full border backdrop-blur-sm from-orange-500/20 to-yellow-500/20 border-white/10" />
+                  </FloatingElement>
+
+                  {/* 主要内容区域 - z-index 最高，确保在最上层 */}
+                  <div className="flex relative z-30 flex-col justify-center items-center px-8 h-full text-center">
                       <FloatingElement depth={2}>
                           <h1 className="mb-6 text-6xl font-bold tracking-tight text-white md:text-7xl lg:text-8xl">
                               Welcome to
@@ -1229,29 +1250,8 @@ export default function PortfolioShowcase() {
                       </FloatingElement>
                   </div>
 
-                  {/* 装饰性几何元素 - 调整位置避免与内容重叠 */}
-                  <FloatingElement depth={1.2} className="top-1/4 pointer-events-none right-1/6">
-                      <div className="w-20 h-20 bg-gradient-to-br rounded-lg border backdrop-blur-sm rotate-45 from-green-500/30 to-emerald-500/30 border-white/20" />
-                  </FloatingElement>
-
-                  <FloatingElement depth={1.5} className="bottom-1/4 pointer-events-none left-1/6">
-                      <div className="w-24 h-24 bg-gradient-to-br rounded-lg border backdrop-blur-sm from-indigo-500/30 to-purple-500/30 border-white/20" />
-                  </FloatingElement>
-
-                  <FloatingElement depth={1} className="top-3/4 pointer-events-none right-1/6">
-                      <div className="w-16 h-16 bg-gradient-to-br rounded-full border backdrop-blur-sm from-pink-500/30 to-rose-500/30 border-white/20" />
-                  </FloatingElement>
-
-                  <FloatingElement depth={1.3} className="top-1/3 pointer-events-none left-1/12">
-                      <div className="w-12 h-12 bg-gradient-to-br rounded-lg border backdrop-blur-sm rotate-12 from-cyan-500/30 to-blue-500/30 border-white/20" />
-                  </FloatingElement>
-
-                  <FloatingElement depth={0.9} className="bottom-1/3 pointer-events-none right-1/12">
-                      <div className="w-14 h-14 bg-gradient-to-br rounded-full border backdrop-blur-sm from-orange-500/30 to-yellow-500/30 border-white/20" />
-                  </FloatingElement>
-
-                  {/* 滚动提示 */}
-                  <div className="absolute bottom-8 left-1/2 z-30 -translate-x-1/2 pointer-events-none">
+                  {/* 滚动提示 - z-index 最高 */}
+                  <div className="absolute bottom-8 left-1/2 z-40 -translate-x-1/2 pointer-events-none">
                       <div className="flex flex-col gap-2 items-center text-white/60">
                           <span className="text-sm">Scroll down</span>
                           <div className="flex justify-center items-start p-2 w-6 h-10 rounded-full border-2 border-white/30">
