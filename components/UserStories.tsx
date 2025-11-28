@@ -5,7 +5,6 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { VerticalCutReveal, VerticalCutRevealRef } from "@/components/ui/vertical-cut-reveal";
 import { ArrowRight, Loader2 } from "lucide-react";
-import { motion } from "framer-motion";
 import { AnimatedCard } from "@/components/ui/animated-card";
 
 if (typeof window !== "undefined") {

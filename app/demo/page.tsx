@@ -18,7 +18,7 @@ import Partners from "@/components/Partners";
 import Footer from "@/components/Footer";
 import { LoginDialog } from "@/components/LoginDialog";
 
-export default function Home() {
+export default function PortfolioDemoPage() {
   const [loginOpen, setLoginOpen] = useState(false);
 
   return (
@@ -77,3 +77,4 @@ export default function Home() {
     </main>
   );
 }
+

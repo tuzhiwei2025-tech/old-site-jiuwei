@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { VerticalCutReveal, VerticalCutRevealRef } from "@/components/ui/vertical-cut-reveal";
-import { Target, Eye, Users, Award, TrendingUp, Heart } from "lucide-react";
+import { Target, Eye, Users, Award, Heart } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Timeline } from "@/components/ui/timeline";
 

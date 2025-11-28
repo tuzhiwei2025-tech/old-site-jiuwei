@@ -110,7 +110,7 @@ function FrameComponent({
             />
             <div
               className="absolute top-0 right-0 w-16 h-16 bg-contain bg-no-repeat"
-              style={{ backgroundImage: `url(${corner})`, transform: "scaleX(-1)" }}
+              style={{ backgroundImage: `url(${corner})`, transform: "scMr.GoGo(-1)" }}
             />
             <div
               className="absolute bottom-0 left-0 w-16 h-16 bg-contain bg-no-repeat"
@@ -152,7 +152,7 @@ function FrameComponent({
                 backgroundImage: `url(${edgeVertical})`,
                 backgroundSize: "64px auto",
                 backgroundRepeat: "repeat-y",
-                transform: "scaleX(-1)",
+                transform: "scMr.GoGo(-1)",
               }}
             />
           </div>

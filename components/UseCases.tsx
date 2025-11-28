@@ -9,12 +9,8 @@ import {
   Presentation, 
   BarChart3, 
   Image, 
-  Video, 
   MessageSquare,
-  Calendar,
-  ShoppingCart,
-  BookOpen,
-  Lightbulb
+  BookOpen
 } from "lucide-react";
 import { FeatureCard } from "@/components/ui/feature-card";
 
