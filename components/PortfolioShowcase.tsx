@@ -9,10 +9,48 @@ import { ScrollingFeatureShowcase } from "@/components/ui/interactive-scrolling-
 import StackingCard from "@/components/ui/stacking-card";
 import { Skiper31 } from "@/components/ui/text-scroll-animation";
 import Floating, { FloatingElement } from "@/components/ui/parallax-floating";
+import { LogoCloud } from "@/components/ui/logo-cloud-4";
+import { ScrollVelocity } from "@/components/ui/scroll-velocity";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
+
+// 合作伙伴logo数据
+const partners = [
+  {
+    src: "https://svgl.app/library/nvidia-wordmark-light.svg",
+    alt: "Nvidia Logo",
+  },
+  {
+    src: "https://svgl.app/library/supabase_wordmark_light.svg",
+    alt: "Supabase Logo",
+  },
+  {
+    src: "https://svgl.app/library/openai_wordmark_light.svg",
+    alt: "OpenAI Logo",
+  },
+  {
+    src: "https://svgl.app/library/turso-wordmark-light.svg",
+    alt: "Turso Logo",
+  },
+  {
+    src: "https://svgl.app/library/vercel_wordmark.svg",
+    alt: "Vercel Logo",
+  },
+  {
+    src: "https://svgl.app/library/github_wordmark_light.svg",
+    alt: "GitHub Logo",
+  },
+  {
+    src: "https://svgl.app/library/claude-ai-wordmark-icon_light.svg",
+    alt: "Claude AI Logo",
+  },
+  {
+    src: "https://svgl.app/library/clerk-wordmark-light.svg",
+    alt: "Clerk Logo",
+  },
+];
 
 export default function PortfolioShowcase() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -1007,6 +1045,22 @@ export default function PortfolioShowcase() {
     },
   ];
 
+  // Mock 数据用于 ScrollVelocity 组件
+  const scrollVelocityMockData = [
+    "NVIDIA",
+    "OPENAI",
+    "SUPABASE",
+    "VERCEL",
+    "GITHUB",
+    "CLAUDE AI",
+    "TURSO",
+    "CLERK",
+    "STRIPE",
+    "TWILIO",
+    "SENDGRID",
+    "ALGOLIA",
+  ];
+
   const customers = [
     {
       name: "MICHAEL T.",
@@ -1237,29 +1291,41 @@ export default function PortfolioShowcase() {
         <StackingCard
           projects={[
             {
-              title: "Project One",
-              description: "This is a description of the first project. It showcases amazing features and capabilities.",
+              title: "Avatars - Build your Expert Team",
+              description: "Introducing a brand-new feature: Avatars. With Avatars, you can choose who you want to interact with — whether it's legendary figures from history or a team of dedicated expert advisors tailored to your personal needs.",
               link: "https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800&auto=format&fit=crop",
-              color: "#6366f1",
-            },
-            {
-              title: "Project Two",
-              description: "Another fantastic project with innovative solutions and cutting-edge technology.",
-              link: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop",
               color: "#8b5cf6",
+              type: 'avatars',
+              features: [
+                "Engage with historical figures.",
+                "Build a personalized expert team.",
+                "Get tailored advice and insights.",
+              ],
             },
             {
-              title: "Project Three",
-              description: "A third project that demonstrates excellence in design and functionality.",
-              link: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=800&auto=format&fit=crop",
-              color: "#ec4899",
-            },
-            {
-              title: "Project Four",
-              description: "The fourth project in our showcase, featuring unique approaches and solutions.",
-              link: "https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800&auto=format&fit=crop",
-              color: "#f59e0b",
-            },
+                title: "Avatars - Build your Expert Team",
+                description: "Introducing a brand-new feature: Avatars. With Avatars, you can choose who you want to interact with — whether it's legendary figures from history or a team of dedicated expert advisors tailored to your personal needs.",
+                link: "https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800&auto=format&fit=crop",
+                color: "#8b5cf6",
+                type: 'avatars',
+                features: [
+                  "Engage with historical figures.",
+                  "Build a personalized expert team.",
+                  "Get tailored advice and insights.",
+                ],
+              },
+              {
+                title: "Avatars - Build your Expert Team",
+                description: "Introducing a brand-new feature: Avatars. With Avatars, you can choose who you want to interact with — whether it's legendary figures from history or a team of dedicated expert advisors tailored to your personal needs.",
+                link: "https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800&auto=format&fit=crop",
+                color: "#8b5cf6",
+                type: 'avatars',
+                features: [
+                  "Engage with historical figures.",
+                  "Build a personalized expert team.",
+                  "Get tailored advice and insights.",
+                ],
+              },
           ]}
         />
       </section>
@@ -1270,54 +1336,13 @@ export default function PortfolioShowcase() {
               id="projects"
               className="flex relative flex-col justify-center items-center py-20 min-h-screen bg-black"
           >
-              {/* Logo Cloud - 精确还原 */}
+              {/* Logo Cloud */}
               <div
                   ref={projectsLogosRef}
                   className="pb-8 mb-12 w-full border-b border-white/10"
               >
-                  <div className="container px-8 mx-auto">
-                      <div className="flex flex-wrap gap-8 justify-between items-center">
-                          <div className="flex flex-col gap-2 items-center cursor-pointer">
-                              <div className="flex justify-center items-center w-12 h-12 rounded bg-white/10">
-                                  <div className="w-8 h-8 rounded-full bg-white/20" />
-                              </div>
-                              <span className="text-xs font-medium text-white/80">ProtoSphere</span>
-                              <span className="text-[10px] text-white/50 uppercase">CONNECTION</span>
-                          </div>
-                          <div className="flex flex-col gap-2 items-center cursor-pointer">
-                              <div className="flex justify-center items-center w-12 h-12 rounded bg-white/10">
-                                  <div className="w-8 h-8 bg-white/20" style={{ clipPath: "polygon(50% 0%, 0% 100%, 100% 100%)" }} />
-                              </div>
-                              <span className="text-xs font-medium text-white/80">Thelma Watson</span>
-                              <span className="text-[10px] text-white/50 uppercase">Artist & Illustrator</span>
-                          </div>
-                          <div className="flex flex-col gap-2 items-center cursor-pointer">
-                              <div className="flex justify-center items-center w-12 h-12 rounded bg-white/10">
-                                  <div className="w-8 h-8 bg-white/20" style={{ clipPath: "polygon(50% 0%, 0% 50%, 50% 100%, 100% 50%)" }} />
-                              </div>
-                              <span className="text-xs font-medium text-white/80">Impact Creative</span>
-                          </div>
-                          <div className="flex flex-col gap-2 items-center cursor-pointer">
-                              <div className="flex justify-center items-center w-12 h-12 rounded bg-white/10">
-                                  <div className="w-8 h-8 rounded bg-white/20" />
-                              </div>
-                              <span className="text-xs font-medium text-white/80">SCA LER</span>
-                              <span className="text-[10px] text-white/50 uppercase">Graphic Design Tool</span>
-                          </div>
-                          <div className="flex flex-col gap-2 items-center cursor-pointer">
-                              <div className="flex justify-center items-center w-12 h-12 rounded bg-white/10">
-                                  <div className="w-8 h-8 rounded bg-white/20" />
-                              </div>
-                              <span className="text-xs font-medium text-white/80">PIXEL FORGE</span>
-                          </div>
-                          <div className="flex flex-col gap-2 items-center cursor-pointer">
-                              <div className="flex justify-center items-center w-12 h-12 rounded bg-white/10">
-                                  <div className="w-8 h-8 bg-white/20" style={{ clipPath: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)" }} />
-                              </div>
-                              <span className="text-xs font-medium text-white/80">VIOLETA K</span>
-                              <span className="text-[10px] text-white/50 uppercase">DESIGN STUDIO</span>
-                          </div>
-                      </div>
+                  <div className="w-full">
+                      <LogoCloud logos={partners} />
                   </div>
               </div>
 
@@ -1329,40 +1354,18 @@ export default function PortfolioShowcase() {
                       PROJECTS
                   </h2>
 
-                  {/* 项目卡片列表 */}
-                  <div ref={projectsListRef} className="mx-auto mb-16 space-y-8 max-w-4xl">
-                      {projects.map((project, index) => (
-                          <div
-                              key={index}
-                              className="flex gap-8 items-center p-6 rounded-2xl border transition-colors cursor-pointer border-white/30 hover:bg-white/5"
-                              style={{
-                                  boxShadow: "0 0 20px rgba(255, 255, 255, 0.1)",
-                              }}
-                          >
-                              <div className="flex-shrink-0 text-9xl font-bold leading-none text-white/10">
-                                  {project.number}
-                              </div>
-                              <div className="flex-1">
-                                  <div className="mb-2 text-sm tracking-wider uppercase text-white/60">
-                                      CLIENT
-                                  </div>
-                                  <div className="mb-4 text-2xl font-semibold text-white">{project.client}</div>
-                                  {/* 项目预览区域 - 多个预览图 */}
-                                  <div className="flex overflow-hidden gap-2 w-full h-32 rounded-lg bg-white/5">
-                                      <div className="flex-1 bg-gradient-to-r from-purple-500/20 to-pink-500/20" />
-                                      {index === 2 && (
-                                          <>
-                                              <div className="w-32 bg-gradient-to-r from-yellow-500/20 to-orange-500/20" />
-                                              <div className="w-32 bg-gradient-to-r from-blue-500/20 to-green-500/20" />
-                                          </>
-                                      )}
-                                  </div>
-                              </div>
-                              <button className="flex-shrink-0 px-6 py-3 text-sm tracking-wider text-white uppercase rounded-lg border transition-colors border-white/30 hover:bg-white/10">
-                                  LIVE PROJECT
-                              </button>
-                          </div>
-                      ))}
+                  {/* 项目滚动速度展示 */}
+                  <div ref={projectsListRef} className="mx-auto mb-16 max-w-4xl">
+                      <ScrollVelocity 
+                          velocity={5}
+                          className="text-white"
+                      >
+                          {scrollVelocityMockData.map((item, index) => (
+                              <span key={index} className="text-white">
+                                  {item}
+                              </span>
+                          ))}
+                      </ScrollVelocity>
                   </div>
 
                   {/* 项目网格缩略图 */}
