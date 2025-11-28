@@ -22,11 +22,13 @@ interface ProjectData {
   description: string;
   link: string;
   color: string;
-  type?: 'image' | 'avatars' | 'ai-comparison';
+  type?: 'image' | 'avatars' | 'ai-comparison' | 'video';
   avatars?: Avatar[];
   features?: string[];
   aiModels?: AIModel[];
   query?: string;
+  videoUrl?: string;
+  videoThumbnail?: string;
 }
 
 interface CardProps {
@@ -38,11 +40,13 @@ interface CardProps {
   progress: MotionValue<number>;
   range: [number, number];
   targetScale: number;
-  type?: 'image' | 'avatars' | 'ai-comparison';
+  type?: 'image' | 'avatars' | 'ai-comparison' | 'video';
   avatars?: Avatar[];
   features?: string[];
   aiModels?: AIModel[];
   query?: string;
+  videoUrl?: string;
+  videoThumbnail?: string;
 }
 
 export const Card = ({
@@ -59,6 +63,8 @@ export const Card = ({
   features = [],
   aiModels = [],
   query = '',
+  videoUrl = '',
+  videoThumbnail = '',
 }: CardProps) => {
   const container = useRef(null);
   const { scrollYProgress } = useScroll({
@@ -81,13 +87,14 @@ export const Card = ({
           opacity,
           top: `calc(-5vh + ${i * 25}px)`,
         }}
-        className={`flex relative -top-[25%] h-[500px] w-full max-w-6xl rounded-2xl overflow-hidden origin-top shadow-2xl border border-white/10 backdrop-blur-sm`}
+        className={`flex relative -top-[25%] h-[650px] w-full max-w-7xl rounded-2xl overflow-hidden origin-top shadow-2xl border border-white/10 backdrop-blur-lg`}
       >
-        {/* 渐变背景层 */}
+        {/* 渐变背景层 - 增强毛玻璃效果 */}
         <div 
-          className='absolute inset-0 opacity-90'
+          className='absolute inset-0 opacity-95 backdrop-blur-lg'
           style={{
-            background: `linear-gradient(135deg, ${color}15 0%, ${color}30 50%, ${color}15 100%)`,
+            background: `linear-gradient(135deg, ${color}30 0%, ${color}60 50%, ${color}30 100%)`,
+            backgroundColor: 'rgba(0, 0, 0, 0.4)',
           }}
         />
         
@@ -99,13 +106,13 @@ export const Card = ({
 
         {/* 内容容器 */}
         <div className='flex relative z-10 flex-col w-full h-full lg:flex-row'>
-          {/* 左侧文字内容区域 */}
-          <div className='flex flex-col justify-center w-full lg:w-[45%] p-8 lg:p-12 space-y-6'>
+          {/* 左侧文字内容区域 - 添加半透明背景增强可读性 */}
+          <div className='flex flex-col justify-center w-full lg:w-[45%] p-8 lg:p-12 space-y-6 backdrop-blur-sm bg-black/20 rounded-l-2xl'>
             {/* 图标装饰 */}
             <div className='flex gap-3 items-center mb-2'>
               <div 
                 className='flex justify-center items-center w-12 h-12 rounded-xl border backdrop-blur-md border-white/20'
-                style={{ backgroundColor: `${color}40` }}
+                style={{ backgroundColor: `${color}60` }}
               >
                 <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
                   <path d='M12 2L2 7L12 12L22 7L12 2Z' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round' fill='none'/>
@@ -147,13 +154,13 @@ export const Card = ({
                   <li key={idx} className='flex gap-3 items-center'>
                     <div 
                       className='flex justify-center items-center w-5 h-5 rounded-full shrink-0'
-                      style={{ backgroundColor: `${color}40` }}
+                      style={{ backgroundColor: `${color}60` }}
                     >
                       <svg width='12' height='12' viewBox='0 0 12 12' fill='none' xmlns='http://www.w3.org/2000/svg'>
                         <path d='M10 3L4.5 8.5L2 6' stroke={color} strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'/>
                       </svg>
                     </div>
-                    <span className='text-sm lg:text-base text-white/90'>{feature}</span>
+                    <span className='text-sm font-medium text-white lg:text-base'>{feature}</span>
                   </li>
                 ))}
               </motion.ul>
@@ -173,7 +180,7 @@ export const Card = ({
                 className='inline-flex gap-2 items-center px-6 py-3 font-medium text-white rounded-full transition-all duration-300 group hover:gap-4'
                 style={{
                   background: `linear-gradient(135deg, ${color} 0%, ${color}dd 100%)`,
-                  boxShadow: `0 4px 15px ${color}40`,
+                  boxShadow: `0 4px 20px ${color}60`,
                 }}
               >
                 <span>了解更多</span>
@@ -198,29 +205,53 @@ export const Card = ({
           <div className='relative w-full lg:w-[55%] h-full overflow-hidden'>
             {type === 'avatars' ? (
               /* 头像集合布局 */
-              <div className='flex relative justify-center items-center p-8 w-full h-full lg:p-12'>
-                {/* 背景装饰 */}
+              <div className='flex overflow-hidden relative justify-center items-center p-6 w-full h-full lg:p-10'>
+                {/* 细网格背景 - 确保在最底层且清晰可见 */}
                 <div 
-                  className='absolute inset-0 opacity-20'
+                  className='absolute inset-0 z-0'
                   style={{
-                    background: `radial-gradient(circle at center, ${color}40 0%, transparent 70%)`,
+                    backgroundImage: `linear-gradient(${color}80 1px, transparent 1px), linear-gradient(90deg, ${color}80 1px, transparent 1px)`,
+                    backgroundSize: '20px 20px',
+                    opacity: 0.5,
                   }}
                 />
                 
-                {/* 头像容器 */}
-                <div className='relative z-10 w-full max-w-lg h-full max-h-96'>
+                {/* 背景装饰 - 降低透明度，让网格更明显 */}
+                <div 
+                  className='absolute inset-0 z-0 opacity-15'
+                  style={{
+                    background: `radial-gradient(circle at center, ${color}60 0%, transparent 70%)`,
+                  }}
+                />
+                
+                {/* 头像容器 - 确保头像不超出容器边界 */}
+                <div className='relative z-10 w-full h-full min-h-[500px] overflow-visible'>
                   {avatars.map((avatar, idx) => {
+                    // 定义不同大小的头像位置：中心集合，四周发散
+                    // 9个头像，重新计算位置确保完全不重叠，考虑头像实际大小（包括边框和阴影）
+                    // 小头像半径约10-11px，中等约13-15px，大头像约20-22px
+                    // 需要至少30-35%的间距才能确保不重叠
                     const positions = [
-                      { top: '10%', left: '20%', z: 3, rotate: -3, size: 'w-20 h-20 lg:w-24 lg:h-24' },
-                      { top: '5%', left: '55%', z: 2, rotate: 5, size: 'w-24 h-24 lg:w-28 lg:h-28' },
-                      { top: '2%', left: '80%', z: 4, rotate: -2, size: 'w-20 h-20 lg:w-24 lg:h-24' },
-                      { top: '38%', left: '8%', z: 1, rotate: 4, size: 'w-20 h-20 lg:w-26 lg:h-26' },
-                      { top: '32%', left: '45%', z: 5, rotate: -6, size: 'w-24 h-24 lg:w-32 lg:h-32' },
-                      { top: '28%', left: '75%', z: 2, rotate: 2, size: 'w-20 h-20 lg:w-24 lg:h-24' },
-                      { top: '62%', left: '25%', z: 3, rotate: -4, size: 'w-20 h-20 lg:w-26 lg:h-26' },
-                      { top: '58%', left: '65%', z: 1, rotate: 3, size: 'w-20 h-20 lg:w-24 lg:h-24' },
+                      // 四周分散的头像 - 左上 (小) - 确保在边缘
+                      { top: '15%', left: '15%', z: 2, rotate: -8, size: 'w-14 h-14 sm:w-16 sm:h-16 lg:w-18 lg:h-18 xl:w-20 xl:h-20', scale: 'small' },
+                      // 中间区域 - 上中 (中) - 与中心保持30%距离
+                      { top: '22%', left: '50%', z: 3, rotate: 12, size: 'w-20 h-20 sm:w-22 sm:h-22 lg:w-24 lg:h-24 xl:w-26 xl:h-26', scale: 'medium' },
+                      // 四周分散的头像 - 右上 (小) - 确保在边缘
+                      { top: '12%', left: '85%', z: 1, rotate: -5, size: 'w-16 h-16 sm:w-18 sm:h-18 lg:w-20 lg:h-20 xl:w-22 xl:h-22', scale: 'small' },
+                      // 中间区域 - 中左 (中) - 与中心保持30%距离
+                      { top: '50%', left: '22%', z: 4, rotate: 15, size: 'w-22 h-22 sm:w-24 sm:h-24 lg:w-26 lg:h-26 xl:w-28 xl:h-28', scale: 'medium' },
+                      // 中间区域 - 中心焦点 (最大)
+                      { top: '50%', left: '50%', z: 5, rotate: -12, size: 'w-32 h-32 sm:w-36 sm:h-36 lg:w-40 lg:h-40 xl:w-44 xl:h-44', scale: 'large' },
+                      // 中间区域 - 中右 (中) - 与中心保持30%距离
+                      { top: '50%', left: '78%', z: 3, rotate: 8, size: 'w-22 h-22 sm:w-24 sm:h-24 lg:w-26 lg:h-26 xl:w-28 xl:h-28', scale: 'medium' },
+                      // 四周分散的头像 - 右上 (小) - 更分散，避免与中右重叠
+                      { top: '18%', left: '90%', z: 2, rotate: -10, size: 'w-16 h-16 sm:w-18 sm:h-18 lg:w-20 lg:h-20 xl:w-22 xl:h-22', scale: 'small' },
+                      // 中间区域 - 下中 (中) - 与中心保持28%距离
+                      { top: '78%', left: '50%', z: 4, rotate: 6, size: 'w-24 h-24 sm:w-26 sm:h-26 lg:w-28 lg:h-28 xl:w-30 xl:h-30', scale: 'medium' },
+                      // 中间区域 - 中下 (第二大) - 与中心保持足够距离，避免与下中重叠
+                      { top: '60%', left: '80%', z: 5, rotate: -7, size: 'w-26 h-26 sm:w-30 sm:h-30 lg:w-34 lg:h-34 xl:w-38 xl:h-38', scale: 'large' },
                     ];
-                    const pos = positions[idx % positions.length] || { top: '50%', left: '50%', z: 1, rotate: 0, size: 'w-20 h-20 lg:w-24 lg:h-24' };
+                    const pos = positions[idx % positions.length] || { top: '50%', left: '50%', z: 1, rotate: 0, size: 'w-20 h-20 lg:w-24 lg:h-24', scale: 'medium' };
                     
                     return (
                       <motion.div
@@ -240,32 +271,49 @@ export const Card = ({
                         }}
                       >
                         {/* 头像圆形容器 */}
-                        <div 
-                          className={`overflow-hidden relative rounded-full ${pos.size}`}
+                        <motion.div 
+                          className={`overflow-hidden relative rounded-full ${pos.size} cursor-pointer group`}
                           style={{
-                            border: `3px solid ${avatar.borderColor}`,
-                            boxShadow: `0 0 20px ${avatar.borderColor}40`,
+                            border: pos.scale === 'large' ? `4px solid ${avatar.borderColor}` : pos.scale === 'medium' ? `3px solid ${avatar.borderColor}` : `2px solid ${avatar.borderColor}`,
+                            boxShadow: pos.scale === 'large' 
+                              ? `0 0 30px ${avatar.borderColor}60, 0 0 60px ${avatar.borderColor}30, 0 0 100px ${avatar.borderColor}15`
+                              : pos.scale === 'medium'
+                              ? `0 0 25px ${avatar.borderColor}50, 0 0 50px ${avatar.borderColor}20`
+                              : `0 0 15px ${avatar.borderColor}40, 0 0 30px ${avatar.borderColor}15`,
                           }}
+                          whileHover={{ scale: 1.15, zIndex: 10 }}
+                          transition={{ duration: 0.3 }}
                         >
                           <img 
                             src={avatar.image} 
                             alt={`Avatar ${idx + 1}`}
-                            className='object-cover w-full h-full'
+                            className='object-cover w-full h-full transition-transform duration-300 group-hover:scale-110'
                           />
-                        </div>
+                          {/* 悬停光效 */}
+                          <div 
+                            className='absolute inset-0 rounded-full opacity-0 transition-opacity duration-300 group-hover:opacity-30'
+                            style={{
+                              background: `radial-gradient(circle, ${avatar.borderColor} 0%, transparent 70%)`,
+                            }}
+                          />
+                        </motion.div>
                         
                         {/* 图标（如果有） */}
                         {avatar.icon && (
-                          <div 
-                            className='flex absolute -right-1 -bottom-1 justify-center items-center w-6 h-6 rounded-full border-2 shadow-md lg:w-7 lg:h-7 border-white/20'
+                          <motion.div 
+                            className={`flex absolute -right-1 -bottom-1 justify-center items-center rounded-full border-2 shadow-lg backdrop-blur-sm border-white/30 ${
+                              pos.scale === 'large' ? 'w-8 h-8 lg:w-9 lg:h-9' : pos.scale === 'medium' ? 'w-6 h-6 lg:w-7 lg:h-7' : 'w-5 h-5 lg:w-6 lg:h-6'
+                            }`}
                             style={{ backgroundColor: avatar.iconColor || avatar.borderColor }}
+                            whileHover={{ scale: 1.2 }}
+                            transition={{ duration: 0.2 }}
                           >
                             <img 
                               src={avatar.icon} 
                               alt='icon'
-                              className='w-3 h-3 lg:w-4 lg:h-4'
+                              className={pos.scale === 'large' ? 'w-4 h-4 lg:w-5 lg:h-5' : pos.scale === 'medium' ? 'w-3 h-3 lg:w-4 lg:h-4' : 'w-2.5 h-2.5 lg:w-3 lg:h-3'}
                             />
-                          </div>
+                          </motion.div>
                         )}
                       </motion.div>
                     );
@@ -274,7 +322,7 @@ export const Card = ({
 
                 {/* 装饰性光效 */}
                 <div 
-                  className='absolute top-1/2 right-1/4 w-64 h-64 opacity-20 blur-3xl -translate-y-1/2'
+                  className='absolute top-1/2 right-1/4 w-80 h-80 opacity-30 blur-3xl -translate-y-1/2'
                   style={{ backgroundColor: color }}
                 />
               </div>
@@ -321,33 +369,200 @@ export const Card = ({
                   ))}
                 </div>
               </div>
+            ) : type === 'video' ? (
+              /* 视频播放器布局 */
+              <div className='flex relative justify-center items-center p-8 w-full h-full lg:p-12'>
+                {/* 背景装饰 */}
+                <div 
+                  className='absolute inset-0 opacity-20'
+                  style={{
+                    background: `radial-gradient(circle at center, ${color}40 0%, transparent 70%)`,
+                  }}
+                />
+                
+                {/* 视频播放器容器 */}
+                <div className='overflow-hidden relative z-10 w-full max-w-3xl rounded-2xl border shadow-2xl backdrop-blur-sm aspect-video border-white/30 group'>
+                  {/* 视频播放器 */}
+                  <div className='relative w-full h-full bg-gradient-to-br to-black from-slate-900'>
+                    {videoThumbnail ? (
+                      <>
+                        <img 
+                          src={videoThumbnail} 
+                          alt={title}
+                          className='object-cover w-full h-full transition-transform duration-500 group-hover:scale-105'
+                        />
+                        {/* 渐变遮罩 */}
+                        <div 
+                          className='absolute inset-0 opacity-60'
+                          style={{
+                            background: `linear-gradient(to bottom, transparent 0%, ${color}20 50%, ${color}40 100%)`,
+                          }}
+                        />
+                        {/* 播放按钮覆盖层 */}
+                        <div className='flex absolute inset-0 justify-center items-center transition-all duration-300 cursor-pointer group/play hover:bg-black/10'>
+                          <motion.div 
+                            className='flex justify-center items-center w-24 h-24 rounded-full border-2 backdrop-blur-md transition-all group-hover/play:scale-110 group-hover/play:shadow-2xl'
+                            style={{
+                              borderColor: color,
+                              backgroundColor: `${color}40`,
+                              boxShadow: `0 0 40px ${color}50`,
+                            }}
+                            whileHover={{ scale: 1.15 }}
+                            whileTap={{ scale: 0.95 }}
+                          >
+                            <svg 
+                              width='48' 
+                              height='48' 
+                              viewBox='0 0 24 24' 
+                              fill='none' 
+                              xmlns='http://www.w3.org/2000/svg'
+                              className='ml-1 drop-shadow-lg'
+                              style={{ color: '#ffffff' }}
+                            >
+                              <path 
+                                d='M8 5V19L19 12L8 5Z' 
+                                fill='currentColor'
+                              />
+                            </svg>
+                          </motion.div>
+                          {/* 播放提示文字 */}
+                          <div className='absolute bottom-24 left-1/2 opacity-0 transition-opacity duration-300 -translate-x-1/2 group-hover/play:opacity-100'>
+                            <span className='px-4 py-2 text-sm font-medium rounded-full backdrop-blur-md text-white/90 bg-black/40'>
+                              点击播放
+                            </span>
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <div className='flex justify-center items-center w-full h-full'>
+                        <div className='text-white/40'>视频加载中...</div>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* 视频控制栏（模拟） */}
+                  <div className='absolute right-0 bottom-0 left-0 p-5 bg-gradient-to-t to-transparent opacity-0 backdrop-blur-sm transition-opacity duration-300 from-black/90 group-hover:opacity-100'>
+                    <div className='flex gap-4 items-center'>
+                      {/* 播放/暂停按钮 */}
+                      <button 
+                        className='flex justify-center items-center w-8 h-8 rounded-full transition-colors hover:bg-white/20'
+                        style={{ color: color }}
+                      >
+                        <svg width='20' height='20' viewBox='0 0 24 24' fill='currentColor'>
+                          <path d='M6 4H10V20H6V4ZM14 4H18V20H14V4Z' />
+                        </svg>
+                      </button>
+                      {/* 进度条 */}
+                      <div className='overflow-hidden flex-1 h-1.5 rounded-full bg-white/20 cursor-pointer group/progress'>
+                        <div 
+                          className='relative h-full rounded-full transition-all'
+                          style={{ 
+                            width: '35%',
+                            backgroundColor: color,
+                          }}
+                        >
+                          {/* 进度条拖拽点 */}
+                          <div 
+                            className='absolute right-0 top-1/2 w-3 h-3 bg-white rounded-full shadow-lg opacity-0 transition-opacity -translate-y-1/2 group-hover/progress:opacity-100'
+                            style={{ backgroundColor: color }}
+                          />
+                        </div>
+                      </div>
+                      {/* 时间显示 */}
+                      <div className='font-mono text-xs text-white/90 min-w-[80px]'>
+                        1:24 / 3:45
+                      </div>
+                      {/* 音量控制 */}
+                      <div className='flex gap-2 items-center group/volume'>
+                        <button className='flex justify-center items-center w-8 h-8 rounded-full transition-colors hover:bg-white/20'>
+                          <svg width='18' height='18' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                            <path d='M3 9V15H7L12 20V4L7 9H3Z' fill='currentColor' className='text-white/90'/>
+                            <path d='M16.5 12C16.5 10.23 15.5 8.71 14 7.97V16.03C15.5 15.29 16.5 13.77 16.5 12Z' fill='currentColor' className='text-white/90'/>
+                          </svg>
+                        </button>
+                        <div className='w-16 h-1 rounded-full opacity-0 transition-opacity cursor-pointer bg-white/20 group-hover/volume:opacity-100'>
+                          <div 
+                            className='h-full rounded-full transition-all'
+                            style={{ 
+                              width: '70%',
+                              backgroundColor: color,
+                            }}
+                          />
+                        </div>
+                      </div>
+                      {/* 全屏按钮 */}
+                      <button 
+                        className='flex justify-center items-center w-8 h-8 rounded-full transition-colors hover:bg-white/20'
+                        style={{ color: color }}
+                      >
+                        <svg width='18' height='18' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                          <path d='M7 14H5V19H10V17H7V14ZM17 14V17H19V19H14V14H17ZM5 10H7V7H10V5H5V10ZM19 10V5H14V7H17V10H19Z' fill='currentColor' className='text-white/90'/>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 装饰性光效 */}
+                <div 
+                  className='absolute top-1/2 right-1/4 w-80 h-80 opacity-30 blur-3xl -translate-y-1/2'
+                  style={{ backgroundColor: color }}
+                />
+              </div>
             ) : (
               /* 图片布局 */
-              <>
+              <div className='overflow-hidden relative w-full h-full group'>
                 <motion.div
                   className='absolute inset-0'
                   style={{ scale: imageScale }}
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ duration: 0.6, ease: 'easeOut' }}
                 >
                   <img 
                     src={url} 
                     alt={title} 
-                    className='object-cover w-full h-full' 
+                    className='object-cover w-full h-full transition-transform duration-700 group-hover:scale-110' 
                   />
-                  {/* 图片渐变遮罩 */}
+                  {/* 多层渐变遮罩 */}
                   <div 
-                    className='absolute inset-0'
+                    className='absolute inset-0 opacity-60'
                     style={{
-                      background: `linear-gradient(to left, ${color}20 0%, transparent 30%)`,
+                      background: `linear-gradient(135deg, ${color}50 0%, ${color}30 30%, transparent 60%)`,
+                    }}
+                  />
+                  <div 
+                    className='absolute inset-0 opacity-40'
+                    style={{
+                      background: `radial-gradient(circle at 80% 20%, ${color}40 0%, transparent 50%)`,
+                    }}
+                  />
+                  {/* 网格叠加效果 */}
+                  <div 
+                    className='absolute inset-0 opacity-10'
+                    style={{
+                      backgroundImage: `linear-gradient(${color}40 1px, transparent 1px), linear-gradient(90deg, ${color}40 1px, transparent 1px)`,
+                      backgroundSize: '40px 40px',
                     }}
                   />
                 </motion.div>
 
-                {/* 装饰性光效 */}
+                {/* 装饰性光效 - 多个 */}
                 <div 
-                  className='absolute top-0 right-0 w-64 h-64 opacity-30 blur-3xl'
+                  className='absolute top-0 right-0 w-96 h-96 opacity-50 blur-3xl transition-opacity duration-500 group-hover:opacity-70'
                   style={{ backgroundColor: color }}
                 />
-              </>
+                <div 
+                  className='absolute bottom-0 left-0 w-64 h-64 opacity-30 blur-3xl transition-opacity duration-500 group-hover:opacity-50'
+                  style={{ backgroundColor: color }}
+                />
+                {/* 边框高光 */}
+                <div 
+                  className='absolute inset-0 opacity-0 transition-opacity duration-500 pointer-events-none group-hover:opacity-100'
+                  style={{
+                    boxShadow: `inset 0 0 0 2px ${color}60, 0 0 80px ${color}30`,
+                  }}
+                />
+              </div>
             )}
           </div>
         </div>
@@ -356,7 +571,7 @@ export const Card = ({
         <div 
           className='absolute inset-0 rounded-2xl pointer-events-none'
           style={{
-            boxShadow: `inset 0 0 0 1px ${color}30, 0 0 40px ${color}20`,
+            boxShadow: `inset 0 0 0 1px ${color}50, 0 0 60px ${color}40`,
           }}
         />
       </motion.div>
@@ -407,6 +622,8 @@ const Component = forwardRef<HTMLElement, ComponentRootProps>(({ projects = [], 
               features={project.features || []}
               aiModels={project.aiModels || []}
               query={project.query || ''}
+              videoUrl={project.videoUrl || ''}
+              videoThumbnail={project.videoThumbnail || ''}
             />
           );
         })}

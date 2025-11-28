@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import FAQs from "@/components/ui/faqs-component";
@@ -11,9 +11,126 @@ import { Skiper31 } from "@/components/ui/text-scroll-animation";
 import Floating, { FloatingElement } from "@/components/ui/parallax-floating";
 import { LogoCloud } from "@/components/ui/logo-cloud-4";
 import { ScrollVelocity } from "@/components/ui/scroll-velocity";
+import { GridScrollVelocity } from "@/components/ui/grid-scroll-velocity";
+import { LoginDialog } from "@/components/LoginDialog";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
+}
+
+// PortfolioShowcase 专用的 Header 组件
+interface PortfolioHeaderProps {
+  onLoginClick?: () => void;
+}
+
+function PortfolioHeader({ onLoginClick }: PortfolioHeaderProps) {
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
+    e.preventDefault();
+    const element = document.getElementById(targetId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  return (
+    <>
+      {/* SVG Filters for Gooey Effect */}
+      <svg className="absolute inset-0 w-0 h-0 pointer-events-none">
+        <defs>
+          <filter id="gooey-filter" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur" />
+            <feColorMatrix
+              in="blur"
+              mode="matrix"
+              values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9"
+              result="gooey"
+            />
+            <feComposite in="SourceGraphic" in2="gooey" operator="atop" />
+          </filter>
+        </defs>
+      </svg>
+      
+      <header 
+        className={`fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-6 py-3 transition-all duration-300 ${
+          scrolled 
+            ? "shadow-lg backdrop-blur-xl bg-black/20" 
+            : "bg-transparent"
+        }`}
+      >
+        {/* Logo */}
+        <div className="flex items-center">
+          <a href="#" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="text-xl font-bold text-white">
+            Mr.GoGo
+          </a>
+        </div>
+
+      {/* Navigation */}
+      <nav className="flex items-center space-x-3">
+        <a
+          href="#projects"
+          onClick={(e) => handleNavClick(e, 'projects')}
+          className="px-3 py-1.5 text-sm font-medium rounded-full transition-all duration-200 text-white/80 hover:text-white hover:bg-white/10"
+        >
+          PROJECTS
+        </a>
+        <a
+          href="#about"
+          onClick={(e) => handleNavClick(e, 'about')}
+          className="px-3 py-1.5 text-sm font-medium rounded-full transition-all duration-200 text-white/80 hover:text-white hover:bg-white/10"
+        >
+          ABOUT
+        </a>
+        <a
+          href="#customers"
+          onClick={(e) => handleNavClick(e, 'customers')}
+          className="px-3 py-1.5 text-sm font-medium rounded-full transition-all duration-200 text-white/80 hover:text-white hover:bg-white/10"
+        >
+          CUSTOMERS
+        </a>
+        <a
+          href="#faqs"
+          onClick={(e) => handleNavClick(e, 'faqs')}
+          className="px-3 py-1.5 text-sm font-medium rounded-full transition-all duration-200 text-white/80 hover:text-white hover:bg-white/10"
+        >
+          FAQs
+        </a>
+        <a
+          href="#contact"
+          onClick={(e) => handleNavClick(e, 'contact')}
+          className="px-3 py-1.5 text-sm font-medium rounded-full transition-all duration-200 text-white/80 hover:text-white hover:bg-white/10"
+        >
+          CONTACT
+        </a>
+      </nav>
+
+      {/* Login Button Group with Arrow */}
+      <div id="gooey-btn" className="flex relative items-center group" style={{ filter: "url(#gooey-filter)" }}>
+        <button className="absolute right-0 px-2 py-1.5 rounded-full bg-white text-black font-normal text-xs transition-all duration-300 hover:bg-white/90 cursor-pointer h-7 flex items-center justify-center -translate-x-10 group-hover:-translate-x-19 z-0">
+          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 17L17 7M17 7H7M17 7V17" />
+          </svg>
+        </button>
+        <button 
+          id="login-trigger"
+          onClick={onLoginClick}
+          className="flex z-10 items-center px-5 py-1.5 h-7 text-xs font-normal text-black bg-white rounded-full transition-all duration-300 cursor-pointer hover:bg-white/90"
+        >
+          登录
+        </button>
+      </div>
+    </header>
+    </>
+  );
 }
 
 // 合作伙伴logo数据
@@ -54,10 +171,8 @@ const partners = [
 
 export default function PortfolioShowcase() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [loginOpen, setLoginOpen] = useState(false);
 
-  // Navigation
-  const navRef = useRef<HTMLElement>(null);
-  const navItemsRef = useRef<HTMLDivElement>(null);
 
   // Hero Section
   const heroRef = useRef<HTMLDivElement>(null);
@@ -105,64 +220,7 @@ export default function PortfolioShowcase() {
   useEffect(() => {
     const ctx = gsap.context(() => {
       // ========== NAVIGATION ==========
-      if (navRef.current && navItemsRef.current) {
-        const navItems = navItemsRef.current.children;
-        Array.from(navItems).forEach((item, index) => {
-          gsap.fromTo(
-            item,
-            { opacity: 0, y: -20 },
-            {
-              opacity: 1,
-              y: 0,
-              duration: 0.6,
-              delay: index * 0.1,
-              ease: "power2.out",
-            }
-          );
-        });
-
-        // 导航栏滚动时的背景变化
-        ScrollTrigger.create({
-          trigger: "body",
-          start: "top -100",
-          end: "bottom bottom",
-          onEnter: () => {
-            gsap.to(navRef.current, {
-              backgroundColor: "rgba(0, 0, 0, 0.95)",
-              backdropFilter: "blur(10px)",
-              duration: 0.3,
-            });
-          },
-          onLeaveBack: () => {
-            gsap.to(navRef.current, {
-              backgroundColor: "rgba(0, 0, 0, 0.8)",
-              backdropFilter: "blur(8px)",
-              duration: 0.3,
-            });
-          },
-        });
-
-        // 导航链接悬停动画
-        Array.from(navItems).forEach((item) => {
-          item.addEventListener("mouseenter", () => {
-            gsap.to(item, {
-              y: -2,
-              scale: 1.05,
-              duration: 0.2,
-              ease: "power2.out",
-            });
-          });
-
-          item.addEventListener("mouseleave", () => {
-            gsap.to(item, {
-              y: 0,
-              scale: 1,
-              duration: 0.2,
-              ease: "power2.out",
-            });
-          });
-        });
-      }
+      // Header 组件已经内置了滚动效果和动画，不再需要额外的动画代码
 
       // ========== HERO SECTION ==========
       if (heroRef.current) {
@@ -1061,6 +1119,26 @@ export default function PortfolioShowcase() {
     "ALGOLIA",
   ];
 
+  // Mock 数据用于项目网格缩略图
+  const projectThumbnailsMockData = [
+    { id: 0, title: "Project 1", image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&auto=format&fit=crop&q=80" },
+    { id: 1, title: "Project 2", image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=250&auto=format&fit=crop&q=80" },
+    { id: 2, title: "Project 3", image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&auto=format&fit=crop&q=80" },
+    { id: 3, title: "Project 4", image: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=400&h=250&auto=format&fit=crop&q=80" },
+    { id: 4, title: "Project 5", image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&auto=format&fit=crop&q=80" },
+    { id: 5, title: "Project 6", image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=250&auto=format&fit=crop&q=80" },
+    { id: 6, title: "Project 7", image: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=400&h=250&auto=format&fit=crop&q=80" },
+    { id: 7, title: "Project 8", image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&auto=format&fit=crop&q=80" },
+    { id: 8, title: "Project 9", image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=250&auto=format&fit=crop&q=80" },
+    { id: 9, title: "Project 10", image: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=400&h=250&auto=format&fit=crop&q=80" },
+    { id: 10, title: "Project 11", image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&auto=format&fit=crop&q=80" },
+    { id: 11, title: "Project 12", image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=250&auto=format&fit=crop&q=80" },
+    { id: 12, title: "Project 13", image: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=400&h=250&auto=format&fit=crop&q=80" },
+    { id: 13, title: "Project 14", image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&auto=format&fit=crop&q=80" },
+    { id: 14, title: "Project 15", image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=250&auto=format&fit=crop&q=80" },
+    { id: 15, title: "Project 16", image: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=400&h=250&auto=format&fit=crop&q=80" },
+  ];
+
   const customers = [
     {
       name: "MICHAEL T.",
@@ -1097,45 +1175,30 @@ export default function PortfolioShowcase() {
   return (
     <><div ref={containerRef} className="overflow-x-hidden text-white bg-black">
           {/* ========== NAVIGATION ========== */}
-          <nav
-              ref={navRef}
-              className="fixed top-0 right-0 left-0 z-50 border-b backdrop-blur-sm bg-black/80 border-white/10"
-          >
-              <div className="container px-8 py-6 mx-auto">
-                  <div ref={navItemsRef} className="flex justify-between items-center">
-                      <div className="text-xl font-bold">Mr.GoGo</div>
-                      <div className="flex gap-8 text-sm tracking-wider uppercase">
-                          <a href="#about" className="transition-colors hover:text-white/80">ABOUT</a>
-                          <a href="#customers" className="transition-colors hover:text-white/80">CUSTOMERS</a>
-                          <a href="#projects" className="transition-colors hover:text-white/80">PROJECTS</a>
-                          <a href="#contact" className="transition-colors hover:text-white/80">CONTACT</a>
-                      </div>
-                  </div>
-              </div>
-          </nav>
+          <PortfolioHeader onLoginClick={() => setLoginOpen(true)} />
 
           {/* ========== PARALLAX FLOATING HERO SECTION ========== */}
           <section className="overflow-hidden relative w-full h-screen bg-gradient-to-br from-black via-gray-900 to-black">
               <Floating className="relative w-full h-full" sensitivity={1.2} easingFactor={0.08}>
-                  {/* 背景装饰元素 - 大尺寸模糊圆形 */}
-                  <FloatingElement depth={0.3} className="top-10 left-10">
+                  {/* 背景装饰元素 - 大尺寸模糊圆形，放在边缘避免重叠 */}
+                  <FloatingElement depth={0.3} className="top-0 left-0 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
                       <div className="w-64 h-64 bg-gradient-to-br rounded-full blur-3xl from-purple-500/20 to-pink-500/20" />
                   </FloatingElement>
 
-                  <FloatingElement depth={0.5} className="right-20 top-1/2">
+                  <FloatingElement depth={0.5} className="right-0 top-1/2 translate-x-1/2 -translate-y-1/2 pointer-events-none">
                       <div className="w-80 h-80 bg-gradient-to-br rounded-full blur-3xl from-blue-500/20 to-cyan-500/20" />
                   </FloatingElement>
 
-                  <FloatingElement depth={0.7} className="bottom-20 left-1/4">
+                  <FloatingElement depth={0.7} className="bottom-0 left-1/4 -translate-x-1/2 translate-y-1/2 pointer-events-none">
                       <div className="w-48 h-48 bg-gradient-to-br rounded-full blur-3xl from-yellow-500/20 to-orange-500/20" />
                   </FloatingElement>
 
-                  <FloatingElement depth={0.4} className="top-1/4 right-1/3">
+                  <FloatingElement depth={0.4} className="top-0 right-1/3 translate-x-1/2 -translate-y-1/2 pointer-events-none">
                       <div className="w-56 h-56 bg-gradient-to-br rounded-full blur-3xl from-indigo-500/20 to-purple-500/20" />
                   </FloatingElement>
 
                   {/* 主要内容区域 */}
-                  <div className="flex relative z-10 flex-col justify-center items-center px-8 h-full text-center">
+                  <div className="flex relative z-20 flex-col justify-center items-center px-8 h-full text-center">
                       <FloatingElement depth={2}>
                           <h1 className="mb-6 text-6xl font-bold tracking-tight text-white md:text-7xl lg:text-8xl">
                               Welcome to
@@ -1166,29 +1229,29 @@ export default function PortfolioShowcase() {
                       </FloatingElement>
                   </div>
 
-                  {/* 装饰性几何元素 */}
-                  <FloatingElement depth={1.2} className="top-1/3 right-1/4">
+                  {/* 装饰性几何元素 - 调整位置避免与内容重叠 */}
+                  <FloatingElement depth={1.2} className="top-1/4 pointer-events-none right-1/6">
                       <div className="w-20 h-20 bg-gradient-to-br rounded-lg border backdrop-blur-sm rotate-45 from-green-500/30 to-emerald-500/30 border-white/20" />
                   </FloatingElement>
 
-                  <FloatingElement depth={1.5} className="bottom-1/3 left-1/3">
+                  <FloatingElement depth={1.5} className="bottom-1/4 pointer-events-none left-1/6">
                       <div className="w-24 h-24 bg-gradient-to-br rounded-lg border backdrop-blur-sm from-indigo-500/30 to-purple-500/30 border-white/20" />
                   </FloatingElement>
 
-                  <FloatingElement depth={1} className="top-2/3 right-1/3">
+                  <FloatingElement depth={1} className="top-3/4 pointer-events-none right-1/6">
                       <div className="w-16 h-16 bg-gradient-to-br rounded-full border backdrop-blur-sm from-pink-500/30 to-rose-500/30 border-white/20" />
                   </FloatingElement>
 
-                  <FloatingElement depth={1.3} className="top-1/2 left-1/5">
+                  <FloatingElement depth={1.3} className="top-1/3 pointer-events-none left-1/12">
                       <div className="w-12 h-12 bg-gradient-to-br rounded-lg border backdrop-blur-sm rotate-12 from-cyan-500/30 to-blue-500/30 border-white/20" />
                   </FloatingElement>
 
-                  <FloatingElement depth={0.9} className="bottom-1/4 right-1/5">
+                  <FloatingElement depth={0.9} className="bottom-1/3 pointer-events-none right-1/12">
                       <div className="w-14 h-14 bg-gradient-to-br rounded-full border backdrop-blur-sm from-orange-500/30 to-yellow-500/30 border-white/20" />
                   </FloatingElement>
 
                   {/* 滚动提示 */}
-                  <div className="absolute bottom-8 left-1/2 z-20 -translate-x-1/2">
+                  <div className="absolute bottom-8 left-1/2 z-30 -translate-x-1/2 pointer-events-none">
                       <div className="flex flex-col gap-2 items-center text-white/60">
                           <span className="text-sm">Scroll down</span>
                           <div className="flex justify-center items-start p-2 w-6 h-10 rounded-full border-2 border-white/30">
@@ -1285,9 +1348,8 @@ export default function PortfolioShowcase() {
       <ScrollingFeatureShowcase />
     </section> */}
 
-      </div>
-      {/* ========== STACKING CARD MODULE ========== */}
-      <section className="relative w-full">
+          {/* ========== STACKING CARD MODULE ========== */}
+          <section className="relative w-full">
         <StackingCard
           projects={[
             {
@@ -1301,36 +1363,111 @@ export default function PortfolioShowcase() {
                 "Build a personalized expert team.",
                 "Get tailored advice and insights.",
               ],
+              avatars: [
+                {
+                  image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop",
+                  borderColor: "#10b981",
+                  icon: "https://cdn-icons-png.flaticon.com/32/3135/3135715.png",
+                  iconColor: "#10b981",
+                },
+                {
+                  image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop",
+                  borderColor: "#6366f1",
+                },
+                {
+                  image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop",
+                  borderColor: "#eab308",
+                  icon: "https://cdn-icons-png.flaticon.com/32/3135/3135715.png",
+                  iconColor: "#eab308",
+                },
+                {
+                  image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop",
+                  borderColor: "#f59e0b",
+                },
+                {
+                  image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop",
+                  borderColor: "#06b6d4",
+                  icon: "https://cdn-icons-png.flaticon.com/32/3135/3135715.png",
+                  iconColor: "#06b6d4",
+                },
+                {
+                  image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop",
+                  borderColor: "#8b5cf6",
+                },
+                {
+                  image: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=200&h=200&fit=crop",
+                  borderColor: "#a855f7",
+                  icon: "https://cdn-icons-png.flaticon.com/32/3135/3135715.png",
+                  iconColor: "#a855f7",
+                },
+                {
+                  image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop",
+                  borderColor: "#3b82f6",
+                },
+                {
+                  image: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=200&h=200&fit=crop",
+                  borderColor: "#f97316",
+                  icon: "https://cdn-icons-png.flaticon.com/32/3135/3135715.png",
+                  iconColor: "#f97316",
+                },
+              ],
             },
             {
-                title: "Avatars - Build your Expert Team",
-                description: "Introducing a brand-new feature: Avatars. With Avatars, you can choose who you want to interact with — whether it's legendary figures from history or a team of dedicated expert advisors tailored to your personal needs.",
-                link: "https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800&auto=format&fit=crop",
-                color: "#8b5cf6",
-                type: 'avatars',
+                title: "AI-Powered Analytics Dashboard",
+                description: "Get deep insights into your business with our AI-powered analytics platform. Visualize data, track performance metrics, and make data-driven decisions with confidence.",
+                link: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop",
+                color: "#10b981",
+                type: 'image',
                 features: [
-                  "Engage with historical figures.",
-                  "Build a personalized expert team.",
-                  "Get tailored advice and insights.",
+                  "Real-time data visualization.",
+                  "AI-powered insights.",
+                  "Customizable dashboards.",
                 ],
               },
-              {
-                title: "Avatars - Build your Expert Team",
-                description: "Introducing a brand-new feature: Avatars. With Avatars, you can choose who you want to interact with — whether it's legendary figures from history or a team of dedicated expert advisors tailored to your personal needs.",
-                link: "https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800&auto=format&fit=crop",
-                color: "#8b5cf6",
-                type: 'avatars',
-                features: [
-                  "Engage with historical figures.",
-                  "Build a personalized expert team.",
-                  "Get tailored advice and insights.",
-                ],
-              },
+            {
+              title: "Video Tutorial - Learn from Experts",
+              description: "Watch comprehensive video tutorials created by industry experts. Learn new skills, understand complex concepts, and master advanced techniques through our interactive video learning platform.",
+              link: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop",
+              color: "#6366f1",
+              type: 'video',
+              features: [
+                "HD quality video content.",
+                "Interactive learning experience.",
+                "Expert-led tutorials.",
+              ],
+              videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+              videoThumbnail: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800&h=450&fit=crop",
+            },
+            {
+              title: "Advanced Workflow Automation",
+              description: "Streamline your business processes with our intelligent workflow automation system. Create custom workflows, automate repetitive tasks, and boost productivity across your entire organization.",
+              link: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop",
+              color: "#f59e0b",
+              type: 'image',
+              features: [
+                "Custom workflow creation.",
+                "Automated task management.",
+                "Real-time collaboration tools.",
+              ],
+            },
+            {
+              title: "Product Demo Video",
+              description: "Experience our product in action through detailed demonstration videos. See how our platform can transform your workflow and boost your productivity with real-world examples.",
+              link: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop",
+              color: "#06b6d4",
+              type: 'video',
+              features: [
+                "Step-by-step demonstrations.",
+                "Real-world use cases.",
+                "Interactive product tours.",
+              ],
+              videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+              videoThumbnail: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=450&fit=crop",
+            },
+        
           ]}
         />
-      </section>
-      <div className="overflow-x-hidden text-white bg-black">
-          {/* ========== PROJECTS SECTION ========== */}
+          </section>
           <section
               ref={projectsRef}
               id="projects"
@@ -1346,7 +1483,7 @@ export default function PortfolioShowcase() {
                   </div>
               </div>
 
-              <div className="container relative z-10 px-8 mx-auto">
+              <div className="relative z-10 w-full">
                   <h2
                       ref={projectsTitleRef}
                       className="mb-16 text-7xl font-black tracking-tight text-center text-white md:text-8xl lg:text-9xl"
@@ -1355,10 +1492,14 @@ export default function PortfolioShowcase() {
                   </h2>
 
                   {/* 项目滚动速度展示 */}
-                  <div ref={projectsListRef} className="mx-auto mb-16 max-w-4xl">
+                  <div 
+                      ref={projectsListRef} 
+                      className="overflow-hidden mb-16 w-full"
+                      style={{ transform: 'skew(3deg, -2deg)' }}
+                  >
                       <ScrollVelocity 
                           velocity={5}
-                          className="text-white"
+                          className="w-full text-white"
                       >
                           {scrollVelocityMockData.map((item, index) => (
                               <span key={index} className="text-white">
@@ -1369,21 +1510,39 @@ export default function PortfolioShowcase() {
                   </div>
 
                   {/* 项目网格缩略图 */}
-                  <div ref={projectsGridRef} className="grid grid-cols-4 gap-4 mx-auto max-w-6xl">
-                      {[...Array(8)].map((_, index) => (
-                          <div
-                              key={index}
-                              className="overflow-hidden relative bg-gradient-to-br rounded-lg cursor-pointer project-thumbnail aspect-square from-purple-500/20 via-pink-500/20 to-orange-500/20"
-                          >
-                              {index === 4 && (
-                                  <div className="flex absolute inset-0 justify-center items-center">
-                                      <div className="flex justify-center items-center w-12 h-12 rounded-full backdrop-blur-sm bg-white/20">
-                                          <div className="w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-b-[12px] border-b-white ml-1" />
+                  <div 
+                      ref={projectsGridRef} 
+                      className="overflow-hidden w-full"
+                      style={{ transform: 'skew(3deg, -2deg)' }}
+                  >
+                      <GridScrollVelocity 
+                          velocity={10}
+                          rows={2}
+                          cols={4}
+                          movable={true}
+                          className="w-full text-white"
+                      >
+                          {projectThumbnailsMockData.map((project, index) => (
+                              <div
+                                  key={project.id}
+                                  className="overflow-hidden relative bg-gradient-to-br rounded-lg cursor-pointer project-thumbnail from-purple-500/20 via-pink-500/20 to-orange-500/20"
+                                  style={{ width: '300px', height: `${300 * 0.618}px` }}
+                              >
+                                  <img 
+                                      src={project.image} 
+                                      alt={project.title}
+                                      className="object-cover w-full h-full"
+                                  />
+                                  {index === 4 && (
+                                      <div className="flex absolute inset-0 justify-center items-center bg-black/30">
+                                          <div className="flex justify-center items-center w-12 h-12 rounded-full backdrop-blur-sm bg-white/20">
+                                              <div className="w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-b-[12px] border-b-white ml-1" />
+                                          </div>
                                       </div>
-                                  </div>
-                              )}
-                          </div>
-                      ))}
+                                  )}
+                              </div>
+                          ))}
+                      </GridScrollVelocity>
                   </div>
               </div>
           </section>
@@ -1618,6 +1777,9 @@ export default function PortfolioShowcase() {
               </div>
           </section>
       </div>
+      
+      {/* Login Dialog */}
+      <LoginDialog open={loginOpen} onOpenChange={setLoginOpen} />
     </>
   );
 }

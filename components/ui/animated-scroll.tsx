@@ -68,14 +68,14 @@ export default function ScrollAdventure() {
     if (currentPage < numOfPages) setCurrentPage(p => p + 1);
   };
 
-  const handleWheel = (e) => {
+  const handleWheel = (e: WheelEvent) => {
     if (scrolling.current) return;
     scrolling.current = true;
     e.deltaY > 0 ? navigateDown() : navigateUp();
     setTimeout(() => (scrolling.current = false), animTime);
   };
 
-  const handleKeyDown = (e) => {
+  const handleKeyDown = (e: KeyboardEvent) => {
     if (scrolling.current) return;
     if (e.key === 'ArrowUp') {
       scrolling.current = true;
