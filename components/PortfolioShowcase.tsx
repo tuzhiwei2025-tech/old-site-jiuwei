@@ -1289,44 +1289,121 @@ export default function PortfolioShowcase() {
       {/* ========== STACKING CARD MODULE ========== */}
       <section className="relative w-full">
         <StackingCard
-          projects={[
+       projects={[
+        {
+          title: "Avatars - Build your Expert Team",
+          description: "Introducing a brand-new feature: Avatars. With Avatars, you can choose who you want to interact with — whether it's legendary figures from history or a team of dedicated expert advisors tailored to your personal needs.",
+          link: "https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800&auto=format&fit=crop",
+          color: "#8b5cf6",
+          type: 'avatars',
+          features: [
+            "Engage with historical figures.",
+            "Build a personalized expert team.",
+            "Get tailored advice and insights.",
+          ],
+          avatars: [
             {
-              title: "Avatars - Build your Expert Team",
-              description: "Introducing a brand-new feature: Avatars. With Avatars, you can choose who you want to interact with — whether it's legendary figures from history or a team of dedicated expert advisors tailored to your personal needs.",
-              link: "https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800&auto=format&fit=crop",
-              color: "#8b5cf6",
-              type: 'avatars',
-              features: [
-                "Engage with historical figures.",
-                "Build a personalized expert team.",
-                "Get tailored advice and insights.",
-              ],
+              image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop",
+              borderColor: "#10b981",
+              icon: "https://cdn-icons-png.flaticon.com/32/3135/3135715.png",
+              iconColor: "#10b981",
             },
             {
-                title: "Avatars - Build your Expert Team",
-                description: "Introducing a brand-new feature: Avatars. With Avatars, you can choose who you want to interact with — whether it's legendary figures from history or a team of dedicated expert advisors tailored to your personal needs.",
-                link: "https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800&auto=format&fit=crop",
-                color: "#8b5cf6",
-                type: 'avatars',
-                features: [
-                  "Engage with historical figures.",
-                  "Build a personalized expert team.",
-                  "Get tailored advice and insights.",
-                ],
-              },
-              {
-                title: "Avatars - Build your Expert Team",
-                description: "Introducing a brand-new feature: Avatars. With Avatars, you can choose who you want to interact with — whether it's legendary figures from history or a team of dedicated expert advisors tailored to your personal needs.",
-                link: "https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800&auto=format&fit=crop",
-                color: "#8b5cf6",
-                type: 'avatars',
-                features: [
-                  "Engage with historical figures.",
-                  "Build a personalized expert team.",
-                  "Get tailored advice and insights.",
-                ],
-              },
-          ]}
+              image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop",
+              borderColor: "#6366f1",
+            },
+            {
+              image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop",
+              borderColor: "#eab308",
+              icon: "https://cdn-icons-png.flaticon.com/32/3135/3135715.png",
+              iconColor: "#eab308",
+            },
+            {
+              image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop",
+              borderColor: "#f59e0b",
+            },
+            {
+              image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop",
+              borderColor: "#06b6d4",
+              icon: "https://cdn-icons-png.flaticon.com/32/3135/3135715.png",
+              iconColor: "#06b6d4",
+            },
+            {
+              image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop",
+              borderColor: "#8b5cf6",
+            },
+            {
+              image: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=200&h=200&fit=crop",
+              borderColor: "#a855f7",
+              icon: "https://cdn-icons-png.flaticon.com/32/3135/3135715.png",
+              iconColor: "#a855f7",
+            },
+            {
+              image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop",
+              borderColor: "#3b82f6",
+            },
+            {
+              image: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=200&h=200&fit=crop",
+              borderColor: "#f97316",
+              icon: "https://cdn-icons-png.flaticon.com/32/3135/3135715.png",
+              iconColor: "#f97316",
+            },
+          ],
+        },
+        {
+            title: "AI-Powered Analytics Dashboard",
+            description: "Get deep insights into your business with our AI-powered analytics platform. Visualize data, track performance metrics, and make data-driven decisions with confidence.",
+            link: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop",
+            color: "#10b981",
+            type: 'image',
+            features: [
+              "Real-time data visualization.",
+              "AI-powered insights.",
+              "Customizable dashboards.",
+            ],
+          },
+        {
+          title: "Video Tutorial - Learn from Experts",
+          description: "Watch comprehensive video tutorials created by industry experts. Learn new skills, understand complex concepts, and master advanced techniques through our interactive video learning platform.",
+          link: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop",
+          color: "#6366f1",
+          type: 'video',
+          features: [
+            "HD quality video content.",
+            "Interactive learning experience.",
+            "Expert-led tutorials.",
+          ],
+          videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+          videoThumbnail: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800&h=450&fit=crop",
+        },
+        {
+          title: "Advanced Workflow Automation",
+          description: "Streamline your business processes with our intelligent workflow automation system. Create custom workflows, automate repetitive tasks, and boost productivity across your entire organization.",
+          link: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop",
+          color: "#f59e0b",
+          type: 'image',
+          features: [
+            "Custom workflow creation.",
+            "Automated task management.",
+            "Real-time collaboration tools.",
+          ],
+        },
+        {
+          title: "Product Demo Video",
+          description: "Experience our product in action through detailed demonstration videos. See how our platform can transform your workflow and boost your productivity with real-world examples.",
+          link: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop",
+          color: "#06b6d4",
+          type: 'video',
+          features: [
+            "Step-by-step demonstrations.",
+            "Real-world use cases.",
+            "Interactive product tours.",
+          ],
+          videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+          videoThumbnail: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=450&fit=crop",
+        },
+    
+      ]}
         />
       </section>
       <div className="overflow-x-hidden text-white bg-black">
