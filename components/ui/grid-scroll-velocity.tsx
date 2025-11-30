@@ -22,8 +22,7 @@ const GridScrollVelocity = React.forwardRef<HTMLDivElement, GridScrollVelocityPr
       damping: 50,
       stiffness: 100,
     })
-    // 增强交互性：降低阈值，增加速度因子范围，让滚动更敏感
-    const velocityFactor = useTransform(smoothVelocity, [0, 5000], [0, 8], {
+    const velocityFactor = useTransform(smoothVelocity, [0, 10000], [0, 5], {
       clamp,
     })
 
@@ -44,7 +43,7 @@ const GridScrollVelocity = React.forwardRef<HTMLDivElement, GridScrollVelocityPr
     const x = useTransform(baseX, (v) => `${wrap(0, -rowWidth, v)}px`)
 
     const directionFactor = React.useRef<number>(1)
-    const scrollThreshold = React.useRef<number>(3) // 降低阈值，更容易响应滚动
+    const scrollThreshold = React.useRef<number>(5)
 
     useAnimationFrame((t, delta) => {
       if (movable) {
@@ -63,8 +62,7 @@ const GridScrollVelocity = React.forwardRef<HTMLDivElement, GridScrollVelocityPr
       } else if (velocityFactor.get() > 0) {
         directionFactor.current = 1
       }
-      // 增强交互：速度因子影响更大，让滚动速度变化更明显
-      moveBy += directionFactor.current * moveBy * (velocityFactor.get() * 1.5)
+      moveBy += directionFactor.current * moveBy * velocityFactor.get()
       baseX.set(baseX.get() + moveBy)
     }
 
