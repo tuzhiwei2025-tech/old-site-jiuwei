@@ -11,6 +11,8 @@ import { Skiper31 } from "@/components/ui/text-scroll-animation";
 import Floating, { FloatingElement } from "@/components/ui/parallax-floating";
 import { LogoCloud } from "@/components/ui/logo-cloud-4";
 import { ScrollVelocity } from "@/components/ui/scroll-velocity";
+import { GridScrollVelocity } from "@/components/ui/grid-scroll-velocity";
+import { LoginDialog } from "@/components/LoginDialog";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -1029,6 +1031,24 @@ export default function PortfolioShowcase() {
         "Custom 3D designs prepared and optimized for 3D printing technology.",
     },
   ];
+  const projectThumbnailsMockData = [
+    { id: 0, title: "Project 1", image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&auto=format&fit=crop&q=80" },
+    { id: 1, title: "Project 2", image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=250&auto=format&fit=crop&q=80" },
+    { id: 2, title: "Project 3", image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&auto=format&fit=crop&q=80" },
+    { id: 3, title: "Project 4", image: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=400&h=250&auto=format&fit=crop&q=80" },
+    { id: 4, title: "Project 5", image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&auto=format&fit=crop&q=80" },
+    { id: 5, title: "Project 6", image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=250&auto=format&fit=crop&q=80" },
+    { id: 6, title: "Project 7", image: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=400&h=250&auto=format&fit=crop&q=80" },
+    { id: 7, title: "Project 8", image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&auto=format&fit=crop&q=80" },
+    { id: 8, title: "Project 9", image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=250&auto=format&fit=crop&q=80" },
+    { id: 9, title: "Project 10", image: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=400&h=250&auto=format&fit=crop&q=80" },
+    { id: 10, title: "Project 11", image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&auto=format&fit=crop&q=80" },
+    { id: 11, title: "Project 12", image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=250&auto=format&fit=crop&q=80" },
+    { id: 12, title: "Project 13", image: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=400&h=250&auto=format&fit=crop&q=80" },
+    { id: 13, title: "Project 14", image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&auto=format&fit=crop&q=80" },
+    { id: 14, title: "Project 15", image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=250&auto=format&fit=crop&q=80" },
+    { id: 15, title: "Project 16", image: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=400&h=250&auto=format&fit=crop&q=80" },
+  ];
 
   const projects = [
     {
@@ -1423,7 +1443,7 @@ export default function PortfolioShowcase() {
                   </div>
               </div>
 
-              <div className="container relative z-10 px-8 mx-auto">
+              <div className="relative z-10 w-full">
                   <h2
                       ref={projectsTitleRef}
                       className="mb-16 text-7xl font-black tracking-tight text-center text-white md:text-8xl lg:text-9xl"
@@ -1432,10 +1452,14 @@ export default function PortfolioShowcase() {
                   </h2>
 
                   {/* 项目滚动速度展示 */}
-                  <div ref={projectsListRef} className="mx-auto mb-16 max-w-4xl">
+                  <div 
+                      ref={projectsListRef} 
+                      className="overflow-hidden mb-16 w-full"
+                      style={{ transform: 'skew(3deg, -2deg)' }}
+                  >
                       <ScrollVelocity 
                           velocity={5}
-                          className="text-white"
+                          className="w-full text-white"
                       >
                           {scrollVelocityMockData.map((item, index) => (
                               <span key={index} className="text-white">
@@ -1446,21 +1470,39 @@ export default function PortfolioShowcase() {
                   </div>
 
                   {/* 项目网格缩略图 */}
-                  <div ref={projectsGridRef} className="grid grid-cols-4 gap-4 mx-auto max-w-6xl">
-                      {[...Array(8)].map((_, index) => (
-                          <div
-                              key={index}
-                              className="overflow-hidden relative bg-gradient-to-br rounded-lg cursor-pointer project-thumbnail aspect-square from-purple-500/20 via-pink-500/20 to-orange-500/20"
-                          >
-                              {index === 4 && (
-                                  <div className="flex absolute inset-0 justify-center items-center">
-                                      <div className="flex justify-center items-center w-12 h-12 rounded-full backdrop-blur-sm bg-white/20">
-                                          <div className="w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-b-[12px] border-b-white ml-1" />
+                  <div 
+                      ref={projectsGridRef} 
+                      className="overflow-hidden w-full"
+                      style={{ transform: 'skew(3deg, -2deg)' }}
+                  >
+                      <GridScrollVelocity 
+                          velocity={10}
+                          rows={2}
+                          cols={4}
+                          movable={true}
+                          className="w-full text-white"
+                      >
+                          {projectThumbnailsMockData.map((project, index) => (
+                              <div
+                                  key={project.id}
+                                  className="overflow-hidden relative bg-gradient-to-br rounded-lg cursor-pointer project-thumbnail from-purple-500/20 via-pink-500/20 to-orange-500/20"
+                                  style={{ width: '300px', height: `${300 * 0.618}px` }}
+                              >
+                                  <img 
+                                      src={project.image} 
+                                      alt={project.title}
+                                      className="object-cover w-full h-full"
+                                  />
+                                  {index === 4 && (
+                                      <div className="flex absolute inset-0 justify-center items-center bg-black/30">
+                                          <div className="flex justify-center items-center w-12 h-12 rounded-full backdrop-blur-sm bg-white/20">
+                                              <div className="w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-b-[12px] border-b-white ml-1" />
+                                          </div>
                                       </div>
-                                  </div>
-                              )}
-                          </div>
-                      ))}
+                                  )}
+                              </div>
+                          ))}
+                      </GridScrollVelocity>
                   </div>
               </div>
           </section>
