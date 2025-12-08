@@ -3,6 +3,7 @@
 import { ReactLenis } from 'lenis/react';
 import { useTransform, motion, useScroll, MotionValue } from 'motion/react';
 import { useRef, forwardRef } from 'react';
+import { MeshGradient } from '@paper-design/shaders-react';
 
 interface Avatar {
   image: string;
@@ -74,7 +75,19 @@ export const Card = ({
 
   const imageScale = useTransform(scrollYProgress, [0, 1], [2, 1]);
   const scale = useTransform(progress, range, [1, targetScale]);
-  const opacity = useTransform(progress, range, [0.6, 1]);
+
+  // 为每个卡片定义不同的配色方案 - 基于提供的配色
+  const gradientColorSchemes = [
+    ["#000000", "#72b9bb", "#b5d9d9", "#8cc5b8", "#dbf4a4"], // 青绿黄配色
+    ["#000000", "#ffd1bd", "#ffebe0", "#b5d9d9", "#72b9bb"], // 粉青配色
+    ["#000000", "#8cc5b8", "#dbf4a4", "#ffd1bd", "#ffebe0"], // 绿粉配色
+    ["#000000", "#b5d9d9", "#72b9bb", "#ffd1bd", "#ffebe0"], // 青粉配色
+    ["#000000", "#ffebe0", "#ffd1bd", "#72b9bb", "#b5d9d9"], // 粉青配色
+    ["#000000", "#dbf4a4", "#8cc5b8", "#b5d9d9", "#72b9bb"], // 黄绿青配色
+  ];
+
+  // 根据卡片索引选择配色方案
+  const colorScheme = gradientColorSchemes[i % gradientColorSchemes.length];
 
   return (
     <div
@@ -84,30 +97,23 @@ export const Card = ({
       <motion.div
         style={{
           scale,
-          opacity,
           top: `calc(-5vh + ${i * 25}px)`,
         }}
-        className={`flex relative -top-[25%] h-[650px] w-full max-w-7xl rounded-2xl overflow-hidden origin-top shadow-2xl border border-white/10 backdrop-blur-lg`}
+        className={`flex relative -top-[25%] h-[650px] w-full max-w-7xl rounded-2xl overflow-hidden origin-top shadow-2xl border border-white/10`}
       >
-        {/* 渐变背景层 - 增强毛玻璃效果 */}
-        <div 
-          className='absolute inset-0 opacity-95 backdrop-blur-lg'
-          style={{
-            background: `linear-gradient(135deg, ${color}30 0%, ${color}60 50%, ${color}30 100%)`,
-            backgroundColor: 'rgba(0, 0, 0, 0.4)',
-          }}
+        {/* MeshGradient 背景 - 完全不透明 */}
+        <MeshGradient
+          className='absolute inset-0 w-full h-full'
+          colors={colorScheme}
+          speed={0.3}
+          distortion={0.8}
+          swirl={0.6}
         />
-        
-        {/* 装饰性网格背景 */}
-        <div className='absolute inset-0 opacity-5' style={{
-          backgroundImage: `radial-gradient(circle, ${color} 1px, transparent 1px)`,
-          backgroundSize: '30px 30px',
-        }} />
 
         {/* 内容容器 */}
         <div className='flex relative z-10 flex-col w-full h-full lg:flex-row'>
-          {/* 左侧文字内容区域 - 添加半透明背景增强可读性 */}
-          <div className='flex flex-col justify-center w-full lg:w-[45%] p-8 lg:p-12 space-y-6 backdrop-blur-sm bg-black/20 rounded-l-2xl'>
+          {/* 左侧文字内容区域 - 使用 MeshGradient 背景 */}
+          <div className='flex flex-col justify-center w-full lg:w-[45%] p-8 lg:p-12 space-y-6 rounded-l-2xl relative z-10'>
             {/* 图标装饰 */}
             <div className='flex gap-3 items-center mb-2'>
               <div 
@@ -328,10 +334,10 @@ export const Card = ({
               </div>
             ) : type === 'ai-comparison' ? (
               /* AI比较布局 */
-              <div className='flex relative flex-col w-full h-full backdrop-blur-sm bg-slate-900/80'>
+              <div className='flex relative flex-col w-full h-full'>
                 {/* AI模型图标行 */}
                 {aiModels.length > 0 && (
-                  <div className='flex gap-4 items-center p-4 border-b border-white/10 bg-slate-800/50'>
+                  <div className='flex gap-4 items-center p-4 border-b border-white/10'>
                     {aiModels.map((model, idx) => (
                       <div key={idx} className='flex overflow-hidden justify-center items-center w-9 h-9 rounded-full border transition-colors bg-white/5 border-white/10 hover:bg-white/10'>
                         <img src={model.icon} alt={model.name} className='w-6 h-6' />
@@ -342,17 +348,17 @@ export const Card = ({
 
                 {/* 查询问题 */}
                 {query && (
-                  <div className='p-4 border-b border-white/10 bg-slate-800/30'>
+                  <div className='p-4 border-b border-white/10'>
                     <p className='text-sm font-medium text-white/90'>{query}</p>
                   </div>
                 )}
 
                 {/* AI响应列 */}
-                <div className='flex overflow-x-auto flex-1 bg-slate-900/50'>
+                <div className='flex overflow-x-auto flex-1'>
                   {aiModels.map((model, idx) => (
                     <div 
                       key={idx} 
-                      className='flex-1 min-w-[280px] p-5 border-r border-white/10 last:border-r-0 overflow-y-auto bg-slate-900/30'
+                      className='flex-1 min-w-[280px] p-5 border-r border-white/10 last:border-r-0 overflow-y-auto'
                     >
                       <div className='flex items-center gap-2.5 mb-4 pb-3 border-b border-white/5'>
                         <img src={model.icon} alt={model.name} className='w-5 h-5' />
@@ -380,10 +386,32 @@ export const Card = ({
                   }}
                 />
                 
-                {/* 视频播放器容器 */}
-                <div className='overflow-hidden relative z-10 w-full max-w-3xl rounded-2xl border shadow-2xl backdrop-blur-sm aspect-video border-white/30 group'>
-                  {/* 视频播放器 */}
-                  <div className='relative w-full h-full bg-gradient-to-br to-black from-slate-900'>
+                {/* 视频播放器容器 - 苹果风格显示器 */}
+                <div className='relative z-10 w-full max-w-3xl group'>
+                  {/* 显示器外框 - 苹果风格：极薄边框，圆润边角 */}
+                  <div 
+                    className='relative rounded-[20px] overflow-hidden'
+                    style={{
+                      background: 'linear-gradient(135deg, rgba(200, 200, 200, 0.15) 0%, rgba(100, 100, 100, 0.1) 50%, rgba(200, 200, 200, 0.15) 100%)',
+                      boxShadow: `
+                        0 0 0 1px rgba(255, 255, 255, 0.1),
+                        0 0 0 2px rgba(0, 0, 0, 0.3),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+                        inset 0 -1px 0 rgba(0, 0, 0, 0.3),
+                        0 30px 80px rgba(0, 0, 0, 0.4),
+                        0 10px 30px rgba(0, 0, 0, 0.2)
+                      `,
+                      padding: '3px',
+                    }}
+                  >
+                    {/* 显示器屏幕 - 极薄边框效果 */}
+                    <div className='relative overflow-hidden rounded-[18px] bg-black aspect-video' style={{ boxShadow: 'inset 0 0 0 0.5px rgba(255, 255, 255, 0.05)' }}>
+                      {/* 屏幕反光效果 - 苹果风格 */}
+                      <div className='absolute top-0 left-0 right-0 h-1/4 bg-gradient-to-b opacity-30 pointer-events-none from-white/40 via-white/10 to-transparent z-10' />
+                      <div className='absolute top-0 left-0 w-1/3 h-1/3 bg-gradient-to-br opacity-20 pointer-events-none from-white/30 to-transparent z-10' />
+                      
+                      {/* 视频播放器 */}
+                      <div className='relative w-full h-full bg-gradient-to-br to-black from-slate-900'>
                     {videoThumbnail ? (
                       <>
                         <img 
@@ -398,26 +426,37 @@ export const Card = ({
                             background: `linear-gradient(to bottom, transparent 0%, ${color}20 50%, ${color}40 100%)`,
                           }}
                         />
-                        {/* 播放按钮覆盖层 */}
-                        <div className='flex absolute inset-0 justify-center items-center transition-all duration-300 cursor-pointer group/play hover:bg-black/10'>
+                        {/* 播放按钮覆盖层 - 苹果风格 */}
+                        <div className='flex absolute inset-0 justify-center items-center transition-all duration-300 cursor-pointer group/play'>
                           <motion.div 
-                            className='flex justify-center items-center w-24 h-24 rounded-full border-2 backdrop-blur-md transition-all group-hover/play:scale-110 group-hover/play:shadow-2xl'
+                            className='flex justify-center items-center w-20 h-20 rounded-full backdrop-blur-xl transition-all group-hover/play:scale-110'
                             style={{
-                              borderColor: color,
-                              backgroundColor: `${color}40`,
-                              boxShadow: `0 0 40px ${color}50`,
+                              background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.15) 100%)',
+                              border: '1px solid rgba(255, 255, 255, 0.3)',
+                              boxShadow: `
+                                0 8px 32px rgba(0, 0, 0, 0.4),
+                                inset 0 1px 0 rgba(255, 255, 255, 0.3),
+                                inset 0 -1px 0 rgba(0, 0, 0, 0.2)
+                              `,
                             }}
-                            whileHover={{ scale: 1.15 }}
+                            whileHover={{ 
+                              scale: 1.1,
+                              boxShadow: `
+                                0 12px 40px rgba(0, 0, 0, 0.5),
+                                inset 0 1px 0 rgba(255, 255, 255, 0.4),
+                                inset 0 -1px 0 rgba(0, 0, 0, 0.2)
+                              `,
+                            }}
                             whileTap={{ scale: 0.95 }}
                           >
                             <svg 
-                              width='48' 
-                              height='48' 
+                              width='32' 
+                              height='32' 
                               viewBox='0 0 24 24' 
                               fill='none' 
                               xmlns='http://www.w3.org/2000/svg'
                               className='ml-1 drop-shadow-lg'
-                              style={{ color: '#ffffff' }}
+                              style={{ color: '#ffffff', filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3))' }}
                             >
                               <path 
                                 d='M8 5V19L19 12L8 5Z' 
@@ -425,9 +464,16 @@ export const Card = ({
                               />
                             </svg>
                           </motion.div>
-                          {/* 播放提示文字 */}
-                          <div className='absolute bottom-24 left-1/2 opacity-0 transition-opacity duration-300 -translate-x-1/2 group-hover/play:opacity-100'>
-                            <span className='px-4 py-2 text-sm font-medium rounded-full backdrop-blur-md text-white/90 bg-black/40'>
+                          {/* 播放提示文字 - 苹果风格 */}
+                          <div className='absolute bottom-20 left-1/2 opacity-0 transition-opacity duration-300 -translate-x-1/2 group-hover/play:opacity-100'>
+                            <span 
+                              className='px-4 py-2 text-sm font-medium rounded-full backdrop-blur-xl text-white/95'
+                              style={{
+                                background: 'rgba(0, 0, 0, 0.6)',
+                                border: '1px solid rgba(255, 255, 255, 0.1)',
+                                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
+                              }}
+                            >
                               点击播放
                             </span>
                           </div>
@@ -438,67 +484,117 @@ export const Card = ({
                         <div className='text-white/40'>视频加载中...</div>
                       </div>
                     )}
-                  </div>
-                  
-                  {/* 视频控制栏（模拟） */}
-                  <div className='absolute right-0 bottom-0 left-0 p-5 bg-gradient-to-t to-transparent opacity-0 backdrop-blur-sm transition-opacity duration-300 from-black/90 group-hover:opacity-100'>
-                    <div className='flex gap-4 items-center'>
-                      {/* 播放/暂停按钮 */}
-                      <button 
-                        className='flex justify-center items-center w-8 h-8 rounded-full transition-colors hover:bg-white/20'
-                        style={{ color: color }}
-                      >
-                        <svg width='20' height='20' viewBox='0 0 24 24' fill='currentColor'>
-                          <path d='M6 4H10V20H6V4ZM14 4H18V20H14V4Z' />
-                        </svg>
-                      </button>
-                      {/* 进度条 */}
-                      <div className='overflow-hidden flex-1 h-1.5 rounded-full bg-white/20 cursor-pointer group/progress'>
-                        <div 
-                          className='relative h-full rounded-full transition-all'
-                          style={{ 
-                            width: '35%',
-                            backgroundColor: color,
-                          }}
+                      </div>
+                    
+                    {/* 视频控制栏（模拟） */}
+                    <div className='absolute right-0 bottom-0 left-0 p-5 bg-gradient-to-t to-transparent opacity-0 backdrop-blur-sm transition-opacity duration-300 from-black/90 group-hover:opacity-100'>
+                      <div className='flex gap-4 items-center'>
+                        {/* 播放/暂停按钮 */}
+                        <button 
+                          className='flex justify-center items-center w-8 h-8 rounded-full transition-colors hover:bg-white/20'
+                          style={{ color: color }}
                         >
-                          {/* 进度条拖拽点 */}
-                          <div 
-                            className='absolute right-0 top-1/2 w-3 h-3 bg-white rounded-full shadow-lg opacity-0 transition-opacity -translate-y-1/2 group-hover/progress:opacity-100'
-                            style={{ backgroundColor: color }}
-                          />
-                        </div>
-                      </div>
-                      {/* 时间显示 */}
-                      <div className='font-mono text-xs text-white/90 min-w-[80px]'>
-                        1:24 / 3:45
-                      </div>
-                      {/* 音量控制 */}
-                      <div className='flex gap-2 items-center group/volume'>
-                        <button className='flex justify-center items-center w-8 h-8 rounded-full transition-colors hover:bg-white/20'>
-                          <svg width='18' height='18' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
-                            <path d='M3 9V15H7L12 20V4L7 9H3Z' fill='currentColor' className='text-white/90'/>
-                            <path d='M16.5 12C16.5 10.23 15.5 8.71 14 7.97V16.03C15.5 15.29 16.5 13.77 16.5 12Z' fill='currentColor' className='text-white/90'/>
+                          <svg width='20' height='20' viewBox='0 0 24 24' fill='currentColor'>
+                            <path d='M6 4H10V20H6V4ZM14 4H18V20H14V4Z' />
                           </svg>
                         </button>
-                        <div className='w-16 h-1 rounded-full opacity-0 transition-opacity cursor-pointer bg-white/20 group-hover/volume:opacity-100'>
+                        {/* 进度条 */}
+                        <div className='overflow-hidden flex-1 h-1.5 rounded-full bg-white/20 cursor-pointer group/progress'>
                           <div 
-                            className='h-full rounded-full transition-all'
+                            className='relative h-full rounded-full transition-all'
                             style={{ 
-                              width: '70%',
+                              width: '35%',
                               backgroundColor: color,
                             }}
-                          />
+                          >
+                            {/* 进度条拖拽点 */}
+                            <div 
+                              className='absolute right-0 top-1/2 w-3 h-3 bg-white rounded-full shadow-lg opacity-0 transition-opacity -translate-y-1/2 group-hover/progress:opacity-100'
+                              style={{ backgroundColor: color }}
+                            />
+                          </div>
                         </div>
+                        {/* 时间显示 */}
+                        <div className='font-mono text-xs text-white/90 min-w-[80px]'>
+                          1:24 / 3:45
+                        </div>
+                        {/* 音量控制 */}
+                        <div className='flex gap-2 items-center group/volume'>
+                          <button className='flex justify-center items-center w-8 h-8 rounded-full transition-colors hover:bg-white/20'>
+                            <svg width='18' height='18' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                              <path d='M3 9V15H7L12 20V4L7 9H3Z' fill='currentColor' className='text-white/90'/>
+                              <path d='M16.5 12C16.5 10.23 15.5 8.71 14 7.97V16.03C15.5 15.29 16.5 13.77 16.5 12Z' fill='currentColor' className='text-white/90'/>
+                            </svg>
+                          </button>
+                          <div className='w-16 h-1 rounded-full opacity-0 transition-opacity cursor-pointer bg-white/20 group-hover/volume:opacity-100'>
+                            <div 
+                              className='h-full rounded-full transition-all'
+                              style={{ 
+                                width: '70%',
+                                backgroundColor: color,
+                              }}
+                            />
+                          </div>
+                        </div>
+                        {/* 全屏按钮 */}
+                        <button 
+                          className='flex justify-center items-center w-8 h-8 rounded-full transition-colors hover:bg-white/20'
+                          style={{ color: color }}
+                        >
+                          <svg width='18' height='18' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                            <path d='M7 14H5V19H10V17H7V14ZM17 14V17H19V19H14V14H17ZM5 10H7V7H10V5H5V10ZM19 10V5H14V7H17V10H19Z' fill='currentColor' className='text-white/90'/>
+                          </svg>
+                        </button>
                       </div>
-                      {/* 全屏按钮 */}
-                      <button 
-                        className='flex justify-center items-center w-8 h-8 rounded-full transition-colors hover:bg-white/20'
-                        style={{ color: color }}
-                      >
-                        <svg width='18' height='18' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
-                          <path d='M7 14H5V19H10V17H7V14ZM17 14V17H19V19H14V14H17ZM5 10H7V7H10V5H5V10ZM19 10V5H14V7H17V10H19Z' fill='currentColor' className='text-white/90'/>
-                        </svg>
-                      </button>
+                    </div>
+                    </div>
+                  </div>
+                  
+                  {/* 显示器品牌标识区域 - 苹果风格：极简设计 */}
+                  <div 
+                    className='flex justify-center items-center py-3'
+                    style={{
+                      background: 'linear-gradient(to bottom, rgba(60, 60, 60, 0.6) 0%, rgba(40, 40, 40, 0.8) 100%)',
+                      backdropFilter: 'blur(10px)',
+                    }}
+                  >
+                    <div 
+                      className='w-12 h-0.5 rounded-full'
+                      style={{
+                        background: 'linear-gradient(to right, transparent, rgba(200, 200, 200, 0.3), transparent)',
+                        boxShadow: '0 0 2px rgba(255, 255, 255, 0.2)',
+                      }}
+                    />
+                  </div>
+                  
+                  {/* 显示器底座 - 苹果风格：简洁优雅 */}
+                  <div className='flex justify-center mt-3'>
+                    <div 
+                      className='relative'
+                      style={{
+                        width: '120px',
+                        height: '8px',
+                      }}
+                    >
+                      {/* 底座主体 */}
+                      <div 
+                        className='absolute inset-0 rounded-full'
+                        style={{
+                          background: 'linear-gradient(135deg, rgba(80, 80, 80, 0.9) 0%, rgba(50, 50, 50, 0.95) 50%, rgba(80, 80, 80, 0.9) 100%)',
+                          boxShadow: `
+                            0 2px 8px rgba(0, 0, 0, 0.4),
+                            inset 0 1px 0 rgba(255, 255, 255, 0.1),
+                            inset 0 -1px 0 rgba(0, 0, 0, 0.3)
+                          `,
+                        }}
+                      />
+                      {/* 底座高光 */}
+                      <div 
+                        className='absolute top-0 left-1/2 -translate-x-1/2 w-16 h-0.5 rounded-full'
+                        style={{
+                          background: 'linear-gradient(to right, transparent, rgba(255, 255, 255, 0.2), transparent)',
+                        }}
+                      />
                     </div>
                   </div>
                 </div>
@@ -556,7 +652,7 @@ export const Card = ({
                   style={{ backgroundColor: color }}
                 />
                 {/* 边框高光 */}
-                <div 
+                <div
                   className='absolute inset-0 opacity-0 transition-opacity duration-500 pointer-events-none group-hover:opacity-100'
                   style={{
                     boxShadow: `inset 0 0 0 2px ${color}60, 0 0 80px ${color}30`,

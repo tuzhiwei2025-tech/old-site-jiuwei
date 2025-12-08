@@ -13,6 +13,8 @@ import { LogoCloud } from "@/components/ui/logo-cloud-4";
 import { ScrollVelocity } from "@/components/ui/scroll-velocity";
 import { GridScrollVelocity } from "@/components/ui/grid-scroll-velocity";
 import { LoginDialog } from "@/components/LoginDialog";
+import { FlippingCard } from "@/components/ui/flipping-card";
+import { InfiniteSlider } from "@/components/ui/infinite-slider";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -57,6 +59,22 @@ const partners = [
 export default function PortfolioShowcase() {
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // 平滑滚动到指定区域
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
+    e.preventDefault();
+    const targetElement = document.querySelector(targetId);
+    if (targetElement) {
+      const navHeight = navRef.current?.offsetHeight || 0;
+      // 增加额外的偏移量，确保内容不被遮挡
+      const extraOffset = 20;
+      const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - navHeight - extraOffset;
+      window.scrollTo({
+        top: Math.max(0, targetPosition),
+        behavior: 'smooth'
+      });
+    }
+  };
+
   // Navigation
   const navRef = useRef<HTMLElement>(null);
   const navItemsRef = useRef<HTMLDivElement>(null);
@@ -67,6 +85,7 @@ export default function PortfolioShowcase() {
   const heroTitleRef = useRef<HTMLHeadingElement>(null);
   const heroSubtitleRef = useRef<HTMLParagraphElement>(null);
   const heroButtonRef = useRef<HTMLButtonElement>(null);
+  const heroImageRef = useRef<HTMLDivElement>(null);
 
   // Services Section
   const servicesRef = useRef<HTMLDivElement>(null);
@@ -104,6 +123,11 @@ export default function PortfolioShowcase() {
   // FAQs Section
   const faqsRef = useRef<HTMLDivElement>(null);
 
+  // User Stories Section
+  const userStoriesRef = useRef<HTMLDivElement>(null);
+  const userStoriesTitleRef = useRef<HTMLHeadingElement>(null);
+  const userStoriesCardsRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const ctx = gsap.context(() => {
       // ========== NAVIGATION ==========
@@ -130,14 +154,14 @@ export default function PortfolioShowcase() {
           end: "bottom bottom",
           onEnter: () => {
             gsap.to(navRef.current, {
-              backgroundColor: "rgba(0, 0, 0, 0.95)",
-              backdropFilter: "blur(10px)",
+              background: "linear-gradient(135deg, rgba(0, 0, 0, 0.98) 0%, rgba(15, 15, 25, 0.98) 25%, rgba(20, 10, 30, 0.98) 50%, rgba(15, 15, 25, 0.98) 75%, rgba(0, 0, 0, 0.98) 100%)",
+              backdropFilter: "blur(12px)",
               duration: 0.3,
             });
           },
           onLeaveBack: () => {
             gsap.to(navRef.current, {
-              backgroundColor: "rgba(0, 0, 0, 0.8)",
+              background: "linear-gradient(135deg, rgba(0, 0, 0, 0.95) 0%, rgba(15, 15, 25, 0.95) 25%, rgba(20, 10, 30, 0.95) 50%, rgba(15, 15, 25, 0.95) 75%, rgba(0, 0, 0, 0.95) 100%)",
               backdropFilter: "blur(8px)",
               duration: 0.3,
             });
@@ -223,25 +247,62 @@ export default function PortfolioShowcase() {
           );
         }
 
-        // 按钮动画
-        if (heroButtonRef.current) {
+        // 图片动画
+        if (heroImageRef.current) {
           gsap.fromTo(
-            heroButtonRef.current,
-            { opacity: 0, scale: 0.8, y: 30 },
+            heroImageRef.current,
+            { opacity: 0, scale: 0.9, y: 30 },
             {
               opacity: 1,
               scale: 1,
               y: 0,
+              duration: 1,
+              delay: 0.8,
+              ease: "power3.out",
+            }
+          );
+        }
+
+        // 按钮动画 - 带倾斜效果
+        if (heroButtonRef.current) {
+          gsap.fromTo(
+            heroButtonRef.current,
+            { opacity: 0, scale: 0.8, y: 30, rotation: -5 },
+            {
+              opacity: 1,
+              scale: 1,
+              y: 0,
+              rotation: -5,
               duration: 0.8,
               delay: 1,
               ease: "back.out(1.7)",
             }
           );
 
+          // 鼠标移动倾斜效果
+          heroButtonRef.current.addEventListener("mousemove", (e) => {
+            const rect = heroButtonRef.current!.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            const rotateX = ((y - centerY) / centerY) * -10;
+            const rotateY = ((x - centerX) / centerX) * 10;
+
+            gsap.to(heroButtonRef.current, {
+              rotationX: rotateX,
+              rotationY: rotateY,
+              transformPerspective: 1000,
+              duration: 0.3,
+              ease: "power2.out",
+            });
+          });
+
           heroButtonRef.current.addEventListener("mouseenter", () => {
             gsap.to(heroButtonRef.current, {
               scale: 1.05,
               y: -5,
+              rotation: -8,
               boxShadow: "0 10px 30px rgba(147, 51, 234, 0.4)",
               duration: 0.3,
               ease: "power2.out",
@@ -252,6 +313,9 @@ export default function PortfolioShowcase() {
             gsap.to(heroButtonRef.current, {
               scale: 1,
               y: 0,
+              rotation: -5,
+              rotationX: 0,
+              rotationY: 0,
               boxShadow: "0 0 0px rgba(147, 51, 234, 0)",
               duration: 0.3,
               ease: "power2.out",
@@ -994,6 +1058,52 @@ export default function PortfolioShowcase() {
           );
         });
       }
+
+      // ========== USER STORIES SECTION ==========
+      if (userStoriesRef.current) {
+        // 标题动画
+        if (userStoriesTitleRef.current) {
+          gsap.fromTo(
+            userStoriesTitleRef.current,
+            { opacity: 0, y: 30 },
+            {
+              opacity: 1,
+              y: 0,
+              duration: 1,
+              ease: "power3.out",
+              scrollTrigger: {
+                trigger: userStoriesRef.current,
+                start: "top 80%",
+                toggleActions: "play none none none",
+              },
+            }
+          );
+        }
+
+        // 卡片动画
+        if (userStoriesCardsRef.current) {
+          const cards = userStoriesCardsRef.current.children;
+          Array.from(cards).forEach((card, index) => {
+            gsap.fromTo(
+              card,
+              { opacity: 0, y: 50, rotationY: -15 },
+              {
+                opacity: 1,
+                y: 0,
+                rotationY: 0,
+                duration: 0.8,
+                delay: index * 0.15,
+                ease: "back.out(1.2)",
+                scrollTrigger: {
+                  trigger: userStoriesRef.current,
+                  start: "top 80%",
+                  toggleActions: "play none none none",
+                },
+              }
+            );
+          });
+        }
+      }
     }, containerRef);
 
     return () => ctx.revert();
@@ -1112,6 +1222,90 @@ export default function PortfolioShowcase() {
       company: "BOLDEDGE MARKETING",
       text: "The 3D render was produced for our new product. It added a dynamic edge to our marketing materials and increased engagement significantly.",
     },
+    {
+      name: "ALEX P.",
+      company: "DIGITAL DREAMS",
+      text: "Outstanding work on our architectural visualization project. The attention to detail and realistic lighting made all the difference in our client presentations.",
+    },
+    {
+      name: "MARIA L.",
+      company: "CREATIVE STUDIOS",
+      text: "Mr.GoGo transformed our brand identity with stunning 3D logo designs. The creativity and technical skill exceeded our expectations completely.",
+    },
+    {
+      name: "ROBERT H.",
+      company: "TECHNOVATION LABS",
+      text: "The product visualization work was exceptional. It helped us communicate our vision to stakeholders and investors with incredible clarity.",
+    },
+    {
+      name: "EMMA W.",
+      company: "FASHION FORWARD",
+      text: "Working with Mr.GoGo on our fashion campaign was a game-changer. The 3D renders brought our designs to life in ways we never imagined.",
+    },
+    {
+      name: "CHRIS M.",
+      company: "AUTOMOTIVE DESIGN",
+      text: "The car visualization project was executed flawlessly. Every detail was perfect, from the materials to the lighting and composition.",
+    },
+    {
+      name: "LISA K.",
+      company: "INTERIOR VISIONS",
+      text: "Our interior design project came to life through Mr.GoGo's incredible 3D rendering skills. The photorealistic results were beyond our expectations.",
+    },
+    {
+      name: "TOM B.",
+      company: "GAME STUDIOS",
+      text: "The character models and environments created for our game were absolutely stunning. The quality and creativity were top-notch throughout.",
+    },
+    {
+      name: "SARAH J.",
+      company: "MEDIA PRODUCTIONS",
+      text: "Mr.GoGo's 3D animations for our commercial were breathtaking. The smooth motion and attention to detail made our campaign stand out.",
+    },
+    {
+      name: "MARK D.",
+      company: "INNOVATION HUB",
+      text: "The prototype visualization helped us secure crucial funding. The quality of work and professionalism throughout the project was outstanding.",
+    },
+  ];
+
+  const userStories = [
+    {
+      name: "MICHAEL T.",
+      role: "CEO, PROTOSPHERE",
+      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop",
+      mainImage: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&auto=format&fit=crop&q=80",
+      frontTitle: "Product Launch Success",
+      frontDescription: "See how 3D design transformed our product launch",
+      backStory: "Mr.GoGo brought our product concept to life in a way we never thought possible. The 3D model was so detailed and realistic, it helped us secure investors and streamline the manufacturing process.",
+    },
+    {
+      name: "DAVID R.",
+      role: "Game Director, APEX",
+      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop",
+      mainImage: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=300&auto=format&fit=crop&q=80",
+      frontTitle: "Character Design",
+      frontDescription: "Discover the creative process behind our game characters",
+      backStory: "Mr.GoGo's 3D character designs exceeded expectations. The level of detail, creativity, and responsiveness throughout the project was outstanding. Our game wouldn't be the same without their contributions.",
+    },
+    {
+      name: "RACHEL M.",
+      role: "Art Director, METAFORM",
+      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop",
+      mainImage: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=400&h=300&auto=format&fit=crop&q=80",
+      frontTitle: "NFT Collection",
+      frontDescription: "Explore how 3D art elevated our NFT project",
+      backStory: "Mr.GoGo's unique 3D designs made our NFT collection a huge success. The art was breathtaking, and their professionalism made the entire process smooth and enjoyable.",
+    },
+    {
+      name: "DR. ANDREA K.",
+      role: "Medical Director, MEDTECH",
+      avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop",
+      mainImage: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&auto=format&fit=crop&q=80",
+      frontTitle: "Medical Visualization",
+      frontDescription: "Learn about precision 3D models for medical training",
+      backStory: "Created detailed 3D models for our medical training program. The quality was outstanding - precise, realistic, and incredibly useful for our team. We're thrilled with the outcome.",
+    },
   ];
 
   return (
@@ -1119,17 +1313,59 @@ export default function PortfolioShowcase() {
           {/* ========== NAVIGATION ========== */}
           <nav
               ref={navRef}
-              className="fixed top-0 right-0 left-0 z-50 border-b backdrop-blur-sm bg-black/80 border-white/10"
+              className="fixed top-0 right-0 left-0 z-50 border-b backdrop-blur-md border-white/10"
+              style={{
+                  background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.95) 0%, rgba(15, 15, 25, 0.95) 25%, rgba(20, 10, 30, 0.95) 50%, rgba(15, 15, 25, 0.95) 75%, rgba(0, 0, 0, 0.95) 100%)',
+                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
+              }}
           >
-              <div className="container px-8 py-6 mx-auto">
-                  <div ref={navItemsRef} className="flex justify-between items-center">
-                      <div className="text-xl font-bold">Mr.GoGo</div>
-                      <div className="flex gap-8 text-sm tracking-wider uppercase">
-                          <a href="#about" className="transition-colors hover:text-white/80">ABOUT</a>
-                          <a href="#customers" className="transition-colors hover:text-white/80">CUSTOMERS</a>
-                          <a href="#projects" className="transition-colors hover:text-white/80">PROJECTS</a>
-                          <a href="#contact" className="transition-colors hover:text-white/80">CONTACT</a>
+              <div className="w-full py-3  md:py-4">
+                  <div ref={navItemsRef} className="flex justify-between items-center w-full px-10 ">
+                      {/* 左侧 Logo */}
+                      <div className="shrink-0">
+                          <a 
+                              href="#" 
+                              onClick={(e) => {
+                                  e.preventDefault();
+                                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                              }}
+                              className="text-xl font-bold tracking-tight text-white transition-opacity hover:opacity-80"
+                          >
+                              GoAgent
+                          </a>
                       </div>
+                      
+                      {/* 右侧导航链接 */}
+                      <nav className="flex gap-4 items-center sm:gap-6 md:gap-8">
+                          <a 
+                              href="#about" 
+                              onClick={(e) => handleNavClick(e, '#about')}
+                              className="text-sm font-medium tracking-wider uppercase text-white/70 transition-all hover:text-white hover:scale-105 active:scale-95"
+                          >
+                              ABOUT
+                          </a>
+                          <a 
+                              href="#customers" 
+                              onClick={(e) => handleNavClick(e, '#customers')}
+                              className="text-sm font-medium tracking-wider uppercase text-white/70 transition-all hover:text-white hover:scale-105 active:scale-95"
+                          >
+                              CUSTOMERS
+                          </a>
+                          <a 
+                              href="#projects" 
+                              onClick={(e) => handleNavClick(e, '#projects')}
+                              className="text-sm font-medium tracking-wider uppercase text-white/70 transition-all hover:text-white hover:scale-105 active:scale-95"
+                          >
+                              PROJECTS
+                          </a>
+                          <a 
+                              href="#contact" 
+                              onClick={(e) => handleNavClick(e, '#contact')}
+                              className="text-sm font-medium tracking-wider uppercase text-white/70 transition-all hover:text-white hover:scale-105 active:scale-95"
+                          >
+                              CONTACT
+                          </a>
+                      </nav>
                   </div>
               </div>
           </nav>
@@ -1222,7 +1458,7 @@ export default function PortfolioShowcase() {
           {/* ========== HERO SECTION ========== */}
           <section
               ref={heroRef}
-              className="flex relative justify-center items-center pt-24 min-h-screen bg-black"
+              className="flex relative flex-col  min-h-screen bg-black"
           >
               <div
                   ref={heroOverlayRef}
@@ -1230,30 +1466,59 @@ export default function PortfolioShowcase() {
               >
               </div>
 
-              <div className="container relative z-10 px-8 py-20 mx-auto text-center">
-                  <h1
-                      ref={heroTitleRef}
-                      className="mb-6 text-6xl font-black tracking-tight leading-tight md:text-7xl lg:text-8xl"
-                  >
-                      HI, I&apos;M Mr.GoGo
-                  </h1>
-                  <p
-                      ref={heroSubtitleRef}
-                      className="mx-auto mb-8 max-w-4xl text-lg font-light md:text-xl lg:text-2xl text-white/80"
-                  >
-                      A 3D DESIGNER PASSIONATE ABOUT CRAFTING BOLD AND MEMORABLE PROJECTS
-                  </p>
-                  <button
-                      ref={heroButtonRef}
-                      className="px-8 py-4 font-semibold tracking-wider text-white uppercase bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg transition-all hover:from-purple-700 hover:to-pink-700"
-                  >
-                      CONTACT ME
-                  </button>
+              <div className="container relative z-10 px-8 py-12 mx-auto">
+                  {/* 上方标题区域 */}
+                  <div className="mb-12 text-center">
+                      <h1
+                          ref={heroTitleRef}
+                          className="text-7xl font-black tracking-tight leading-tight md:text-8xl lg:text-9xl xl:text-[10rem]"
+                      >
+                          HI, I&apos;M Mr.GoGo
+                      </h1>
+                  </div>
+
+                  {/* 下方三栏布局 */}
+                  <div className="grid grid-cols-1 gap-8 items-start lg:grid-cols-12">
+                      {/* 左侧：说明文字 */}
+                      <div className="flex flex-col justify-start lg:col-span-3">
+                          <p
+                              ref={heroSubtitleRef}
+                              className="text-lg font-light md:text-xl lg:text-2xl text-white/80"
+                          >
+                              A 3D DESIGNER PASSIONATE ABOUT CRAFTING BOLD AND MEMORABLE PROJECTS
+                          </p>
+                      </div>
+
+                      {/* 中间：大图片 */}
+                      <div className="flex justify-center items-center lg:col-span-6">
+                          <div
+                              ref={heroImageRef}
+                              className="relative w-full max-w-lg aspect-square rounded-lg overflow-hidden"
+                          >
+                              <img
+                                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=800&auto=format&fit=crop&q=80"
+                                  alt="Mr.GoGo"
+                                  className="object-cover w-full h-full"
+                              />
+                          </div>
+                      </div>
+
+                      {/* 右侧：按钮 */}
+                      <div className="flex justify-center items-start lg:col-span-3 lg:justify-start">
+                          <button
+                              ref={heroButtonRef}
+                              className="px-8 py-4 font-semibold tracking-wider text-white uppercase bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg transition-all hover:from-purple-700 hover:to-pink-700"
+                              style={{ transformStyle: "preserve-3d" }}
+                          >
+                              CONTACT ME
+                          </button>
+                      </div>
+                  </div>
               </div>
           </section>
 
           {/* ========== SERVICES SECTION ========== */}
-          <section
+          {/* <section
               ref={servicesRef}
               className="flex relative justify-center items-center py-20 min-h-screen text-black bg-white"
               style={{ fontFamily: "var(--font-nunito), sans-serif" }}
@@ -1291,7 +1556,7 @@ export default function PortfolioShowcase() {
                       ))}
                   </div>
               </div>
-          </section>
+          </section> */}
 
 
 
@@ -1431,7 +1696,7 @@ export default function PortfolioShowcase() {
           <section
               ref={projectsRef}
               id="projects"
-              className="flex relative flex-col justify-center items-center py-20 min-h-screen bg-black"
+              className="flex relative flex-col justify-center items-center py-20 min-h-screen bg-black scroll-mt-24"
           >
               {/* Logo Cloud */}
               <div
@@ -1486,7 +1751,7 @@ export default function PortfolioShowcase() {
                               <div
                                   key={project.id}
                                   className="overflow-hidden relative bg-gradient-to-br rounded-lg cursor-pointer project-thumbnail from-purple-500/20 via-pink-500/20 to-orange-500/20"
-                                  style={{ width: '300px', height: `${300 * 0.618}px` }}
+                                  style={{ width: '500px', height: `${500 * 0.618}px` }}
                               >
                                   <img 
                                       src={project.image} 
@@ -1511,7 +1776,7 @@ export default function PortfolioShowcase() {
           <section
               ref={aboutRef}
               id="about"
-              className="flex overflow-hidden relative justify-center items-center py-20 min-h-screen bg-black"
+              className="flex overflow-hidden relative justify-center items-center py-20 min-h-screen bg-black scroll-mt-24"
           >
               <div className="container relative z-10 px-8 mx-auto">
                   <div className="mx-auto max-w-4xl text-center">
@@ -1561,9 +1826,9 @@ export default function PortfolioShowcase() {
           <section
               ref={customersRef}
               id="customers"
-              className="flex relative justify-center items-center py-20 min-h-screen bg-black"
+              className="flex relative justify-center items-center py-20 min-h-screen bg-black scroll-mt-24"
           >
-              <div className="container relative z-10 px-8 mx-auto">
+              <div className="relative z-10 w-full">
                   <div className="mb-16 text-center">
                       <h2
                           ref={customersTitleRef}
@@ -1576,29 +1841,199 @@ export default function PortfolioShowcase() {
 
                   <div
                       ref={customersCardsRef}
-                      className="grid grid-cols-1 gap-8 mx-auto max-w-7xl md:grid-cols-2 lg:grid-cols-3"
+                      className="w-full px-8"
                   >
-                      {customers.map((customer, index) => (
-                          <div
-                              key={index}
-                              className="p-8 rounded-3xl border backdrop-blur-sm transition-colors cursor-pointer bg-white/5 border-white/10 hover:bg-white/10"
+                      <div className="flex flex-col gap-6">
+                          {/* 第一行 - 从左到右 */}
+                          <InfiniteSlider
+                              gap={24}
+                              duration={40}
+                              reverse={false}
                           >
-                              <div className="flex gap-4 items-center mb-6">
-                                  <div className="flex justify-center items-center w-16 h-16 rounded-full bg-white/10">
-                                      <span className="text-2xl font-bold text-white/60">
-                                          {customer.name.charAt(0)}
-                                      </span>
-                                  </div>
-                                  <div>
-                                      <div className="font-semibold text-white">{customer.name}</div>
-                                      <div className="text-sm tracking-wider uppercase text-white/60">
-                                          {customer.company}
+                              {customers.slice(0, 5).map((customer, index) => (
+                                  <div
+                                      key={index}
+                                      className="shrink-0 p-6 w-96 h-48 rounded-3xl border backdrop-blur-sm transition-all cursor-pointer bg-white/5 border-white/10 hover:bg-white/10 hover:scale-105"
+                                  >
+                                      <div className="flex gap-3 items-center mb-4">
+                                          <div className="flex justify-center items-center w-12 h-12 rounded-full bg-white/10">
+                                              <span className="text-xl font-bold text-white/60">
+                                                  {customer.name.charAt(0)}
+                                              </span>
+                                          </div>
+                                          <div>
+                                              <div className="text-sm font-semibold text-white">{customer.name}</div>
+                                              <div className="text-xs tracking-wider uppercase text-white/60">
+                                                  {customer.company}
+                                              </div>
+                                          </div>
                                       </div>
+                                      <p className="text-xs leading-relaxed text-white/80 line-clamp-3">
+                                          {customer.text}
+                                      </p>
                                   </div>
-                              </div>
-                              <p className="text-sm leading-relaxed text-white/80 md:text-base">
-                                  {customer.text}
-                              </p>
+                              ))}
+                          </InfiniteSlider>
+                          
+                          {/* 第二行 - 从右到左 */}
+                          <InfiniteSlider
+                              gap={24}
+                              duration={45}
+                              reverse={true}
+                          >
+                              {customers.slice(5, 10).map((customer, index) => (
+                                  <div
+                                      key={index + 5}
+                                      className="shrink-0 p-6 w-96 h-48 rounded-3xl border backdrop-blur-sm transition-all cursor-pointer bg-white/5 border-white/10 hover:bg-white/10 hover:scale-105"
+                                  >
+                                      <div className="flex gap-3 items-center mb-4">
+                                          <div className="flex justify-center items-center w-12 h-12 rounded-full bg-white/10">
+                                              <span className="text-xl font-bold text-white/60">
+                                                  {customer.name.charAt(0)}
+                                              </span>
+                                          </div>
+                                          <div>
+                                              <div className="text-sm font-semibold text-white">{customer.name}</div>
+                                              <div className="text-xs tracking-wider uppercase text-white/60">
+                                                  {customer.company}
+                                              </div>
+                                          </div>
+                                      </div>
+                                      <p className="text-xs leading-relaxed text-white/80 line-clamp-3">
+                                          {customer.text}
+                                      </p>
+                                  </div>
+                              ))}
+                          </InfiniteSlider>
+                          
+                          {/* 第三行 - 从左到右 */}
+                          <InfiniteSlider
+                              gap={24}
+                              duration={35}
+                              reverse={false}
+                          >
+                              {customers.slice(10, 15).map((customer, index) => (
+                                  <div
+                                      key={index + 10}
+                                      className="shrink-0 p-6 w-96 h-48 rounded-3xl border backdrop-blur-sm transition-all cursor-pointer bg-white/5 border-white/10 hover:bg-white/10 hover:scale-105"
+                                  >
+                                      <div className="flex gap-3 items-center mb-4">
+                                          <div className="flex justify-center items-center w-12 h-12 rounded-full bg-white/10">
+                                              <span className="text-xl font-bold text-white/60">
+                                                  {customer.name.charAt(0)}
+                                              </span>
+                                          </div>
+                                          <div>
+                                              <div className="text-sm font-semibold text-white">{customer.name}</div>
+                                              <div className="text-xs tracking-wider uppercase text-white/60">
+                                                  {customer.company}
+                                              </div>
+                                          </div>
+                                      </div>
+                                      <p className="text-xs leading-relaxed text-white/80 line-clamp-3">
+                                          {customer.text}
+                                      </p>
+                                  </div>
+                              ))}
+                          </InfiniteSlider>
+                      </div>
+                  </div>
+              </div>
+          </section>
+
+          {/* ========== USER STORIES SECTION ========== */}
+          <section
+              ref={userStoriesRef}
+              id="user-stories"
+              className="flex relative justify-center items-center py-20 min-h-screen bg-black"
+          >
+              <div className="container relative z-10 px-8 mx-auto">
+                  <div className="mb-16 text-center">
+                      <h2
+                          ref={userStoriesTitleRef}
+                          className="mb-4 text-6xl font-black tracking-tight text-white md:text-7xl lg:text-8xl"
+                      >
+                          User Stories
+                      </h2>
+                      <p className="mx-auto mt-6 max-w-2xl text-lg text-white/60 md:text-xl">
+                          Hover over the cards to discover real stories from our clients
+                      </p>
+                  </div>
+
+                  <div
+                      ref={userStoriesCardsRef}
+                      className="grid grid-cols-1 gap-8 mx-auto max-w-7xl md:grid-cols-2 lg:grid-cols-4"
+                  >
+                      {userStories.map((story, index) => (
+                          <div key={index} className="flex justify-center">
+                              <FlippingCard
+                                  height={450}
+                                  width={280}
+                                  frontContent={
+                                      <div className="flex flex-col h-full">
+                                          {/* 上方：主图片 - 占五分之四 */}
+                                          <div className="w-full h-4/5 overflow-hidden rounded-t-xl relative">
+                                              <img
+                                                  src={story.mainImage}
+                                                  alt={story.frontTitle}
+                                                  className="w-full h-full object-cover"
+                                              />
+                                              {/* 中间：头像 - 覆盖在图片上 */}
+                                              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2">
+                                                  <img
+                                                      src={story.avatar}
+                                                      alt={story.name}
+                                                      className="w-16 h-16 rounded-full object-cover border-4 border-white shadow-lg"
+                                                  />
+                                              </div>
+                                          </div>
+                                          {/* 下面：文字 - 占五分之一 */}
+                                          <div className="flex-1 flex flex-col justify-between px-6 pt-8 pb-6">
+                                              <div>
+                                                  <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-purple-600 text-center">
+                                                      {story.frontTitle}
+                                                  </div>
+                                                  <p className="text-sm leading-relaxed text-neutral-700 text-center mb-4">
+                                                      {story.frontDescription}
+                                                  </p>
+                                              </div>
+                                              <div className="text-center">
+                                                  <span className="text-xs text-neutral-400 italic">Hover to read story →</span>
+                                              </div>
+                                          </div>
+                                      </div>
+                                  }
+                                  backContent={
+                                      <div className="flex flex-col justify-between h-full p-6">
+                                          <div className="flex-1">
+                                              <div className="mb-4 flex gap-3 items-center">
+                                                  <img
+                                                      src={story.avatar}
+                                                      alt={story.name}
+                                                      className="w-14 h-14 rounded-full object-cover border-2 border-neutral-300 shadow-lg"
+                                                  />
+                                                  <div>
+                                                      <div className="text-base font-bold text-neutral-900">
+                                                          {story.name}
+                                                      </div>
+                                                      <div className="text-xs text-neutral-600">
+                                                          {story.role}
+                                                      </div>
+                                                  </div>
+                                              </div>
+                                              <div className="mb-3 text-xs font-semibold uppercase tracking-wider text-pink-600">
+                                                  Their Story
+                                              </div>
+                                              <p className="text-sm leading-relaxed text-neutral-700">
+                                                  {story.backStory}
+                                              </p>
+                                          </div>
+                                          <div className="mt-4 pt-4 border-t border-neutral-200 text-center">
+                                              <div className="text-2xl">✨</div>
+                                          </div>
+                                      </div>
+                                  }
+                              />
                           </div>
                       ))}
                   </div>
@@ -1614,7 +2049,7 @@ export default function PortfolioShowcase() {
           <section
               ref={contactRef}
               id="contact"
-              className="flex overflow-hidden relative justify-center items-center py-20 min-h-screen bg-black"
+              className="flex overflow-hidden relative justify-center items-center py-20 min-h-screen bg-black scroll-mt-24"
           >
               {/* 背景渐变blob */}
               <div className="absolute inset-0">

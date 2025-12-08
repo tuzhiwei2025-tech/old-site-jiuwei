@@ -26,9 +26,9 @@ const GridScrollVelocity = React.forwardRef<HTMLDivElement, GridScrollVelocityPr
       clamp,
     })
 
-    // 每个item的固定尺寸：宽300px，高约185px（300 * 0.618）
-    const itemWidth = 300
-    const itemGap = 24 // gap-6 = 1.5rem = 24px，增加间距避免重叠
+    // 每个item的固定尺寸：宽500px，高约309px（500 * 0.618）
+    const itemWidth = 500
+    const itemGap = 32 // gap-8 = 2rem = 32px，增加间距避免重叠
     
     // 将children分成两行
     const itemsPerRow = Math.ceil(children.length / rows)
