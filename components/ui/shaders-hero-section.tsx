@@ -4,6 +4,7 @@ import { PulsingBorder, MeshGradient } from "@paper-design/shaders-react"
 import { motion } from "framer-motion"
 import type React from "react"
 import { useEffect, useRef, useState } from "react"
+import { ElectricButton } from "@/components/ui/electric-button"
 import { VerticalCutReveal } from "@/components/ui/vertical-cut-reveal"
 
 interface ShaderBackgroundProps {
@@ -202,13 +203,13 @@ export function HeroContent() {
         </div>
 
         {/* Buttons */}
-        <div className="flex flex-wrap gap-4 items-center">
-          <button className="px-10 py-3.5 text-sm font-normal text-white bg-transparent rounded-full border transition-all duration-200 cursor-pointer border-white/30 hover:bg-white/10 hover:border-white/50 sm:px-12 sm:py-4 sm:text-base">
+        <div className="flex flex-wrap gap-5 items-center">
+          <ElectricButton activeLabel="继续了解">
             了解更多
-          </button>
-          <button className="px-10 py-3.5 text-sm font-normal text-black bg-white rounded-full transition-all duration-200 cursor-pointer hover:bg-white/90 sm:px-12 sm:py-4 sm:text-base">
+          </ElectricButton>
+          <ElectricButton activeLabel="马上开始">
             立即开始
-          </button>
+          </ElectricButton>
         </div>
       </div>
     </main>

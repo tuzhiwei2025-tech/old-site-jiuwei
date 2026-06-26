@@ -33,6 +33,7 @@
     "react-dom": "19.2.0",
     "react-use-measure": "^2.1.7",
     "reactflow": "^11.11.4",
+    "styled-components": "^6.4.3",
     "tailwind-merge": "^3.3.1",
     "three": "^0.181.0",
     "vecteur": "^0.3.0"

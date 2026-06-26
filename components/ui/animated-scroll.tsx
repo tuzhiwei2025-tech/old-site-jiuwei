@@ -8,16 +8,16 @@ const pages = [
     rightBgImage: null,
     leftContent: null,
     rightContent: {
-      heading: 'Welcome Aboard!',
-      description: 'Hold on to your mouse, things are about to get wild!',
+      heading: 'AIOS重新定义交互',
+      description: '从图形界面和命令行，走向自然语言交互、意图驱动和软件适应人。',
     },
   },
   {
     leftBgImage: null,
     rightBgImage: 'https://images.unsplash.com/photo-1749315099905-9cf6cabd9126?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHw0Nnx8fGVufDB8fHx8fA%3D%3D',
     leftContent: {
-      heading: 'Page 2',
-      description: 'Spoiler alert: it’s still empty. Keep that scroll finger limber!',
+      heading: '九维图灵是谁',
+      description: '下一代人工智能操作系统的缔造者，以AIOS重新定义人与世界的交互方式。',
     },
     rightContent: null,
   },
@@ -26,16 +26,16 @@ const pages = [
     rightBgImage: null,
     leftContent: null,
     rightContent: {
-      heading: 'Page 3',
-      description: 'Plot twist: You’ve reached the midpoint. Bravo!',
+      heading: 'GoAgent破局之道',
+      description: '从能用到好用，从AI工具到数字员工，构建企业级AI操作系统的完整基础设施。',
     },
   },
   {
     leftBgImage: null,
     rightBgImage: 'https://images.unsplash.com/photo-1748164521179-ae3b61c6dd90?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwyMjR8fHxlbnwwfHx8fHw%3D',
     leftContent: {
-      heading: 'Page 4',
-      description: 'One more scroll, I promise—almost there!',
+      heading: '五大AI数字员工',
+      description: 'Amy、Lina、Aira、Max、Lumi各司其职，开箱即用，立即提升团队效率。',
     },
     rightContent: null,
   },
@@ -44,10 +44,10 @@ const pages = [
     rightBgImage: null,
     leftContent: null,
     rightContent: {
-      heading: 'Epic Finale!',
+      heading: '产品体系全景',
       description: (
         <>
-         :)
+         灵活部署与产品矩阵，覆盖个人办公、中小团队与企业私有化场景。
         </>
       ),
     },

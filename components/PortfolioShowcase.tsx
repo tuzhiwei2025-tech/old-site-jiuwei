@@ -15,6 +15,8 @@ import { GridScrollVelocity } from "@/components/ui/grid-scroll-velocity";
 import { LoginDialog } from "@/components/LoginDialog";
 import { FlippingCard } from "@/components/ui/flipping-card";
 import { InfiniteSlider } from "@/components/ui/infinite-slider";
+import AiInputCard from "@/components/AiInputCard";
+import { ElectricButton } from "@/components/ui/electric-button";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -129,6 +131,17 @@ export default function PortfolioShowcase() {
   const userStoriesCardsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const cleanups: Array<() => void> = [];
+    const addManagedListener = (
+      target: EventTarget | null | undefined,
+      type: string,
+      handler: EventListener,
+    ) => {
+      if (!target) return;
+      target.addEventListener(type, handler);
+      cleanups.push(() => target.removeEventListener(type, handler));
+    };
+
     const ctx = gsap.context(() => {
       // ========== NAVIGATION ==========
       if (navRef.current && navItemsRef.current) {
@@ -170,23 +183,26 @@ export default function PortfolioShowcase() {
 
         // 导航链接悬停动画
         Array.from(navItems).forEach((item) => {
-          item.addEventListener("mouseenter", () => {
+          const handleMouseEnter = () => {
             gsap.to(item, {
               y: -2,
               scale: 1.05,
               duration: 0.2,
               ease: "power2.out",
             });
-          });
+          };
 
-          item.addEventListener("mouseleave", () => {
+          const handleMouseLeave = () => {
             gsap.to(item, {
               y: 0,
               scale: 1,
               duration: 0.2,
               ease: "power2.out",
             });
-          });
+          };
+
+          addManagedListener(item, "mouseenter", handleMouseEnter);
+          addManagedListener(item, "mouseleave", handleMouseLeave);
         });
       }
 
@@ -280,8 +296,24 @@ export default function PortfolioShowcase() {
           );
 
           // 鼠标移动倾斜效果
-          heroButtonRef.current.addEventListener("mousemove", (e) => {
-            const rect = heroButtonRef.current!.getBoundingClientRect();
+          const button = heroButtonRef.current;
+          const rotationXTo = gsap.quickTo(button, "rotationX", {
+            duration: 0.25,
+            ease: "power2.out",
+          });
+          const rotationYTo = gsap.quickTo(button, "rotationY", {
+            duration: 0.25,
+            ease: "power2.out",
+          });
+          let buttonRect: DOMRect | null = null;
+          let buttonMoveEvent: MouseEvent | null = null;
+          let buttonMoveFrame = 0;
+
+          const updateButtonTilt = () => {
+            buttonMoveFrame = 0;
+            if (!buttonMoveEvent) return;
+            const rect = buttonRect ?? button.getBoundingClientRect();
+            const e = buttonMoveEvent;
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
             const centerX = rect.width / 2;
@@ -289,37 +321,52 @@ export default function PortfolioShowcase() {
             const rotateX = ((y - centerY) / centerY) * -10;
             const rotateY = ((x - centerX) / centerX) * 10;
 
-            gsap.to(heroButtonRef.current, {
-              rotationX: rotateX,
-              rotationY: rotateY,
-              transformPerspective: 1000,
-              duration: 0.3,
-              ease: "power2.out",
-            });
-          });
+            rotationXTo(rotateX);
+            rotationYTo(rotateY);
+          };
 
-          heroButtonRef.current.addEventListener("mouseenter", () => {
-            gsap.to(heroButtonRef.current, {
+          const handleButtonMouseMove = (e: Event) => {
+            buttonMoveEvent = e as MouseEvent;
+            if (!buttonMoveFrame) {
+              buttonMoveFrame = requestAnimationFrame(updateButtonTilt);
+            }
+          };
+
+          const handleButtonMouseEnter = () => {
+            buttonRect = button.getBoundingClientRect();
+            gsap.to(button, {
               scale: 1.05,
               y: -5,
               rotation: -8,
+              transformPerspective: 1000,
               boxShadow: "0 10px 30px rgba(147, 51, 234, 0.4)",
               duration: 0.3,
               ease: "power2.out",
             });
-          });
+          };
 
-          heroButtonRef.current.addEventListener("mouseleave", () => {
-            gsap.to(heroButtonRef.current, {
+          const handleButtonMouseLeave = () => {
+            if (buttonMoveFrame) cancelAnimationFrame(buttonMoveFrame);
+            buttonMoveFrame = 0;
+            buttonMoveEvent = null;
+            buttonRect = null;
+            rotationXTo(0);
+            rotationYTo(0);
+            gsap.to(button, {
               scale: 1,
               y: 0,
               rotation: -5,
-              rotationX: 0,
-              rotationY: 0,
               boxShadow: "0 0 0px rgba(147, 51, 234, 0)",
               duration: 0.3,
               ease: "power2.out",
             });
+          };
+
+          addManagedListener(button, "mousemove", handleButtonMouseMove);
+          addManagedListener(button, "mouseenter", handleButtonMouseEnter);
+          addManagedListener(button, "mouseleave", handleButtonMouseLeave);
+          cleanups.push(() => {
+            if (buttonMoveFrame) cancelAnimationFrame(buttonMoveFrame);
           });
         }
       }
@@ -454,23 +501,26 @@ export default function PortfolioShowcase() {
             });
 
             // 悬停效果
-            item.addEventListener("mouseenter", () => {
+            const handleMouseEnter = () => {
               gsap.to(item, {
                 x: index % 2 === 0 ? -30 : 30,
                 scale: 1.02,
                 duration: 0.3,
                 ease: "power2.out",
               });
-            });
+            };
 
-            item.addEventListener("mouseleave", () => {
+            const handleMouseLeave = () => {
               gsap.to(item, {
                 x: index % 2 === 0 ? -20 : 20,
                 scale: 1,
                 duration: 0.3,
                 ease: "power2.out",
               });
-            });
+            };
+
+            addManagedListener(item, "mouseenter", handleMouseEnter);
+            addManagedListener(item, "mouseleave", handleMouseLeave);
           });
         }
       }
@@ -499,23 +549,26 @@ export default function PortfolioShowcase() {
             );
 
             // Logo 悬停动画
-            logo.addEventListener("mouseenter", () => {
+            const handleMouseEnter = () => {
               gsap.to(logo, {
                 scale: 1.05,
                 y: -3,
                 duration: 0.3,
                 ease: "power2.out",
               });
-            });
+            };
 
-            logo.addEventListener("mouseleave", () => {
+            const handleMouseLeave = () => {
               gsap.to(logo, {
                 scale: 1,
                 y: 0,
                 duration: 0.3,
                 ease: "power2.out",
               });
-            });
+            };
+
+            addManagedListener(logo, "mouseenter", handleMouseEnter);
+            addManagedListener(logo, "mouseleave", handleMouseLeave);
           });
         }
 
@@ -571,7 +624,7 @@ export default function PortfolioShowcase() {
               },
             });
 
-            project.addEventListener("mouseenter", () => {
+            const handleMouseEnter = () => {
               gsap.to(project, {
                 scale: 1.02,
                 y: -8,
@@ -580,9 +633,9 @@ export default function PortfolioShowcase() {
                 duration: 0.3,
                 ease: "power2.out",
               });
-            });
+            };
 
-            project.addEventListener("mouseleave", () => {
+            const handleMouseLeave = () => {
               gsap.to(project, {
                 scale: 1,
                 y: 0,
@@ -591,7 +644,10 @@ export default function PortfolioShowcase() {
                 duration: 0.3,
                 ease: "power2.out",
               });
-            });
+            };
+
+            addManagedListener(project, "mouseenter", handleMouseEnter);
+            addManagedListener(project, "mouseleave", handleMouseLeave);
           });
         }
 
@@ -617,21 +673,24 @@ export default function PortfolioShowcase() {
               }
             );
 
-            thumb.addEventListener("mouseenter", () => {
+            const handleMouseEnter = () => {
               gsap.to(thumb, {
                 scale: 1.05,
                 duration: 0.3,
                 ease: "power2.out",
               });
-            });
+            };
 
-            thumb.addEventListener("mouseleave", () => {
+            const handleMouseLeave = () => {
               gsap.to(thumb, {
                 scale: 1,
                 duration: 0.3,
                 ease: "power2.out",
               });
-            });
+            };
+
+            addManagedListener(thumb, "mouseenter", handleMouseEnter);
+            addManagedListener(thumb, "mouseleave", handleMouseLeave);
           });
         }
       }
@@ -639,7 +698,39 @@ export default function PortfolioShowcase() {
       // ========== ABOUT ME SECTION ==========
       if (aboutRef.current) {
         if (aboutBlobsRef.current) {
+          const about = aboutRef.current;
           const blobs = aboutBlobsRef.current.children;
+          const blobFollowers = Array.from(blobs).map((blob, index) => ({
+            xTo: gsap.quickTo(blob, "x", { duration: 1.2, ease: "power2.out" }),
+            yTo: gsap.quickTo(blob, "y", { duration: 1.2, ease: "power2.out" }),
+            strength: 20 + index * 10,
+          }));
+          let aboutMoveEvent: MouseEvent | null = null;
+          let aboutMoveFrame = 0;
+          const updateAboutBlobs = () => {
+            aboutMoveFrame = 0;
+            if (!aboutMoveEvent) return;
+            const rect = about.getBoundingClientRect();
+            const x = (aboutMoveEvent.clientX - rect.left - rect.width / 2) / rect.width;
+            const y = (aboutMoveEvent.clientY - rect.top - rect.height / 2) / rect.height;
+
+            blobFollowers.forEach((follower) => {
+              follower.xTo(x * follower.strength);
+              follower.yTo(y * follower.strength - 15);
+            });
+          };
+          const handleAboutMouseMove = (e: Event) => {
+            aboutMoveEvent = e as MouseEvent;
+            if (!aboutMoveFrame) {
+              aboutMoveFrame = requestAnimationFrame(updateAboutBlobs);
+            }
+          };
+
+          addManagedListener(about, "mousemove", handleAboutMouseMove);
+          cleanups.push(() => {
+            if (aboutMoveFrame) cancelAnimationFrame(aboutMoveFrame);
+          });
+
           Array.from(blobs).forEach((blob, index) => {
             gsap.fromTo(
               blob,
@@ -667,20 +758,6 @@ export default function PortfolioShowcase() {
               repeat: -1,
               yoyo: true,
               ease: "sine.inOut",
-            });
-
-            // 鼠标跟随效果
-            aboutRef.current?.addEventListener("mousemove", (e) => {
-              const rect = aboutRef.current!.getBoundingClientRect();
-              const x = (e.clientX - rect.left - rect.width / 2) / rect.width;
-              const y = (e.clientY - rect.top - rect.height / 2) / rect.height;
-              
-              gsap.to(blob, {
-                x: x * (20 + index * 10),
-                y: y * (20 + index * 10) - 15,
-                duration: 1.5,
-                ease: "power2.out",
-              });
             });
           });
         }
@@ -798,7 +875,7 @@ export default function PortfolioShowcase() {
               },
             });
 
-            card.addEventListener("mouseenter", () => {
+            const handleMouseEnter = () => {
               gsap.to(card, {
                 scale: 1.05,
                 y: -12,
@@ -807,9 +884,9 @@ export default function PortfolioShowcase() {
                 duration: 0.3,
                 ease: "power2.out",
               });
-            });
+            };
 
-            card.addEventListener("mouseleave", () => {
+            const handleMouseLeave = () => {
               gsap.to(card, {
                 scale: 1,
                 y: 0,
@@ -818,7 +895,10 @@ export default function PortfolioShowcase() {
                 duration: 0.3,
                 ease: "power2.out",
               });
-            });
+            };
+
+            addManagedListener(card, "mouseenter", handleMouseEnter);
+            addManagedListener(card, "mouseleave", handleMouseLeave);
           });
         }
       }
@@ -826,8 +906,10 @@ export default function PortfolioShowcase() {
       // ========== CONTACT SECTION ==========
       if (contactRef.current) {
         if (contactBlobRef.current) {
+          const contact = contactRef.current;
+          const contactBlob = contactBlobRef.current;
           // 滚动视差
-          gsap.to(contactBlobRef.current, {
+          gsap.to(contactBlob, {
             y: -80,
             scale: 1.08,
             rotation: 12,
@@ -840,7 +922,7 @@ export default function PortfolioShowcase() {
           });
 
           // 呼吸动画
-          gsap.to(contactBlobRef.current, {
+          gsap.to(contactBlob, {
             scale: 1.04,
             duration: 3.5,
             repeat: -1,
@@ -849,17 +931,32 @@ export default function PortfolioShowcase() {
           });
 
           // 鼠标跟随
-          contactRef.current.addEventListener("mousemove", (e) => {
-            const rect = contactRef.current!.getBoundingClientRect();
+          const contactXTo = gsap.quickTo(contactBlob, "x", { duration: 1.2, ease: "power2.out" });
+          const contactYTo = gsap.quickTo(contactBlob, "y", { duration: 1.2, ease: "power2.out" });
+          const contactRotationTo = gsap.quickTo(contactBlob, "rotation", { duration: 1.2, ease: "power2.out" });
+          let contactMoveEvent: MouseEvent | null = null;
+          let contactMoveFrame = 0;
+          const updateContactBlob = () => {
+            contactMoveFrame = 0;
+            if (!contactMoveEvent) return;
+            const rect = contact.getBoundingClientRect();
+            const e = contactMoveEvent;
             const x = (e.clientX - rect.left - rect.width / 2) / rect.width;
             const y = (e.clientY - rect.top - rect.height / 2) / rect.height;
-            gsap.to(contactBlobRef.current, {
-              x: x * 40,
-              y: y * 40,
-              rotation: x * 15,
-              duration: 1.5,
-              ease: "power2.out",
-            });
+            contactXTo(x * 40);
+            contactYTo(y * 40);
+            contactRotationTo(x * 15);
+          };
+          const handleContactMouseMove = (e: Event) => {
+            contactMoveEvent = e as MouseEvent;
+            if (!contactMoveFrame) {
+              contactMoveFrame = requestAnimationFrame(updateContactBlob);
+            }
+          };
+
+          addManagedListener(contact, "mousemove", handleContactMouseMove);
+          cleanups.push(() => {
+            if (contactMoveFrame) cancelAnimationFrame(contactMoveFrame);
           });
         }
 
@@ -939,7 +1036,7 @@ export default function PortfolioShowcase() {
               }
             );
 
-            icon.addEventListener("mouseenter", () => {
+            const handleMouseEnter = () => {
               gsap.to(icon, {
                 scale: 1.15,
                 y: -8,
@@ -947,9 +1044,9 @@ export default function PortfolioShowcase() {
                 duration: 0.25,
                 ease: "power2.out",
               });
-            });
+            };
 
-            icon.addEventListener("mouseleave", () => {
+            const handleMouseLeave = () => {
               gsap.to(icon, {
                 scale: 1,
                 y: 0,
@@ -957,9 +1054,9 @@ export default function PortfolioShowcase() {
                 duration: 0.25,
                 ease: "power2.out",
               });
-            });
+            };
 
-            icon.addEventListener("click", () => {
+            const handleClick = () => {
               gsap.to(icon, {
                 scale: 0.9,
                 duration: 0.1,
@@ -967,7 +1064,11 @@ export default function PortfolioShowcase() {
                 repeat: 1,
                 ease: "power2.inOut",
               });
-            });
+            };
+
+            addManagedListener(icon, "mouseenter", handleMouseEnter);
+            addManagedListener(icon, "mouseleave", handleMouseLeave);
+            addManagedListener(icon, "click", handleClick);
           });
         }
 
@@ -1106,205 +1207,208 @@ export default function PortfolioShowcase() {
       }
     }, containerRef);
 
-    return () => ctx.revert();
+    return () => {
+      cleanups.forEach((cleanup) => cleanup());
+      ctx.revert();
+    };
   }, []);
 
   const services = [
     {
       number: "01",
-      label: "3D MODELING",
+      label: "对话工作台",
       description:
-        "Creation of detailed objects, characters, or environments tailored to specific client needs, ideal for games, products, and visualizations.",
+        "人人都能 Vibe Coding，用提示词代替手动操作，串联工作流。",
     },
     {
       number: "02",
-      label: "3D RENDERING",
+      label: "Skills Hub",
       description:
-        "High-quality, photorealistic renders that showcase designs with realistic lighting, textures, and shadows.",
+        "通过 Function Call 调用技能仓库，让 AI 工作搭子具备执行复杂任务的能力。",
     },
     {
       number: "03",
-      label: "3D ANIMATION",
+      label: "GoData向量知识库",
       description:
-        "Dynamic animations to bring characters, products, or environments to life for marketing, gaming, or storytelling.",
+        "长期记忆与专业大脑，覆盖语义相似度与精确关键词匹配场景。",
     },
     {
       number: "04",
-      label: "PRODUCT DESIGN",
+      label: "Prompt Genius",
       description:
-        "Precise 3D modeling and rendering for showcasing or prototyping consumer products.",
+        "模糊指令自动补全，本地推理驱动，让每一条指令都发挥最大价值。",
     },
     {
       number: "05",
-      label: "3D PRINTING",
+      label: "Memory OS",
       description:
-        "Custom 3D designs prepared and optimized for 3D printing technology.",
+        "超越对话历史堆叠，实现长任务执行中的连贯认知与精准决策。",
     },
   ];
   const projectThumbnailsMockData = [
-    { id: 0, title: "Project 1", image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&auto=format&fit=crop&q=80" },
-    { id: 1, title: "Project 2", image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=250&auto=format&fit=crop&q=80" },
-    { id: 2, title: "Project 3", image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&auto=format&fit=crop&q=80" },
-    { id: 3, title: "Project 4", image: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=400&h=250&auto=format&fit=crop&q=80" },
-    { id: 4, title: "Project 5", image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&auto=format&fit=crop&q=80" },
-    { id: 5, title: "Project 6", image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=250&auto=format&fit=crop&q=80" },
-    { id: 6, title: "Project 7", image: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=400&h=250&auto=format&fit=crop&q=80" },
-    { id: 7, title: "Project 8", image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&auto=format&fit=crop&q=80" },
-    { id: 8, title: "Project 9", image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=250&auto=format&fit=crop&q=80" },
-    { id: 9, title: "Project 10", image: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=400&h=250&auto=format&fit=crop&q=80" },
-    { id: 10, title: "Project 11", image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&auto=format&fit=crop&q=80" },
-    { id: 11, title: "Project 12", image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=250&auto=format&fit=crop&q=80" },
-    { id: 12, title: "Project 13", image: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=400&h=250&auto=format&fit=crop&q=80" },
-    { id: 13, title: "Project 14", image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&auto=format&fit=crop&q=80" },
-    { id: 14, title: "Project 15", image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=250&auto=format&fit=crop&q=80" },
-    { id: 15, title: "Project 16", image: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=400&h=250&auto=format&fit=crop&q=80" },
+    { id: 0, title: "对话工作台", image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&auto=format&fit=crop&q=80" },
+    { id: 1, title: "Skills Hub", image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=250&auto=format&fit=crop&q=80" },
+    { id: 2, title: "GoData知识库", image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&auto=format&fit=crop&q=80" },
+    { id: 3, title: "Prompt Genius", image: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=400&h=250&auto=format&fit=crop&q=80" },
+    { id: 4, title: "Memory OS", image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&auto=format&fit=crop&q=80" },
+    { id: 5, title: "Inference Turbo", image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=250&auto=format&fit=crop&q=80" },
+    { id: 6, title: "Amy通用助手", image: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=400&h=250&auto=format&fit=crop&q=80" },
+    { id: 7, title: "Lina Word专家", image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&auto=format&fit=crop&q=80" },
+    { id: 8, title: "Aira PPT专家", image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=250&auto=format&fit=crop&q=80" },
+    { id: 9, title: "Max Excel专家", image: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=400&h=250&auto=format&fit=crop&q=80" },
+    { id: 10, title: "Lumi应用开发专家", image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&auto=format&fit=crop&q=80" },
+    { id: 11, title: "Cloud云轻盒", image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=250&auto=format&fit=crop&q=80" },
+    { id: 12, title: "Mix轻终端", image: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=400&h=250&auto=format&fit=crop&q=80" },
+    { id: 13, title: "Spark Solo工作站", image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&auto=format&fit=crop&q=80" },
+    { id: 14, title: "Spark Cluster集群", image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=250&auto=format&fit=crop&q=80" },
+    { id: 15, title: "企业私有化方案", image: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=400&h=250&auto=format&fit=crop&q=80" },
   ];
 
   const projects = [
     {
       number: "01",
-      client: "Rogue Studios",
+      client: "某城市建设投资集团",
     },
     {
       number: "02",
-      client: "Pixel Forge",
+      client: "某文化传媒公司",
     },
     {
       number: "03",
-      client: "MetaForm Creations",
+      client: "某市属重点中学",
     },
   ];
 
   // Mock 数据用于 ScrollVelocity 组件
   const scrollVelocityMockData = [
-    "NVIDIA",
-    "OPENAI",
-    "SUPABASE",
-    "VERCEL",
-    "GITHUB",
-    "CLAUDE AI",
-    "TURSO",
-    "CLERK",
-    "STRIPE",
-    "TWILIO",
-    "SENDGRID",
-    "ALGOLIA",
+    "AIOS",
+    "GOAGENT",
+    "GODATA",
+    "SKILLS HUB",
+    "PROMPT GENIUS",
+    "MEMORY OS",
+    "INFERENCE TURBO",
+    "AMY",
+    "LINA",
+    "AIRA",
+    "MAX",
+    "LUMI",
   ];
 
   const customers = [
     {
-      name: "MICHAEL T.",
-      company: "PROTOSPHERE INNOVATIONS",
-      text: "Mr.GoGo brought our product concept to life in a way we never thought possible. The 3D model was so detailed and realistic, it helped us secure investors and streamline the manufacturing process. Highly recommend.",
+      name: "行政办公室",
+      company: "某城市建设投资集团",
+      text: "以前最怕下班前接到紧急发文，对着十几项格式规范改到深夜，是常有的事。",
     },
     {
-      name: "DAVID R.",
-      company: "APEX INTERACTIVE",
-      text: "Mr.GoGo's 3D character designs exceeded expectations. The level of detail, creativity, and responsiveness throughout the project was outstanding. Our game wouldn't be the same without their contributions.",
+      name: "公文规范",
+      company: "某城市建设投资集团",
+      text: "导入历年标准公文、品牌规范与项目档案，搭建专属知识库，自动生成格式合规的完整初稿。",
     },
     {
-      name: "RACHEL M.",
-      company: "METAFORM CREATIONS",
-      text: "Mr.GoGo's unique 3D designs made our NFT collection a huge success. The art was breathtaking, and their professionalism made the entire process smooth and enjoyable. Looking forward to collaborating again.",
+      name: "看得见的变化",
+      company: "某城市建设投资集团",
+      text: "新员工公文上手周期缩短80%，集团文档品牌合规率从42%提升至96%。",
     },
     {
-      name: "DR. ANDREA K.",
-      company: "MEDTECH VISUALS",
-      text: "Also created detailed 3D models for our medical training program, and the quality was outstanding. The models were precise, realistic, and incredibly useful for our team. We're thrilled with the outcome.",
+      name: "策划部",
+      company: "某文化传媒公司",
+      text: "比稿季同时接四五个项目，一半时间都在调PPT排版，创意都想不动了。",
     },
     {
-      name: "JAMES K.",
-      company: "INNOVATIVE PRODUCT DESIGN",
-      text: "The 3D prototypes we created for our 2 new products were fantastic. The speed of iteration and precision made it so much easier to visualize our ideas. Highly recommend!",
+      name: "创意知识底座",
+      company: "某文化传媒公司",
+      text: "上传提案模板、历史案例库与品牌视觉规范，全员可用数字员工快速产出标准化初稿。",
     },
     {
-      name: "SUSAN S.",
-      company: "BOLDEDGE MARKETING",
-      text: "The 3D render was produced for our new product. It added a dynamic edge to our marketing materials and increased engagement significantly.",
+      name: "产出效率",
+      company: "某文化传媒公司",
+      text: "单份竞标方案产出周期从3天压缩至4小时，基础排版与文案工作人力投入减少70%。",
     },
     {
-      name: "ALEX P.",
-      company: "DIGITAL DREAMS",
-      text: "Outstanding work on our architectural visualization project. The attention to detail and realistic lighting made all the difference in our client presentations.",
+      name: "高二年级组",
+      company: "某市属重点中学",
+      text: "备课本、练习卷、学情分析、学生评语经常把作业抱回家，改到半夜。",
     },
     {
-      name: "MARIA L.",
-      company: "CREATIVE STUDIOS",
-      text: "Mr.GoGo transformed our brand identity with stunning 3D logo designs. The creativity and technical skill exceeded our expectations completely.",
+      name: "校本教研知识库",
+      company: "某市属重点中学",
+      text: "同步教材、教案、试卷等全量教学资料，输入教学主题与班级学情即可生成教案框架和试卷初稿。",
     },
     {
-      name: "ROBERT H.",
-      company: "TECHNOVATION LABS",
-      text: "The product visualization work was exceptional. It helped us communicate our vision to stakeholders and investors with incredible clarity.",
+      name: "教学回归课堂",
+      company: "某市属重点中学",
+      text: "教师单课备课时间平均减少55%，试卷与学情报告产出效率提升3倍。",
     },
     {
-      name: "EMMA W.",
-      company: "FASHION FORWARD",
-      text: "Working with Mr.GoGo on our fashion campaign was a game-changer. The 3D renders brought our designs to life in ways we never imagined.",
+      name: "Amy",
+      company: "通用助手",
+      text: "随时应答、日常问题解答、智能任务管理、多场景支持。",
     },
     {
-      name: "CHRIS M.",
-      company: "AUTOMOTIVE DESIGN",
-      text: "The car visualization project was executed flawlessly. Every detail was perfect, from the materials to the lighting and composition.",
+      name: "Lina",
+      company: "Word专家",
+      text: "生成文档、文案撰写与编辑、格式自动调整、内容智能优化。",
     },
     {
-      name: "LISA K.",
-      company: "INTERIOR VISIONS",
-      text: "Our interior design project came to life through Mr.GoGo's incredible 3D rendering skills. The photorealistic results were beyond our expectations.",
+      name: "Aira",
+      company: "PPT专家",
+      text: "专业演示、内容排版与设计、智能配色方案、精美模板生成。",
     },
     {
-      name: "TOM B.",
-      company: "GAME STUDIOS",
-      text: "The character models and environments created for our game were absolutely stunning. The quality and creativity were top-notch throughout.",
+      name: "Max",
+      company: "Excel专家",
+      text: "图表可视化、数据分析与展示、智能图表生成、自动化报表。",
     },
     {
-      name: "SARAH J.",
-      company: "MEDIA PRODUCTIONS",
-      text: "Mr.GoGo's 3D animations for our commercial were breathtaking. The smooth motion and attention to detail made our campaign stand out.",
+      name: "Lumi",
+      company: "网站应用开发专家",
+      text: "想法变应用、快速应用开发、网站原型生成、低代码平台。",
     },
     {
-      name: "MARK D.",
-      company: "INNOVATION HUB",
-      text: "The prototype visualization helped us secure crucial funding. The quality of work and professionalism throughout the project was outstanding.",
+      name: "更多专家角色",
+      company: "GoAgent",
+      text: "内置5大数字员工，开箱即用，立即提升团队效率，更多专家角色就位中。",
     },
   ];
 
   const userStories = [
     {
-      name: "MICHAEL T.",
-      role: "CEO, PROTOSPHERE",
+      name: "行政办公室",
+      role: "某城市建设投资集团",
       avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop",
       mainImage: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&auto=format&fit=crop&q=80",
-      frontTitle: "Product Launch Success",
-      frontDescription: "See how 3D design transformed our product launch",
-      backStory: "Mr.GoGo brought our product concept to life in a way we never thought possible. The 3D model was so detailed and realistic, it helped us secure investors and streamline the manufacturing process.",
+      frontTitle: "公文上手周期缩短80%",
+      frontDescription: "格式严苛、标准不一、汇总繁琐的行政材料生产场景",
+      backStory: "导入集团历年标准公文、品牌规范与项目档案，搭建专属知识库；说清事由、主送单位与核心内容，自动生成格式合规的完整初稿。",
     },
     {
-      name: "DAVID R.",
-      role: "Game Director, APEX",
+      name: "策划部",
+      role: "某文化传媒公司",
       avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop",
       mainImage: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=300&auto=format&fit=crop&q=80",
-      frontTitle: "Character Design",
-      frontDescription: "Discover the creative process behind our game characters",
-      backStory: "Mr.GoGo's 3D character designs exceeded expectations. The level of detail, creativity, and responsiveness throughout the project was outstanding. Our game wouldn't be the same without their contributions.",
+      frontTitle: "竞标方案4小时产出",
+      frontDescription: "改稿频繁、创意耗散、基础排版挤占核心创意",
+      backStory: "上传公司提案模板、历史案例库与品牌视觉规范，构建创意知识底座；全员可用数字员工，客户经理也能生成初版方案。",
     },
     {
-      name: "RACHEL M.",
-      role: "Art Director, METAFORM",
+      name: "高二年级组",
+      role: "某市属重点中学",
       avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop",
       mainImage: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=400&h=300&auto=format&fit=crop&q=80",
-      frontTitle: "NFT Collection",
-      frontDescription: "Explore how 3D art elevated our NFT project",
-      backStory: "Mr.GoGo's unique 3D designs made our NFT collection a huge success. The art was breathtaking, and their professionalism made the entire process smooth and enjoyable.",
+      frontTitle: "学情报告效率提升3倍",
+      frontDescription: "备课、出卷、分析、评语撰写占用大量课余时间",
+      backStory: "搭建校本教研知识库，同步教材、教案、试卷等全量教学资料；配置备课教研、学情分析两类专属数字员工。",
     },
     {
-      name: "DR. ANDREA K.",
-      role: "Medical Director, MEDTECH",
+      name: "企业私有化",
+      role: "GoAgent AIPC",
       avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop",
       mainImage: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&auto=format&fit=crop&q=80",
-      frontTitle: "Medical Visualization",
-      frontDescription: "Learn about precision 3D models for medical training",
-      backStory: "Created detailed 3D models for our medical training program. The quality was outstanding - precise, realistic, and incredibly useful for our team. We're thrilled with the outcome.",
+      frontTitle: "消费级成本跑企业级推理",
+      frontDescription: "Spark Cluster集群，本地化部署方案优势",
+      backStory: "支持300B FP8本地模型、512GB超大显存、高速推理和团队并发支持，适合中小团队搭建内网私有算力池。",
     },
   ];
 
@@ -1342,28 +1446,28 @@ export default function PortfolioShowcase() {
                               onClick={(e) => handleNavClick(e, '#about')}
                               className="text-sm font-medium tracking-wider uppercase text-white/70 transition-all hover:text-white hover:scale-105 active:scale-95"
                           >
-                              ABOUT
+                              AIOS
                           </a>
                           <a 
                               href="#customers" 
                               onClick={(e) => handleNavClick(e, '#customers')}
                               className="text-sm font-medium tracking-wider uppercase text-white/70 transition-all hover:text-white hover:scale-105 active:scale-95"
                           >
-                              CUSTOMERS
+                              案例
                           </a>
                           <a 
                               href="#projects" 
                               onClick={(e) => handleNavClick(e, '#projects')}
                               className="text-sm font-medium tracking-wider uppercase text-white/70 transition-all hover:text-white hover:scale-105 active:scale-95"
                           >
-                              PROJECTS
+                              产品
                           </a>
                           <a 
                               href="#contact" 
                               onClick={(e) => handleNavClick(e, '#contact')}
                               className="text-sm font-medium tracking-wider uppercase text-white/70 transition-all hover:text-white hover:scale-105 active:scale-95"
                           >
-                              CONTACT
+                              联系
                           </a>
                       </nav>
                   </div>
@@ -1391,130 +1495,62 @@ export default function PortfolioShowcase() {
                   </FloatingElement>
 
                   {/* 主要内容区域 */}
-                  <div className="flex relative z-10 flex-col justify-center items-center px-8 h-full text-center">
-                      <FloatingElement depth={2}>
-                          <h1 className="mb-6 text-6xl font-bold tracking-tight text-white md:text-7xl lg:text-8xl">
-                              Welcome to
-                              <br />
-                              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-orange-400">
-                                  Parallax World
+                  <div className="grid relative z-10 grid-cols-1 gap-8 items-center content-center px-8 pt-14 mx-auto w-full max-w-7xl min-h-screen text-center lg:grid-cols-[560px_minmax(0,1fr)] lg:gap-14 lg:px-12">
+                      <div className="hidden justify-center items-center lg:flex lg:-translate-x-24">
+                          <AiInputCard scale={1.74} />
+                      </div>
+
+                      <div className="relative z-10 flex flex-col items-center">
+                          <h1 className="mb-8 text-center text-[clamp(2.7rem,5.05vw,5.85rem)] font-black tracking-tight leading-[1.03] text-white">
+                              <span className="block whitespace-nowrap">GoAgent，助力企业真正</span>
+                              <span className="block whitespace-nowrap text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-orange-400">
+                                  迈入AIPC时代
                               </span>
                           </h1>
-                      </FloatingElement>
 
-                      <FloatingElement depth={2.5}>
-                          <p className="mx-auto mb-12 max-w-2xl text-lg font-light text-white/80 md:text-xl lg:text-2xl">
-                              Experience the power of interactive parallax floating effects.
-                              <br />
-                              Move your mouse to see the magic happen.
+                          <p className="mb-10 whitespace-nowrap text-center text-[clamp(1.15rem,1.75vw,2rem)] font-light leading-none text-white/75">
+                              本地化智能办公神器，让AI从工具进化为可协同落地的数字员工
                           </p>
-                      </FloatingElement>
 
-                      <FloatingElement depth={3}>
-                          <div className="flex flex-wrap gap-4 justify-center">
-                              <button className="px-8 py-4 font-semibold tracking-wider text-white uppercase bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg transition-all hover:from-purple-700 hover:to-pink-700 hover:scale-105">
-                                  Get Started
-                              </button>
-                              <button className="px-8 py-4 font-semibold tracking-wider text-white uppercase rounded-lg border backdrop-blur-sm transition-all bg-white/10 border-white/20 hover:bg-white/20 hover:scale-105">
-                                  Learn More
-                              </button>
+                          <div className="flex justify-center">
+                              <ElectricButton activeLabel="开始探索">
+                                  了解 GoAgent
+                              </ElectricButton>
                           </div>
-                      </FloatingElement>
+                      </div>
                   </div>
 
                   {/* 装饰性几何元素 */}
-                  <FloatingElement depth={1.2} className="top-1/3 right-1/4">
+                  <FloatingElement depth={1.2} className="top-28 right-16 md:right-24">
                       <div className="w-20 h-20 bg-gradient-to-br rounded-lg border backdrop-blur-sm rotate-45 from-green-500/30 to-emerald-500/30 border-white/20" />
                   </FloatingElement>
 
-                  <FloatingElement depth={1.5} className="bottom-1/3 left-1/3">
+                  <FloatingElement depth={1.5} className="-bottom-8 left-24 md:left-1/4">
                       <div className="w-24 h-24 bg-gradient-to-br rounded-lg border backdrop-blur-sm from-indigo-500/30 to-purple-500/30 border-white/20" />
                   </FloatingElement>
 
-                  <FloatingElement depth={1} className="top-2/3 right-1/3">
+                  <FloatingElement depth={1} className="right-20 bottom-24 md:right-1/4">
                       <div className="w-16 h-16 bg-gradient-to-br rounded-full border backdrop-blur-sm from-pink-500/30 to-rose-500/30 border-white/20" />
                   </FloatingElement>
 
-                  <FloatingElement depth={1.3} className="top-1/2 left-1/5">
+                  <FloatingElement depth={1.3} className="top-1/2 left-10 md:left-20">
                       <div className="w-12 h-12 bg-gradient-to-br rounded-lg border backdrop-blur-sm rotate-12 from-cyan-500/30 to-blue-500/30 border-white/20" />
                   </FloatingElement>
 
-                  <FloatingElement depth={0.9} className="bottom-1/4 right-1/5">
+                  <FloatingElement depth={0.9} className="right-8 bottom-8 md:right-20">
                       <div className="w-14 h-14 bg-gradient-to-br rounded-full border backdrop-blur-sm from-orange-500/30 to-yellow-500/30 border-white/20" />
                   </FloatingElement>
 
                   {/* 滚动提示 */}
                   <div className="absolute bottom-8 left-1/2 z-20 -translate-x-1/2">
                       <div className="flex flex-col gap-2 items-center text-white/60">
-                          <span className="text-sm">Scroll down</span>
+                          <span className="text-sm">继续了解</span>
                           <div className="flex justify-center items-start p-2 w-6 h-10 rounded-full border-2 border-white/30">
                               <div className="w-1.5 h-1.5 rounded-full bg-white/60 animate-bounce" />
                           </div>
                       </div>
                   </div>
               </Floating>
-          </section>
-
-          {/* ========== HERO SECTION ========== */}
-          <section
-              ref={heroRef}
-              className="flex relative flex-col  min-h-screen bg-black"
-          >
-              <div
-                  ref={heroOverlayRef}
-                  className="absolute top-20 left-1/2 z-20 px-6 py-3 bg-black rounded-lg -translate-x-1/2"
-              >
-              </div>
-
-              <div className="container relative z-10 px-8 py-12 mx-auto">
-                  {/* 上方标题区域 */}
-                  <div className="mb-12 text-center">
-                      <h1
-                          ref={heroTitleRef}
-                          className="text-7xl font-black tracking-tight leading-tight md:text-8xl lg:text-9xl xl:text-[10rem]"
-                      >
-                          HI, I&apos;M Mr.GoGo
-                      </h1>
-                  </div>
-
-                  {/* 下方三栏布局 */}
-                  <div className="grid grid-cols-1 gap-8 items-start lg:grid-cols-12">
-                      {/* 左侧：说明文字 */}
-                      <div className="flex flex-col justify-start lg:col-span-3">
-                          <p
-                              ref={heroSubtitleRef}
-                              className="text-lg font-light md:text-xl lg:text-2xl text-white/80"
-                          >
-                              A 3D DESIGNER PASSIONATE ABOUT CRAFTING BOLD AND MEMORABLE PROJECTS
-                          </p>
-                      </div>
-
-                      {/* 中间：大图片 */}
-                      <div className="flex justify-center items-center lg:col-span-6">
-                          <div
-                              ref={heroImageRef}
-                              className="relative w-full max-w-lg aspect-square rounded-lg overflow-hidden"
-                          >
-                              <img
-                                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=800&auto=format&fit=crop&q=80"
-                                  alt="Mr.GoGo"
-                                  className="object-cover w-full h-full"
-                              />
-                          </div>
-                      </div>
-
-                      {/* 右侧：按钮 */}
-                      <div className="flex justify-center items-start lg:col-span-3 lg:justify-start">
-                          <button
-                              ref={heroButtonRef}
-                              className="px-8 py-4 font-semibold tracking-wider text-white uppercase bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg transition-all hover:from-purple-700 hover:to-pink-700"
-                              style={{ transformStyle: "preserve-3d" }}
-                          >
-                              CONTACT ME
-                          </button>
-                      </div>
-                  </div>
-              </div>
           </section>
 
           {/* ========== SERVICES SECTION ========== */}
@@ -1576,15 +1612,15 @@ export default function PortfolioShowcase() {
         <StackingCard
        projects={[
         {
-          title: "Avatars - Build your Expert Team",
-          description: "Introducing a brand-new feature: Avatars. With Avatars, you can choose who you want to interact with — whether it's legendary figures from history or a team of dedicated expert advisors tailored to your personal needs.",
+          title: "五大AI数字员工",
+          description: "Amy、Lina、Aira、Max、Lumi各司其职的专家级超级智能体，覆盖通用助手、Word、PPT、Excel与网站应用开发。",
           link: "https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800&auto=format&fit=crop",
           color: "#8b5cf6",
           type: 'avatars',
           features: [
-            "Engage with historical figures.",
-            "Build a personalized expert team.",
-            "Get tailored advice and insights.",
+            "内置5大数字员工，开箱即用。",
+            "从日常应答到专业办公生成。",
+            "更多专家角色持续就位。",
           ],
           avatars: [
             {
@@ -1636,53 +1672,53 @@ export default function PortfolioShowcase() {
           ],
         },
         {
-            title: "AI-Powered Analytics Dashboard",
-            description: "Get deep insights into your business with our AI-powered analytics platform. Visualize data, track performance metrics, and make data-driven decisions with confidence.",
+            title: "内置Skills Hub仓库",
+            description: "通过Function Call调用GoAgent技能仓库，让AI工作搭子具备执行复杂任务的能力。",
             link: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop",
             color: "#10b981",
             type: 'image',
             features: [
-              "Real-time data visualization.",
-              "AI-powered insights.",
-              "Customizable dashboards.",
+              "数据爬虫与结构化解析。",
+              "文档格式解析与知识库检索。",
+              "代码转Office与ECharts制表。",
             ],
           },
         {
-          title: "Video Tutorial - Learn from Experts",
-          description: "Watch comprehensive video tutorials created by industry experts. Learn new skills, understand complex concepts, and master advanced techniques through our interactive video learning platform.",
+          title: "GoData向量知识库",
+          description: "资料库扮演长期记忆与专业大脑的核心角色，支持语义相似度与精确关键词匹配。",
           link: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop",
           color: "#6366f1",
           type: 'video',
           features: [
-            "HD quality video content.",
-            "Interactive learning experience.",
-            "Expert-led tutorials.",
+            "Word、Excel、PPT自动分块。",
+            "召回率提升25%+。",
+            "知识更新从天级缩短至分钟级。",
           ],
           videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
           videoThumbnail: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800&h=450&fit=crop",
         },
         {
-          title: "Advanced Workflow Automation",
-          description: "Streamline your business processes with our intelligent workflow automation system. Create custom workflows, automate repetitive tasks, and boost productivity across your entire organization.",
+          title: "Prompt Genius",
+          description: "模糊输入不再是瓶颈，普通用户也能驾驭复杂Agent任务，让每一条指令都发挥最大价值。",
           link: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop",
           color: "#f59e0b",
           type: 'image',
           features: [
-            "Custom workflow creation.",
-            "Automated task management.",
-            "Real-time collaboration tools.",
+            "模糊指令自动补全。",
+            "本地推理驱动，无需联网。",
+            "Function Calling调用错误率下降78%。",
           ],
         },
         {
-          title: "Product Demo Video",
-          description: "Experience our product in action through detailed demonstration videos. See how our platform can transform your workflow and boost your productivity with real-world examples.",
+          title: "Memory OS多层记忆系统",
+          description: "让Agent真正理解任务全貌，超越对话历史堆叠，实现长任务执行中的连贯认知与精准决策。",
           link: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop",
           color: "#06b6d4",
           type: 'video',
           features: [
-            "Step-by-step demonstrations.",
-            "Real-world use cases.",
-            "Interactive product tours.",
+            "短期、中期、长期与跨会话记忆。",
+            "单轮对话支持600轮次Function Calling。",
+            "不只是AI工具，更是会成长的工作伙伴。",
           ],
           videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
           videoThumbnail: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=450&fit=crop",
@@ -1713,7 +1749,7 @@ export default function PortfolioShowcase() {
                       ref={projectsTitleRef}
                       className="mb-16 text-7xl font-black tracking-tight text-center text-white md:text-8xl lg:text-9xl"
                   >
-                      PROJECTS
+                      产品体系
                   </h2>
 
                   {/* 项目滚动速度展示 */}
@@ -1778,46 +1814,56 @@ export default function PortfolioShowcase() {
               id="about"
               className="flex overflow-hidden relative justify-center items-center py-20 min-h-screen bg-black scroll-mt-24"
           >
-              <div className="container relative z-10 px-8 mx-auto">
-                  <div className="mx-auto max-w-4xl text-center">
-                      <div ref={aboutBlobsRef} className="flex absolute right-0 left-0 top-20 gap-4 justify-center pointer-events-none">
-                          <div className="w-16 h-16 bg-gradient-to-br from-pink-400 via-purple-400 to-yellow-400 rounded-full opacity-60 blur-sm" />
-                          <div className="w-20 h-20 bg-gradient-to-br from-blue-400 via-green-400 to-orange-400 rounded-full opacity-60 blur-sm" />
-                          <div className="bg-gradient-to-br from-orange-400 via-pink-400 to-white rounded-full opacity-60 blur-sm w-18 h-18" />
-                          <div className="w-16 h-16 bg-gradient-to-br from-blue-600 via-gray-400 to-white rounded-full opacity-60 blur-sm" />
-                      </div>
+              <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(120deg,rgba(84,54,150,0.18)_0%,rgba(0,0,0,0)_34%),linear-gradient(240deg,rgba(28,118,142,0.13)_0%,rgba(0,0,0,0)_31%),#000]" />
+              <div
+                  ref={aboutBlobsRef}
+                  className="absolute inset-0 pointer-events-none"
+                  aria-hidden="true"
+              >
+                  <div className="absolute right-[-3vw] top-[12vh] text-[22vw] font-black leading-none text-white/[0.035]">
+                      AIOS
+                  </div>
+                  <div className="absolute bottom-[10vh] left-[8vw] text-[9vw] font-black leading-none text-white/[0.03]">
+                      GoAgent
+                  </div>
+              </div>
+
+              <div className="container relative z-10 px-6 mx-auto md:px-10">
+                  <div className="max-w-6xl">
+                      <p className="mb-8 text-sm font-semibold uppercase text-cyan-200/75 md:text-base">
+                          JIUGO TURING
+                      </p>
 
                       <h2
                           ref={aboutTitleRef}
-                          className="mb-12 text-6xl font-black tracking-tight text-white md:text-7xl lg:text-8xl"
+                          className="max-w-5xl text-[clamp(4.5rem,13vw,13rem)] font-black leading-[0.86] tracking-normal text-white"
                       >
-                          ABOUT ME
+                          九维图灵
                       </h2>
 
-                      <div ref={aboutDescRef} className="mx-auto mb-12 space-y-4 max-w-2xl text-left">
-                          <p className="text-lg md:text-xl text-white/90">
-                              With over five years of experience in design,
+                      <div ref={aboutDescRef} className="mt-10 max-w-4xl">
+                          <p className="text-2xl font-semibold leading-snug text-white md:text-5xl md:leading-tight">
+                              下一代AIOS缔造者
                           </p>
-                          <p className="text-lg md:text-xl text-white/90">
-                              I specialize in branding, web design, and user experience.
+                          <p className="mt-5 text-base leading-8 text-white/[0.62] md:max-w-2xl md:text-xl">
+                              用GoAgent与GoData，把AI从工具升级为可协作的数字生产力
                           </p>
-                          <p className="text-lg md:text-xl text-white/90">
-                              I love collaborating with businesses that want to stand out
-                          </p>
-                          <p className="text-lg md:text-xl text-white/90">
-                              and showcase their best side.
-                          </p>
-                          <p className="text-lg md:text-xl text-white/90">
-                              Let&apos;s create something amazing together!
-                          </p>
+                          <div className="mt-8 flex flex-wrap gap-x-7 gap-y-3 text-sm font-semibold uppercase text-white/[0.42] md:text-base">
+                              <span>AIOS</span>
+                              <span>GoAgent</span>
+                              <span>GoData</span>
+                              <span>Multi-Agent</span>
+                          </div>
                       </div>
 
-                      <button
-                          ref={aboutButtonRef}
-                          className="px-8 py-4 font-semibold tracking-wider text-white uppercase bg-purple-600 rounded-lg transition-colors hover:bg-purple-700"
-                      >
-                          CONTACT ME
-                      </button>
+                      <div className="mt-10">
+                          <ElectricButton
+                              ref={aboutButtonRef}
+                              activeLabel="进入AIOS"
+                          >
+                              了解AIOS
+                          </ElectricButton>
+                      </div>
                   </div>
               </div>
           </section>
@@ -1834,7 +1880,7 @@ export default function PortfolioShowcase() {
                           ref={customersTitleRef}
                           className="mb-4 text-6xl font-black tracking-tight text-white md:text-7xl lg:text-8xl"
                       >
-                          What Clients<br />Are Saying
+                          典型应用<br />场景案例
                       </h2>
                       <div className="text-6xl">😍</div>
                   </div>
@@ -1953,10 +1999,10 @@ export default function PortfolioShowcase() {
                           ref={userStoriesTitleRef}
                           className="mb-4 text-6xl font-black tracking-tight text-white md:text-7xl lg:text-8xl"
                       >
-                          User Stories
+                          用户故事案例
                       </h2>
                       <p className="mx-auto mt-6 max-w-2xl text-lg text-white/60 md:text-xl">
-                          Hover over the cards to discover real stories from our clients
+                          悬停卡片，查看GoAgent在政企、传媒、教育与本地化部署中的落地变化。
                       </p>
                   </div>
 
@@ -1998,7 +2044,7 @@ export default function PortfolioShowcase() {
                                                   </p>
                                               </div>
                                               <div className="text-center">
-                                                  <span className="text-xs text-neutral-400 italic">Hover to read story →</span>
+                                                      <span className="text-xs text-neutral-400 italic">悬停查看案例 →</span>
                                               </div>
                                           </div>
                                       </div>
@@ -2022,7 +2068,7 @@ export default function PortfolioShowcase() {
                                                   </div>
                                               </div>
                                               <div className="mb-3 text-xs font-semibold uppercase tracking-wider text-pink-600">
-                                                  Their Story
+                                                  案例详情
                                               </div>
                                               <p className="text-sm leading-relaxed text-neutral-700">
                                                   {story.backStory}
@@ -2066,16 +2112,16 @@ export default function PortfolioShowcase() {
                               ref={contactTitleRef}
                               className="mb-6 text-5xl font-black tracking-tight leading-none text-white md:text-6xl lg:text-8xl"
                           >
-                              TOUCH
+                              联系我们
                           </h1>
                           <div ref={contactEmailRef} className="mt-8">
                               <div className="flex gap-4 items-center">
                                   <input
                                       type="email"
-                                      placeholder="Mr.GoGo@3dturner.com"
+                                      placeholder="contact@goagent.ai"
                                       className="flex-1 px-6 py-4 text-white rounded-full border backdrop-blur-sm transition-all bg-white/5 border-white/20 placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-white/50" />
                                   <button className="px-8 py-4 font-semibold text-black uppercase bg-white rounded-full transition-colors hover:bg-white/90">
-                                      SEND
+                                      提交
                                   </button>
                               </div>
                           </div>
@@ -2091,7 +2137,7 @@ export default function PortfolioShowcase() {
                                   WebkitTextStroke: "1px rgba(255, 255, 255, 0.1)",
                               }}
                           >
-                              Mr.GoGo<br />TURNER
+                              GoAgent<br />AIPC
                           </h2>
 
                           {/* 触摸栏图标 - 8个图标精确还原 */}
@@ -2145,25 +2191,25 @@ export default function PortfolioShowcase() {
                           <div ref={contactInfoRef} className="grid grid-cols-2 gap-8">
                               <div>
                                   <h3 className="mb-4 text-xs font-semibold tracking-wider uppercase text-white/60 md:text-sm">
-                                      SOCIAL
+                                      产品线
                                   </h3>
                                   <ul className="space-y-2 text-sm text-white/80 md:text-base">
-                                      <li className="transition-colors cursor-pointer hover:text-white">Instagram</li>
-                                      <li className="transition-colors cursor-pointer hover:text-white">Facebook</li>
-                                      <li className="transition-colors cursor-pointer hover:text-white">Artstation</li>
-                                      <li className="transition-colors cursor-pointer hover:text-white">Deviantart</li>
+                                      <li className="transition-colors cursor-pointer hover:text-white">GoAgent</li>
+                                      <li className="transition-colors cursor-pointer hover:text-white">GoData</li>
+                                      <li className="transition-colors cursor-pointer hover:text-white">AIOS</li>
+                                      <li className="transition-colors cursor-pointer hover:text-white">AIPC</li>
                                   </ul>
                               </div>
                               <div>
                                   <h3 className="mb-4 text-xs font-semibold tracking-wider uppercase text-white/60 md:text-sm">
-                                      CONTACT
+                                      联系方式
                                   </h3>
                                   <ul className="space-y-2 text-sm text-white/80 md:text-base">
-                                      <li className="transition-colors cursor-pointer hover:text-white">Mr.GoGo@3dturner.com</li>
-                                      <li className="transition-colors cursor-pointer hover:text-white">+1 (985) 123-4567</li>
-                                      <li className="transition-colors cursor-pointer hover:text-white">123 Creative Lane,</li>
-                                      <li className="transition-colors cursor-pointer hover:text-white">Suite 45</li>
-                                      <li className="transition-colors cursor-pointer hover:text-white">Design City, CA 90210</li>
+                                      <li className="transition-colors cursor-pointer hover:text-white">九维图灵（上海）科技有限公司</li>
+                                      <li className="transition-colors cursor-pointer hover:text-white">GoAgent AIPC产品咨询</li>
+                                      <li className="transition-colors cursor-pointer hover:text-white">企业私有化方案</li>
+                                      <li className="transition-colors cursor-pointer hover:text-white">AI数字员工定制开发</li>
+                                      <li className="transition-colors cursor-pointer hover:text-white">企业级知识库定制服务</li>
                                   </ul>
                               </div>
                           </div>
