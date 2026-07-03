@@ -3,7 +3,7 @@ import { codeInspectorPlugin } from "code-inspector-plugin";
 
 const nextConfig: NextConfig = {
   webpack: (config, { dev, isServer }) => {
-    if (dev && !isServer) {
+    if (dev && !isServer && process.env.CODE_INSPECTOR === "true") {
       config.plugins?.push(
         codeInspectorPlugin({
           bundler: "webpack",

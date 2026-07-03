@@ -19,9 +19,9 @@ const nunito = Nunito({
 });
 
 export const metadata: Metadata = {
-  title: "GoAgent - 打造生产级 Agentic 工作流",
+  title: "GoAgent AIPC - 九维图灵下一代 AI 操作系统",
   description:
-    "从今天起，轻松构建并部署生产级 Agentic AI 解决方案。GoAgent 提供 Agentic 工作流、RAG Pipeline、丰富的集成及可观测性等一站式能力，让 AI 触手可及。",
+    "GoAgent AIPC 内置五大专家级数字员工，支持本地化部署、企业知识库、推理加速与多智能体协同，助力企业安全落地 AI 生产力。",
 };
 
 export default function RootLayout({

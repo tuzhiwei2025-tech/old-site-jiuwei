@@ -17,6 +17,8 @@ import { FlippingCard } from "@/components/ui/flipping-card";
 import { InfiniteSlider } from "@/components/ui/infinite-slider";
 import AiInputCard from "@/components/AiInputCard";
 import { ElectricButton } from "@/components/ui/electric-button";
+import { SiteHeader } from "@/components/SiteHeader";
+import { KineticText } from "@/components/ui/kinetic-text";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -29,16 +31,16 @@ const partners = [
     alt: "Nvidia Logo",
   },
   {
-    src: "https://svgl.app/library/supabase_wordmark_light.svg",
-    alt: "Supabase Logo",
+    src: "https://svgl.app/library/typescript.svg",
+    alt: "TypeScript Logo",
   },
   {
     src: "https://svgl.app/library/openai_wordmark_light.svg",
     alt: "OpenAI Logo",
   },
   {
-    src: "https://svgl.app/library/turso-wordmark-light.svg",
-    alt: "Turso Logo",
+    src: "https://svgl.app/library/react_light.svg",
+    alt: "React Logo",
   },
   {
     src: "https://svgl.app/library/vercel_wordmark.svg",
@@ -53,8 +55,8 @@ const partners = [
     alt: "Claude AI Logo",
   },
   {
-    src: "https://svgl.app/library/clerk-wordmark-light.svg",
-    alt: "Clerk Logo",
+    src: "https://svgl.app/library/python.svg",
+    alt: "Python Logo",
   },
 ];
 
@@ -64,6 +66,10 @@ export default function PortfolioShowcase() {
   // 平滑滚动到指定区域
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
     e.preventDefault();
+    if (targetId.startsWith("/")) {
+      window.location.href = targetId;
+      return;
+    }
     const targetElement = document.querySelector(targetId);
     if (targetElement) {
       const navHeight = navRef.current?.offsetHeight || 0;
@@ -84,7 +90,7 @@ export default function PortfolioShowcase() {
   // Hero Section
   const heroRef = useRef<HTMLDivElement>(null);
   const heroOverlayRef = useRef<HTMLDivElement>(null);
-  const heroTitleRef = useRef<HTMLHeadingElement>(null);
+  const heroTitleRef = useRef<HTMLDivElement>(null);
   const heroSubtitleRef = useRef<HTMLParagraphElement>(null);
   const heroButtonRef = useRef<HTMLButtonElement>(null);
   const heroImageRef = useRef<HTMLDivElement>(null);
@@ -160,50 +166,7 @@ export default function PortfolioShowcase() {
           );
         });
 
-        // 导航栏滚动时的背景变化
-        ScrollTrigger.create({
-          trigger: "body",
-          start: "top -100",
-          end: "bottom bottom",
-          onEnter: () => {
-            gsap.to(navRef.current, {
-              background: "linear-gradient(135deg, rgba(0, 0, 0, 0.98) 0%, rgba(15, 15, 25, 0.98) 25%, rgba(20, 10, 30, 0.98) 50%, rgba(15, 15, 25, 0.98) 75%, rgba(0, 0, 0, 0.98) 100%)",
-              backdropFilter: "blur(12px)",
-              duration: 0.3,
-            });
-          },
-          onLeaveBack: () => {
-            gsap.to(navRef.current, {
-              background: "linear-gradient(135deg, rgba(0, 0, 0, 0.95) 0%, rgba(15, 15, 25, 0.95) 25%, rgba(20, 10, 30, 0.95) 50%, rgba(15, 15, 25, 0.95) 75%, rgba(0, 0, 0, 0.95) 100%)",
-              backdropFilter: "blur(8px)",
-              duration: 0.3,
-            });
-          },
-        });
-
-        // 导航链接悬停动画
-        Array.from(navItems).forEach((item) => {
-          const handleMouseEnter = () => {
-            gsap.to(item, {
-              y: -2,
-              scale: 1.05,
-              duration: 0.2,
-              ease: "power2.out",
-            });
-          };
-
-          const handleMouseLeave = () => {
-            gsap.to(item, {
-              y: 0,
-              scale: 1,
-              duration: 0.2,
-              ease: "power2.out",
-            });
-          };
-
-          addManagedListener(item, "mouseenter", handleMouseEnter);
-          addManagedListener(item, "mouseleave", handleMouseLeave);
-        });
+        // Header 自身的 hover 交互由组件负责，避免整条导航被 transform 后产生裁切。
       }
 
       // ========== HERO SECTION ==========
@@ -219,32 +182,17 @@ export default function PortfolioShowcase() {
           },
         });
 
-        // 标题文字拆分动画
         if (heroTitleRef.current) {
-          const titleText = heroTitleRef.current.textContent || "";
-          heroTitleRef.current.innerHTML = "";
-          const chars = titleText.split("").map((char, index) => {
-            const span = document.createElement("span");
-            span.textContent = char === " " ? "\u00A0" : char;
-            span.style.display = "inline-block";
-            heroTitleRef.current?.appendChild(span);
-            return span;
-          });
-
-          chars.forEach((char, index) => {
-            gsap.fromTo(
-              char,
-              { opacity: 0, rotationX: -90, y: 50 },
-              {
-                opacity: 1,
-                rotationX: 0,
-                y: 0,
-                duration: 0.8,
-                delay: index * 0.03,
-                ease: "back.out(1.7)",
-              }
-            );
-          });
+          gsap.fromTo(
+            heroTitleRef.current,
+            { opacity: 0, y: 34 },
+            {
+              opacity: 1,
+              y: 0,
+              duration: 0.9,
+              ease: "power3.out",
+            }
+          );
         }
 
         // 副标题 clipPath 动画
@@ -1417,60 +1365,17 @@ export default function PortfolioShowcase() {
           {/* ========== NAVIGATION ========== */}
           <nav
               ref={navRef}
-              className="fixed top-0 right-0 left-0 z-50 border-b backdrop-blur-md border-white/10"
-              style={{
-                  background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.95) 0%, rgba(15, 15, 25, 0.95) 25%, rgba(20, 10, 30, 0.95) 50%, rgba(15, 15, 25, 0.95) 75%, rgba(0, 0, 0, 0.95) 100%)',
-                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
-              }}
+              className="fixed top-0 right-0 left-0 z-50"
           >
-              <div className="w-full py-3  md:py-4">
-                  <div ref={navItemsRef} className="flex justify-between items-center w-full px-10 ">
-                      {/* 左侧 Logo */}
-                      <div className="shrink-0">
-                          <a 
-                              href="#" 
-                              onClick={(e) => {
-                                  e.preventDefault();
-                                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                              }}
-                              className="text-xl font-bold tracking-tight text-white transition-opacity hover:opacity-80"
-                          >
-                              GoAgent
-                          </a>
-                      </div>
-                      
-                      {/* 右侧导航链接 */}
-                      <nav className="flex gap-4 items-center sm:gap-6 md:gap-8">
-                          <a 
-                              href="#about" 
-                              onClick={(e) => handleNavClick(e, '#about')}
-                              className="text-sm font-medium tracking-wider uppercase text-white/70 transition-all hover:text-white hover:scale-105 active:scale-95"
-                          >
-                              AIOS
-                          </a>
-                          <a 
-                              href="#customers" 
-                              onClick={(e) => handleNavClick(e, '#customers')}
-                              className="text-sm font-medium tracking-wider uppercase text-white/70 transition-all hover:text-white hover:scale-105 active:scale-95"
-                          >
-                              案例
-                          </a>
-                          <a 
-                              href="#projects" 
-                              onClick={(e) => handleNavClick(e, '#projects')}
-                              className="text-sm font-medium tracking-wider uppercase text-white/70 transition-all hover:text-white hover:scale-105 active:scale-95"
-                          >
-                              产品
-                          </a>
-                          <a 
-                              href="#contact" 
-                              onClick={(e) => handleNavClick(e, '#contact')}
-                              className="text-sm font-medium tracking-wider uppercase text-white/70 transition-all hover:text-white hover:scale-105 active:scale-95"
-                          >
-                              联系
-                          </a>
-                      </nav>
-                  </div>
+              <div ref={navItemsRef}>
+                  <SiteHeader
+                      mode="home"
+                      onNavigate={handleNavClick}
+                      onLogoClick={(e) => {
+                          e.preventDefault();
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }}
+                  />
               </div>
           </nav>
 
@@ -1495,27 +1400,43 @@ export default function PortfolioShowcase() {
                   </FloatingElement>
 
                   {/* 主要内容区域 */}
-                  <div className="grid relative z-10 grid-cols-1 gap-8 items-center content-center px-8 pt-14 mx-auto w-full max-w-7xl min-h-screen text-center lg:grid-cols-[560px_minmax(0,1fr)] lg:gap-14 lg:px-12">
-                      <div className="hidden justify-center items-center lg:flex lg:-translate-x-24">
-                          <AiInputCard scale={1.74} />
+                  <div className="grid relative z-10 grid-cols-1 gap-8 items-center content-center px-6 pt-16 mx-auto w-full max-w-7xl min-h-screen text-left lg:grid-cols-[500px_minmax(0,1fr)] lg:gap-12 lg:px-12">
+                      <div className="hidden justify-center items-center lg:flex lg:-translate-x-16">
+                          <AiInputCard scale={1.55} />
                       </div>
 
-                      <div className="relative z-10 flex flex-col items-center">
-                          <h1 className="mb-8 text-center text-[clamp(2.7rem,5.05vw,5.85rem)] font-black tracking-tight leading-[1.03] text-white">
-                              <span className="block whitespace-nowrap">GoAgent，助力企业真正</span>
-                              <span className="block whitespace-nowrap text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-orange-400">
-                                  迈入AIPC时代
-                              </span>
-                          </h1>
+                      <div className="relative z-10 flex min-w-0 flex-col items-start">
+                          <div ref={heroTitleRef} className="mb-8 max-w-4xl">
+                              <KineticText
+                                  as="h1"
+                                  text="GoAgent AIPC"
+                                  className="text-left text-[clamp(2.35rem,4vw,4.6rem)] font-black leading-[1.08] tracking-normal text-white"
+                              />
+                              <KineticText
+                                  as="h2"
+                                  text="一支数字员工团队"
+                                  className="mt-2 text-left text-[clamp(2.35rem,4vw,4.6rem)] font-black leading-[1.08] tracking-normal text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-orange-400"
+                              />
+                          </div>
 
-                          <p className="mb-10 whitespace-nowrap text-center text-[clamp(1.15rem,1.75vw,2rem)] font-light leading-none text-white/75">
-                              本地化智能办公神器，让AI从工具进化为可协同落地的数字员工
+                          <p
+                              ref={heroSubtitleRef}
+                              className="mb-10 max-w-2xl text-left text-[clamp(1rem,1.2vw,1.22rem)] font-light leading-8 text-white/72"
+                          >
+                              一台终端，一套系统，五位专家级数字员工。面向文档、报表、演示、数据分析与应用开发，支持本地化部署和企业知识库。
                           </p>
 
-                          <div className="flex justify-center">
+                          <div className="flex flex-col items-start justify-center gap-4 sm:flex-row">
                               <ElectricButton activeLabel="开始探索">
-                                  了解 GoAgent
+                                  预约产品演示
                               </ElectricButton>
+                              <a
+                                  href="/product"
+                                  onClick={(e) => handleNavClick(e, '/product')}
+                                  className="rounded-full border border-white/18 px-6 py-3 text-sm font-semibold text-white/78 transition-all hover:border-white/40 hover:bg-white/10 hover:text-white"
+                              >
+                                  查看产品矩阵
+                              </a>
                           </div>
                       </div>
                   </div>
@@ -1549,9 +1470,9 @@ export default function PortfolioShowcase() {
                               <div className="w-1.5 h-1.5 rounded-full bg-white/60 animate-bounce" />
                           </div>
                       </div>
-                  </div>
-              </Floating>
-          </section>
+	                  </div>
+	              </Floating>
+	          </section>
 
           {/* ========== SERVICES SECTION ========== */}
           {/* <section
@@ -1596,19 +1517,19 @@ export default function PortfolioShowcase() {
 
 
 
-          {/* ========== ANIMATED SCROLL MODULE ========== */}
-          <section className="relative w-full">
-              <ScrollAdventure />
-          </section>
+	          {/* ========== ANIMATED SCROLL MODULE ========== */}
+	          <section className="relative w-full">
+	              <ScrollAdventure />
+	          </section>
 
           {/* ========== INTERACTIVE SCROLLING STORY MODULE ========== */}
           {/* <section className="relative w-full">
       <ScrollingFeatureShowcase />
     </section> */}
 
-      </div>
-      {/* ========== STACKING CARD MODULE ========== */}
-      <section className="relative w-full">
+	      </div>
+	      {/* ========== STACKING CARD MODULE ========== */}
+	      <section className="relative w-full">
         <StackingCard
        projects={[
         {
@@ -1723,11 +1644,11 @@ export default function PortfolioShowcase() {
           videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
           videoThumbnail: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=450&fit=crop",
         },
-    
+
       ]}
         />
-      </section>
-      <div className="overflow-x-hidden text-white bg-black">
+	      </section>
+	      <div className="overflow-x-hidden text-white bg-black">
           {/* ========== PROJECTS SECTION ========== */}
           <section
               ref={projectsRef}
@@ -1747,18 +1668,18 @@ export default function PortfolioShowcase() {
               <div className="relative z-10 w-full">
                   <h2
                       ref={projectsTitleRef}
-                      className="mb-16 text-7xl font-black tracking-tight text-center text-white md:text-8xl lg:text-9xl"
-                  >
-                      产品体系
-                  </h2>
+	                      className="mb-16 text-7xl font-black tracking-tight text-center text-white md:text-8xl lg:text-9xl"
+	                  >
+	                      数字员工与产品生态
+	                  </h2>
 
                   {/* 项目滚动速度展示 */}
-                  <div 
-                      ref={projectsListRef} 
+                  <div
+                      ref={projectsListRef}
                       className="overflow-hidden mb-16 w-full"
                       style={{ transform: 'skew(3deg, -2deg)' }}
                   >
-                      <ScrollVelocity 
+                      <ScrollVelocity
                           velocity={5}
                           className="w-full text-white"
                       >
@@ -1771,12 +1692,12 @@ export default function PortfolioShowcase() {
                   </div>
 
                   {/* 项目网格缩略图 */}
-                  <div 
-                      ref={projectsGridRef} 
+                  <div
+                      ref={projectsGridRef}
                       className="overflow-hidden w-full"
                       style={{ transform: 'skew(3deg, -2deg)' }}
                   >
-                      <GridScrollVelocity 
+                      <GridScrollVelocity
                           velocity={10}
                           rows={2}
                           cols={4}
@@ -1789,8 +1710,8 @@ export default function PortfolioShowcase() {
                                   className="overflow-hidden relative bg-gradient-to-br rounded-lg cursor-pointer project-thumbnail from-purple-500/20 via-pink-500/20 to-orange-500/20"
                                   style={{ width: '500px', height: `${500 * 0.618}px` }}
                               >
-                                  <img 
-                                      src={project.image} 
+                                  <img
+                                      src={project.image}
                                       alt={project.title}
                                       className="object-cover w-full h-full"
                                   />
@@ -1806,10 +1727,10 @@ export default function PortfolioShowcase() {
                       </GridScrollVelocity>
                   </div>
               </div>
-          </section>
+	          </section>
           {/* ========== INTERACTIVE SCROLLING STORY MODULE ========== */}
           {/* ========== ABOUT ME SECTION ========== */}
-          <section
+	          <section
               ref={aboutRef}
               id="about"
               className="flex overflow-hidden relative justify-center items-center py-20 min-h-screen bg-black scroll-mt-24"
@@ -1866,9 +1787,9 @@ export default function PortfolioShowcase() {
                       </div>
                   </div>
               </div>
-          </section>
+	          </section>
 
-          {/* ========== CUSTOMERS SECTION ========== */}
+	          {/* ========== CUSTOMERS SECTION ========== */}
           <section
               ref={customersRef}
               id="customers"
@@ -1920,7 +1841,7 @@ export default function PortfolioShowcase() {
                                   </div>
                               ))}
                           </InfiniteSlider>
-                          
+
                           {/* 第二行 - 从右到左 */}
                           <InfiniteSlider
                               gap={24}
@@ -1951,7 +1872,7 @@ export default function PortfolioShowcase() {
                                   </div>
                               ))}
                           </InfiniteSlider>
-                          
+
                           {/* 第三行 - 从左到右 */}
                           <InfiniteSlider
                               gap={24}
@@ -2095,7 +2016,7 @@ export default function PortfolioShowcase() {
           <section
               ref={contactRef}
               id="contact"
-              className="flex overflow-hidden relative justify-center items-center py-20 min-h-screen bg-black scroll-mt-24"
+              className="flex overflow-hidden relative min-h-screen bg-black scroll-mt-24"
           >
               {/* 背景渐变blob */}
               <div className="absolute inset-0">
@@ -2104,116 +2025,105 @@ export default function PortfolioShowcase() {
                       className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-purple-500/30 via-pink-500/30 to-purple-600/30 rounded-full blur-3xl" />
               </div>
 
-              <div className="container relative z-10 px-8 mx-auto">
-                  <div className="grid grid-cols-1 gap-16 items-center lg:grid-cols-2">
-                      {/* 左侧：标题和邮箱输入 */}
-                      <div className="relative">
+              <div className="container relative z-10 mx-auto flex min-h-screen flex-col justify-between px-8 py-20">
+                  <div className="grid flex-1 grid-cols-1 gap-12 items-center lg:grid-cols-[0.92fr_1.08fr]">
+                      <div className="relative max-w-3xl">
+                          <p className="mb-5 text-sm font-semibold uppercase tracking-[0.24em] text-white/42">
+                              CONTACT
+                          </p>
                           <h1
                               ref={contactTitleRef}
-                              className="mb-6 text-5xl font-black tracking-tight leading-none text-white md:text-6xl lg:text-8xl"
+                              className="mb-7 text-5xl font-black tracking-tight leading-none text-white md:text-6xl lg:text-8xl"
                           >
                               联系我们
                           </h1>
+                          <p className="max-w-2xl text-base leading-8 text-white/62 md:text-lg">
+                              需要了解 GoAgent AIPC、企业私有化部署、数字员工定制或企业知识库方案，可以留下联系方式，我们会尽快与您沟通。
+                          </p>
                           <div ref={contactEmailRef} className="mt-8">
-                              <div className="flex gap-4 items-center">
+                              <div className="flex max-w-2xl flex-col gap-4 sm:flex-row">
                                   <input
                                       type="email"
                                       placeholder="contact@goagent.ai"
-                                      className="flex-1 px-6 py-4 text-white rounded-full border backdrop-blur-sm transition-all bg-white/5 border-white/20 placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-white/50" />
-                                  <button className="px-8 py-4 font-semibold text-black uppercase bg-white rounded-full transition-colors hover:bg-white/90">
-                                      提交
+                                      className="min-w-0 flex-1 rounded-2xl border border-white/16 bg-white/[0.055] px-5 py-4 text-white backdrop-blur-sm transition-all placeholder-white/42 focus:border-white/38 focus:outline-none focus:ring-2 focus:ring-white/20" />
+                                  <button className="rounded-2xl bg-white px-8 py-4 font-semibold text-black transition-colors hover:bg-white/90">
+                                      预约演示
                                   </button>
                               </div>
                           </div>
-                      </div>
-
-                      {/* 右侧：名称、触摸栏和联系信息 */}
-                      <div className="space-y-12">
-                          <h2
-                              ref={contactNameRef}
-                              className="text-5xl font-bold tracking-tight text-white md:text-6xl lg:text-7xl"
-                              style={{
-                                  textShadow: "0 0 20px rgba(255, 255, 255, 0.3)",
-                                  WebkitTextStroke: "1px rgba(255, 255, 255, 0.1)",
-                              }}
-                          >
-                              GoAgent<br />AIPC
-                          </h2>
-
-                          {/* 触摸栏图标 - 8个图标精确还原 */}
-                          <div ref={touchBarRef} className="flex flex-wrap gap-4">
-                              {/* 紫色X形状 */}
-                              <div className="flex justify-center items-center w-16 h-16 bg-purple-500 rounded-lg shadow-lg cursor-pointer">
-                                  <div className="relative w-10 h-10">
-                                      <div className="absolute top-0 left-1/2 w-1 h-full bg-white rounded-full -translate-x-1/2" />
-                                      <div className="absolute left-0 top-1/2 w-full h-1 bg-white rounded-full -translate-y-1/2" />
-                                  </div>
+                          <div className="mt-8 grid max-w-2xl grid-cols-1 gap-3 text-sm text-white/58 sm:grid-cols-3">
+                              <div className="rounded-2xl border border-white/10 bg-white/[0.035] px-4 py-3">
+                                  产品咨询
                               </div>
-
-                              {/* 绿色网格 */}
-                              <div className="flex justify-center items-center w-16 h-16 bg-green-500 rounded-lg shadow-lg cursor-pointer">
-                                  <div className="grid grid-cols-2 gap-1 w-8 h-8">
-                                      <div className="bg-white rounded-sm" />
-                                      <div className="bg-white rounded-sm" />
-                                      <div className="bg-white rounded-sm" />
-                                      <div className="bg-white rounded-sm" />
-                                  </div>
+                              <div className="rounded-2xl border border-white/10 bg-white/[0.035] px-4 py-3">
+                                  私有化部署
                               </div>
-
-                              {/* 白色月牙 */}
-                              <div className="flex justify-center items-center w-16 h-16 rounded-full border shadow-lg cursor-pointer bg-white/10 border-white/20">
-                                  <div className="w-12 h-12 rounded-full border-4 border-white border-t-transparent" />
-                              </div>
-
-                              {/* 紫色圆圈 */}
-                              <div className="w-16 h-16 bg-purple-500 rounded-full shadow-lg cursor-pointer" />
-
-                              {/* 白色箭头 */}
-                              <div className="flex justify-center items-center w-16 h-16 rounded-lg border shadow-lg cursor-pointer bg-white/10 border-white/20">
-                                  <div className="w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-b-[12px] border-b-white" />
-                              </div>
-
-                              {/* 橙色半圆 */}
-                              <div className="flex justify-center items-center w-16 h-16 bg-orange-500 rounded-lg shadow-lg cursor-pointer">
-                                  <div className="w-12 h-12 rounded-full border-4 border-white border-r-transparent border-b-transparent border-l-transparent" />
-                              </div>
-
-                              {/* 白色箭头2 */}
-                              <div className="flex justify-center items-center w-16 h-16 rounded-lg border shadow-lg cursor-pointer bg-white/10 border-white/20">
-                                  <div className="w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-b-[12px] border-b-white" />
-                              </div>
-
-                              {/* 粉色圆圈 */}
-                              <div className="w-16 h-16 bg-pink-500 rounded-full shadow-lg cursor-pointer" />
-                          </div>
-
-                          {/* 联系信息 */}
-                          <div ref={contactInfoRef} className="grid grid-cols-2 gap-8">
-                              <div>
-                                  <h3 className="mb-4 text-xs font-semibold tracking-wider uppercase text-white/60 md:text-sm">
-                                      产品线
-                                  </h3>
-                                  <ul className="space-y-2 text-sm text-white/80 md:text-base">
-                                      <li className="transition-colors cursor-pointer hover:text-white">GoAgent</li>
-                                      <li className="transition-colors cursor-pointer hover:text-white">GoData</li>
-                                      <li className="transition-colors cursor-pointer hover:text-white">AIOS</li>
-                                      <li className="transition-colors cursor-pointer hover:text-white">AIPC</li>
-                                  </ul>
-                              </div>
-                              <div>
-                                  <h3 className="mb-4 text-xs font-semibold tracking-wider uppercase text-white/60 md:text-sm">
-                                      联系方式
-                                  </h3>
-                                  <ul className="space-y-2 text-sm text-white/80 md:text-base">
-                                      <li className="transition-colors cursor-pointer hover:text-white">九维图灵（上海）科技有限公司</li>
-                                      <li className="transition-colors cursor-pointer hover:text-white">GoAgent AIPC产品咨询</li>
-                                      <li className="transition-colors cursor-pointer hover:text-white">企业私有化方案</li>
-                                      <li className="transition-colors cursor-pointer hover:text-white">AI数字员工定制开发</li>
-                                      <li className="transition-colors cursor-pointer hover:text-white">企业级知识库定制服务</li>
-                                  </ul>
+                              <div className="rounded-2xl border border-white/10 bg-white/[0.035] px-4 py-3">
+                                  行业方案合作
                               </div>
                           </div>
                       </div>
+
+                      <div ref={contactInfoRef} className="grid gap-5">
+                          <div className="rounded-3xl border border-white/10 bg-white/[0.045] p-6 backdrop-blur-sm">
+                              <div className="grid gap-7 md:grid-cols-2">
+                                  <div>
+                                      <h3 className="mb-4 text-xs font-semibold tracking-wider uppercase text-white/50 md:text-sm">
+                                          公司
+                                      </h3>
+                                      <ul className="space-y-3 text-sm leading-7 text-white/78 md:text-base">
+                                          <li>九维图灵（上海）科技有限公司</li>
+                                          <li>GoAgent AIPC 产品咨询</li>
+                                          <li>企业私有化方案</li>
+                                          <li>AI 数字员工定制开发</li>
+                                      </ul>
+                                  </div>
+                                  <div>
+                                      <h3 className="mb-4 text-xs font-semibold tracking-wider uppercase text-white/50 md:text-sm">
+                                          产品线
+                                      </h3>
+                                      <ul className="grid grid-cols-2 gap-2 text-sm text-white/72 md:text-base">
+                                          <li className="rounded-xl bg-white/[0.05] px-3 py-2">GoAgent AIPC</li>
+                                          <li className="rounded-xl bg-white/[0.05] px-3 py-2">GoData</li>
+                                          <li className="rounded-xl bg-white/[0.05] px-3 py-2">GoModel</li>
+                                          <li className="rounded-xl bg-white/[0.05] px-3 py-2">SmartStorage</li>
+                                      </ul>
+                                  </div>
+                              </div>
+                          </div>
+
+                          <div className="grid gap-5 rounded-3xl border border-white/10 bg-white/[0.045] p-5 backdrop-blur-sm md:grid-cols-[160px_minmax(0,1fr)] md:items-center">
+                              <div className="shrink-0 rounded-2xl bg-white p-3 shadow-2xl shadow-black/20">
+                                  <img
+                                      src="/wechat-official-account.jpg"
+                                      alt="九维图灵微信公众号二维码"
+                                      className="h-[136px] w-[136px] rounded-xl object-cover"
+                                  />
+                              </div>
+                              <div>
+                                  <h3 className="text-xl font-semibold text-white">
+                                      关注九维图灵公众号
+                                  </h3>
+                                  <p className="mt-3 max-w-xl text-sm leading-7 text-white/62 md:text-base">
+                                      获取 GoAgent AIPC 产品动态、企业 AIOS 落地方案和数字员工应用案例。
+                                  </p>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+
+                  <div className="mt-10 border-t border-white/10 pt-6 text-center text-[13px] leading-7 text-white/42">
+                      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-8 gap-y-2">
+                          <a href="/legal" className="transition-colors hover:text-white">法律声明</a>
+                          <a href="/terms" className="transition-colors hover:text-white">服务条款</a>
+                          <a href="/privacy" className="transition-colors hover:text-white">隐私政策</a>
+                          <a href="/sitemap" className="transition-colors hover:text-white">网站地图</a>
+                          <span>沪ICP备2026000000号-1</span>
+                          <span>沪公网安备 31010902000000号</span>
+                      </div>
+                      <p className="mt-3">
+                          Copyright © 2024 - 2026 九维图灵（上海）科技有限公司. All Rights Reserved.
+                      </p>
                   </div>
               </div>
           </section>
