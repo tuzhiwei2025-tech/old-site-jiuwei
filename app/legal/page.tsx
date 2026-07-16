@@ -9,7 +9,7 @@ export default function LegalStatementPage() {
       sections={[
         {
           title: "网站内容",
-          body: "官网展示的 GoAgent AIPC、AIOS、GoData、GoModel、SmartStorage 等产品信息来自公司公开材料，具体功能、交付范围和服务边界以双方正式合同或订单为准。",
+          body: "官网展示的 GoAgent AIPC、AIOS、GoData、模型路由、SmartStorage 等产品信息来自公司公开材料，具体功能、交付范围和服务边界以双方正式合同或订单为准。",
         },
         {
           title: "知识产权",

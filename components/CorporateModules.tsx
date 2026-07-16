@@ -31,34 +31,22 @@ const audienceSegments = [
 
 const productMatrix = [
   {
-    name: "Cloud 云轻盒",
-    tag: "纯云端",
-    users: "个人办公",
-    points: ["开箱即用", "依托云端算力", "无硬件门槛"],
+    name: "AI机顶盒",
+    tag: "Cloud / Mix",
+    users: "个人到 1-2 人",
+    points: ["Cloud 云轻盒", "Mix 轻终端", "轻量进入 AIOS"],
   },
   {
-    name: "Mix 轻终端",
-    tag: "云地协同",
-    users: "1-2 人",
-    points: ["本地知识库", "云端模型", "离线可用"],
+    name: "AIPC 消费级产品",
+    tag: "Spark Solo / Cluster",
+    users: "个人到中小团队",
+    points: ["Spark Solo 工作站", "Spark Cluster 集群", "本地私有算力"],
   },
   {
-    name: "Spark Solo 工作站",
-    tag: "单机私有化",
-    users: "1-2 人并发",
-    points: ["本地 30B 模型", "128GB 内存", "数据留存本机"],
-  },
-  {
-    name: "Spark Cluster 集群",
-    tag: "四节点架构",
-    users: "多用户并发",
-    points: ["本地 300B 模型", "512GB 显存", "企业级扩展"],
-  },
-  {
-    name: "企业私有化方案",
-    tag: "定制部署",
-    users: "大型企业",
-    points: ["高并发弹性扩展", "安全管控", "系统 API 对接"],
+    name: "AIPC 企业级产品",
+    tag: "8卡及以上服务器",
+    users: "大型集团与政企",
+    points: ["定制化硬件集群", "本地化部署", "安全管控与集成"],
   },
 ];
 
@@ -94,7 +82,7 @@ const techLayers = [
   ["L4", "GoData 向量知识库", "三种检索模式并行，知识更新分钟级响应，形成企业专属专业大脑。"],
   ["L3", "Memory OS", "四层记忆架构与三维热度权重算法，让长任务执行始终保持方向感。"],
   ["L2", "上下文管理系统", "Context Engineering 与无限上下文动态压缩，解决复杂任务上下文丢失。"],
-  ["L1", "基模接入 & GoModel 路由", "基于复杂度、成本、上下文、工具、可用性做模型动态路由。"],
+  ["L1", "基模接入与模型路由", "基于复杂度、成本、上下文、工具、可用性做模型动态路由。"],
 ];
 
 const securityItems = [
@@ -195,7 +183,7 @@ export function ProductMatrixSection() {
           </p>
         </div>
 
-        <div className="grid gap-5 lg:grid-cols-5">
+        <div className="grid gap-5 lg:grid-cols-3">
           {productMatrix.map((product, index) => (
             <article
               key={product.name}
@@ -334,7 +322,7 @@ export function CompanyTimelineSection() {
           <p className="text-sm font-semibold uppercase tracking-[0.35em] text-pink-200/70">ABOUT JIUGO TURING</p>
           <h2 className="mt-4 text-5xl font-black leading-none md:text-8xl">下一代人工智能操作系统的缔造者</h2>
           <p className="mt-6 max-w-4xl text-lg leading-8 text-white/58">
-            九维图灵成立于 2024 年，总部位于上海虹口区，专注 AIOS、GoAgent 数字员工平台、GoData 向量知识库与 GoModel 算力模型服务管理平台。
+            九维图灵成立于 2024 年，总部位于上海虹口区，专注 AIOS、GoAgent 数字员工平台、GoData 向量知识库与模型服务管理平台。
           </p>
         </div>
 

@@ -15,7 +15,7 @@ import ComparisonTable from "@/components/ComparisonTable";
 import About from "@/components/About";
 import UserStories from "@/components/UserStories";
 import Partners from "@/components/Partners";
-import Footer from "@/components/Footer";
+import { SiteFooter } from "@/components/SiteFooter";
 import { LoginDialog } from "@/components/LoginDialog";
 
 export default function PortfolioDemoPage() {
@@ -69,12 +69,10 @@ export default function PortfolioDemoPage() {
       {/* Partners - 合作伙伴 */}
       <Partners />
 
-      {/* Footer - 页脚 */}
-      <Footer />
+      <SiteFooter />
 
       {/* Login Dialog */}
       <LoginDialog open={loginOpen} onOpenChange={setLoginOpen} />
     </main>
   );
 }
-

@@ -2,6 +2,7 @@
 
 import type * as React from "react";
 import { SiteHeader } from "@/components/SiteHeader";
+import { SiteFooter } from "@/components/SiteFooter";
 
 type LegalPageProps = {
   eyebrow: string;
@@ -33,9 +34,11 @@ export function LegalPage({ eyebrow, title, intro, sections }: LegalPageProps) {
 
       <section className="px-6 pb-24 pt-40 md:px-10">
         <div className="mx-auto max-w-4xl">
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-neutral-400">{eyebrow}</p>
-          <h1 className="mt-5 text-left text-4xl font-black leading-tight text-neutral-950 md:text-6xl">{title}</h1>
-          <p className="mt-7 max-w-3xl text-left text-base leading-8 text-neutral-600 md:text-lg">{intro}</p>
+          <header className="flex flex-col items-center text-center">
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-neutral-400">{eyebrow}</p>
+            <h1 className="mt-5 text-4xl font-black leading-tight text-neutral-950 md:text-6xl">{title}</h1>
+            <p className="mt-7 max-w-3xl text-base leading-8 text-neutral-600 md:text-lg">{intro}</p>
+          </header>
 
           <div className="mt-12 space-y-4">
             {sections.map((section) => (
@@ -50,6 +53,8 @@ export function LegalPage({ eyebrow, title, intro, sections }: LegalPageProps) {
           </div>
         </div>
       </section>
+
+      <SiteFooter />
     </main>
   );
 }

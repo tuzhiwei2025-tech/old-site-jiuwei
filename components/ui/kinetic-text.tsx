@@ -7,12 +7,14 @@ type As = "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "p" | "span"
 type KineticTextProps = React.HTMLAttributes<HTMLElement> & {
   text: string
   as?: As
+  noWrap?: boolean
 }
 
 export function KineticText({
   text,
   as: Tag = "h1",
   className = "",
+  noWrap = false,
   style,
   ...rest
 }: KineticTextProps) {
@@ -25,7 +27,7 @@ export function KineticText({
   return (
     <Tag
       {...rest}
-      className={cn("flex flex-wrap font-[300]", className)}
+      className={cn("flex font-[300]", noWrap ? "flex-nowrap whitespace-nowrap" : "flex-wrap", className)}
       style={mergedStyle}
     >
       {text.split("").map((letter, i) => (

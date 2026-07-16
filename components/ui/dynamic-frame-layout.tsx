@@ -5,7 +5,9 @@ import { motion } from "framer-motion"
 
 interface Frame {
   id: number
-  video: string
+  video?: string
+  image?: string
+  imagePosition?: string
   defaultPos: { x: number; y: number; w: number; h: number }
   corner: string
   edgeHorizontal: string
@@ -19,7 +21,9 @@ interface Frame {
 }
 
 interface FrameComponentProps {
-  video: string
+  video?: string
+  image?: string
+  imagePosition?: string
   width: number | string
   height: number | string
   className?: string
@@ -37,6 +41,8 @@ interface FrameComponentProps {
 
 function FrameComponent({
   video,
+  image,
+  imagePosition = "center",
   width,
   height,
   className = "",
@@ -54,12 +60,14 @@ function FrameComponent({
   const videoRef = useRef<HTMLVideoElement>(null)
 
   useEffect(() => {
+    if (image) return
+
     if (isHovered) {
       videoRef.current?.play()
     } else {
       videoRef.current?.pause()
     }
-  }, [isHovered])
+  }, [image, isHovered])
 
   return (
     <div
@@ -91,14 +99,24 @@ function FrameComponent({
               transition: "transform 0.3s ease-in-out",
             }}
           >
-            <video
-              className="w-full h-full object-cover"
-              src={video}
-              loop
-              muted
-              playsInline
-              ref={videoRef}
-            />
+            {image ? (
+              <img
+                src={image}
+                alt=""
+                className="w-full h-full object-cover"
+                style={{ objectPosition: imagePosition }}
+                loading="lazy"
+              />
+            ) : (
+              <video
+                className="w-full h-full object-cover"
+                src={video}
+                loop
+                muted
+                playsInline
+                ref={videoRef}
+              />
+            )}
           </div>
         </div>
 
@@ -255,6 +273,8 @@ export function DynamicFrameLayout({
           >
             <FrameComponent
               video={frame.video}
+              image={frame.image}
+              imagePosition={frame.imagePosition}
               width="100%"
               height="100%"
               className="absolute inset-0"

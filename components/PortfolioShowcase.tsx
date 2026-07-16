@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Link from "next/link";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import FAQs from "@/components/ui/faqs-component";
@@ -16,6 +17,7 @@ import { LoginDialog } from "@/components/LoginDialog";
 import { FlippingCard } from "@/components/ui/flipping-card";
 import { InfiniteSlider } from "@/components/ui/infinite-slider";
 import AiInputCard from "@/components/AiInputCard";
+import { AiosStackCard } from "@/components/AiosStackCard";
 import { ElectricButton } from "@/components/ui/electric-button";
 import { SiteHeader } from "@/components/SiteHeader";
 import { KineticText } from "@/components/ui/kinetic-text";
@@ -109,7 +111,6 @@ export default function PortfolioShowcase() {
 
   // About Me Section
   const aboutRef = useRef<HTMLDivElement>(null);
-  const aboutBlobsRef = useRef<HTMLDivElement>(null);
   const aboutTitleRef = useRef<HTMLHeadingElement>(null);
   const aboutDescRef = useRef<HTMLDivElement>(null);
   const aboutButtonRef = useRef<HTMLButtonElement>(null);
@@ -645,71 +646,6 @@ export default function PortfolioShowcase() {
 
       // ========== ABOUT ME SECTION ==========
       if (aboutRef.current) {
-        if (aboutBlobsRef.current) {
-          const about = aboutRef.current;
-          const blobs = aboutBlobsRef.current.children;
-          const blobFollowers = Array.from(blobs).map((blob, index) => ({
-            xTo: gsap.quickTo(blob, "x", { duration: 1.2, ease: "power2.out" }),
-            yTo: gsap.quickTo(blob, "y", { duration: 1.2, ease: "power2.out" }),
-            strength: 20 + index * 10,
-          }));
-          let aboutMoveEvent: MouseEvent | null = null;
-          let aboutMoveFrame = 0;
-          const updateAboutBlobs = () => {
-            aboutMoveFrame = 0;
-            if (!aboutMoveEvent) return;
-            const rect = about.getBoundingClientRect();
-            const x = (aboutMoveEvent.clientX - rect.left - rect.width / 2) / rect.width;
-            const y = (aboutMoveEvent.clientY - rect.top - rect.height / 2) / rect.height;
-
-            blobFollowers.forEach((follower) => {
-              follower.xTo(x * follower.strength);
-              follower.yTo(y * follower.strength - 15);
-            });
-          };
-          const handleAboutMouseMove = (e: Event) => {
-            aboutMoveEvent = e as MouseEvent;
-            if (!aboutMoveFrame) {
-              aboutMoveFrame = requestAnimationFrame(updateAboutBlobs);
-            }
-          };
-
-          addManagedListener(about, "mousemove", handleAboutMouseMove);
-          cleanups.push(() => {
-            if (aboutMoveFrame) cancelAnimationFrame(aboutMoveFrame);
-          });
-
-          Array.from(blobs).forEach((blob, index) => {
-            gsap.fromTo(
-              blob,
-              { opacity: 0, scale: 0, rotation: index % 2 === 0 ? -45 : 45 },
-              {
-                opacity: 1,
-                scale: 1,
-                rotation: 0,
-                duration: 0.8,
-                delay: index * 0.15,
-                ease: "back.out(1.5)",
-                scrollTrigger: {
-                  trigger: aboutRef.current,
-                  start: "top 80%",
-                  toggleActions: "play none none none",
-                },
-              }
-            );
-
-            // 更流畅的呼吸动画
-            gsap.to(blob, {
-              y: -15,
-              scale: 1.1,
-              duration: 2.5 + index * 0.3,
-              repeat: -1,
-              yoyo: true,
-              ease: "sine.inOut",
-            });
-          });
-        }
-
         // 标题动画 - 颜色变化：从白色变为白色（黑色背景）
         if (aboutTitleRef.current) {
           gsap.fromTo(
@@ -1361,7 +1297,7 @@ export default function PortfolioShowcase() {
   ];
 
   return (
-    <><div ref={containerRef} className="overflow-x-hidden text-white bg-black">
+    <><div ref={containerRef} className="overflow-x-clip text-white bg-black">
           {/* ========== NAVIGATION ========== */}
           <nav
               ref={navRef}
@@ -1430,13 +1366,13 @@ export default function PortfolioShowcase() {
                               <ElectricButton activeLabel="开始探索">
                                   预约产品演示
                               </ElectricButton>
-                              <a
+                              <Link
                                   href="/product"
                                   onClick={(e) => handleNavClick(e, '/product')}
                                   className="rounded-full border border-white/18 px-6 py-3 text-sm font-semibold text-white/78 transition-all hover:border-white/40 hover:bg-white/10 hover:text-white"
                               >
                                   查看产品矩阵
-                              </a>
+                              </Link>
                           </div>
                       </div>
                   </div>
@@ -1528,9 +1464,54 @@ export default function PortfolioShowcase() {
     </section> */}
 
 	      </div>
+	      {/* ========== AIOS ARCHITECTURE MODULE ========== */}
+	      <section id="aios" className="bg-[#f5f5f7] px-6 py-24 text-[#1d1d1f] md:px-10 md:py-32">
+        <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1fr_0.86fr] lg:items-center">
+          <div className="max-w-3xl">
+            <p className="text-sm font-bold uppercase tracking-[0.18em] text-[#86868b]">AIOS Architecture</p>
+            <h2 className="mt-5 text-balance text-5xl font-semibold leading-[1] tracking-[-0.04em] md:text-7xl">
+              让每一次工作<br />都有完整底座。
+            </h2>
+            <p className="mt-8 max-w-2xl text-xl font-medium leading-9 text-[#6e6e73]">
+              模型路由、上下文、记忆、知识库与 Skills 共同完成任务，安全审计、权限管理与私有化部署让它进入真实组织。
+            </p>
+            <div className="mt-10 grid max-w-2xl gap-x-7 gap-y-3 text-sm font-bold text-[#1d1d1f] sm:grid-cols-2">
+              {[
+                "模型路由与上下文管理",
+                "Memory OS 与 GoData 知识库",
+                "Skills 任务执行能力",
+                "安全审计与私有化部署",
+              ].map((item) => (
+                <div key={item} className="flex items-center gap-3 border-t border-black/10 pt-3">
+                  <span className="size-1.5 rounded-full bg-[#0071e3]" />
+                  {item}
+                </div>
+              ))}
+            </div>
+            <a
+              href="/technology"
+              onClick={(event) => handleNavClick(event, "/technology")}
+              className="mt-10 inline-flex h-12 items-center gap-2 rounded-full bg-[#1d1d1f] px-6 text-sm font-bold text-white transition hover:bg-[#333]"
+            >
+              查看技术架构
+              <span aria-hidden="true">↗</span>
+            </a>
+          </div>
+
+          <div className="min-h-[420px] overflow-visible rounded-[34px] border border-black/[0.08] bg-white px-6 py-8 shadow-[0_24px_60px_rgba(0,0,0,0.06)] md:px-10">
+            <div className="flex items-center justify-between text-xs font-bold tracking-[0.12em] text-[#86868b]">
+              <span>GOAGENT AIPC</span>
+              <span>CAPABILITY STACK</span>
+            </div>
+            <AiosStackCard />
+          </div>
+        </div>
+	      </section>
+
 	      {/* ========== STACKING CARD MODULE ========== */}
 	      <section className="relative w-full">
         <StackingCard
+       isolated
        projects={[
         {
           title: "五大AI数字员工",
@@ -1648,7 +1629,7 @@ export default function PortfolioShowcase() {
       ]}
         />
 	      </section>
-	      <div className="overflow-x-hidden text-white bg-black">
+	      <div className="overflow-x-clip text-white bg-black">
           {/* ========== PROJECTS SECTION ========== */}
           <section
               ref={projectsRef}
@@ -1736,19 +1717,6 @@ export default function PortfolioShowcase() {
               className="flex overflow-hidden relative justify-center items-center py-20 min-h-screen bg-black scroll-mt-24"
           >
               <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(120deg,rgba(84,54,150,0.18)_0%,rgba(0,0,0,0)_34%),linear-gradient(240deg,rgba(28,118,142,0.13)_0%,rgba(0,0,0,0)_31%),#000]" />
-              <div
-                  ref={aboutBlobsRef}
-                  className="absolute inset-0 pointer-events-none"
-                  aria-hidden="true"
-              >
-                  <div className="absolute right-[-3vw] top-[12vh] text-[22vw] font-black leading-none text-white/[0.035]">
-                      AIOS
-                  </div>
-                  <div className="absolute bottom-[10vh] left-[8vw] text-[9vw] font-black leading-none text-white/[0.03]">
-                      GoAgent
-                  </div>
-              </div>
-
               <div className="container relative z-10 px-6 mx-auto md:px-10">
                   <div className="max-w-6xl">
                       <p className="mb-8 text-sm font-semibold uppercase text-cyan-200/75 md:text-base">
@@ -2044,7 +2012,7 @@ export default function PortfolioShowcase() {
                               <div className="flex max-w-2xl flex-col gap-4 sm:flex-row">
                                   <input
                                       type="email"
-                                      placeholder="contact@goagent.ai"
+                                      placeholder="sales@9dimension.tech"
                                       className="min-w-0 flex-1 rounded-2xl border border-white/16 bg-white/[0.055] px-5 py-4 text-white backdrop-blur-sm transition-all placeholder-white/42 focus:border-white/38 focus:outline-none focus:ring-2 focus:ring-white/20" />
                                   <button className="rounded-2xl bg-white px-8 py-4 font-semibold text-black transition-colors hover:bg-white/90">
                                       预约演示
@@ -2053,13 +2021,13 @@ export default function PortfolioShowcase() {
                           </div>
                           <div className="mt-8 grid max-w-2xl grid-cols-1 gap-3 text-sm text-white/58 sm:grid-cols-3">
                               <div className="rounded-2xl border border-white/10 bg-white/[0.035] px-4 py-3">
-                                  产品咨询
+                                  北京 · 商务与行业合作
                               </div>
                               <div className="rounded-2xl border border-white/10 bg-white/[0.035] px-4 py-3">
-                                  私有化部署
+                                  上海 · 产品与交付支持
                               </div>
                               <div className="rounded-2xl border border-white/10 bg-white/[0.035] px-4 py-3">
-                                  行业方案合作
+                                  广州 · 华南客户服务
                               </div>
                           </div>
                       </div>
@@ -2073,6 +2041,7 @@ export default function PortfolioShowcase() {
                                       </h3>
                                       <ul className="space-y-3 text-sm leading-7 text-white/78 md:text-base">
                                           <li>九维图灵（上海）科技有限公司</li>
+                                          <li><a href="mailto:sales@9dimension.tech" className="transition-colors hover:text-white">sales@9dimension.tech</a></li>
                                           <li>GoAgent AIPC 产品咨询</li>
                                           <li>企业私有化方案</li>
                                           <li>AI 数字员工定制开发</li>
@@ -2085,7 +2054,7 @@ export default function PortfolioShowcase() {
                                       <ul className="grid grid-cols-2 gap-2 text-sm text-white/72 md:text-base">
                                           <li className="rounded-xl bg-white/[0.05] px-3 py-2">GoAgent AIPC</li>
                                           <li className="rounded-xl bg-white/[0.05] px-3 py-2">GoData</li>
-                                          <li className="rounded-xl bg-white/[0.05] px-3 py-2">GoModel</li>
+                                          <li className="rounded-xl bg-white/[0.05] px-3 py-2">模型路由</li>
                                           <li className="rounded-xl bg-white/[0.05] px-3 py-2">SmartStorage</li>
                                       </ul>
                                   </div>
@@ -2118,8 +2087,28 @@ export default function PortfolioShowcase() {
                           <a href="/terms" className="transition-colors hover:text-white">服务条款</a>
                           <a href="/privacy" className="transition-colors hover:text-white">隐私政策</a>
                           <a href="/sitemap" className="transition-colors hover:text-white">网站地图</a>
-                          <span>沪ICP备2026000000号-1</span>
-                          <span>沪公网安备 31010902000000号</span>
+                          <a
+                              href="https://beian.miit.gov.cn/"
+                              target="_blank"
+                              rel="noreferrer"
+                              className="transition-colors hover:text-white"
+                          >
+                              沪ICP备2026025446号-2
+                          </a>
+                          <a
+                              href="https://beian.mps.gov.cn/#/query/webSearch?code=31010902101481"
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex items-center gap-1 transition-colors hover:text-white"
+                          >
+                              <img
+                                  src="/beian-gov-icon.png"
+                                  alt=""
+                                  aria-hidden="true"
+                                  className="h-4 w-auto"
+                              />
+                              沪公网安备31010902101481号
+                          </a>
                       </div>
                       <p className="mt-3">
                           Copyright © 2024 - 2026 九维图灵（上海）科技有限公司. All Rights Reserved.

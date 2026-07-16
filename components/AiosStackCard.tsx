@@ -4,14 +4,14 @@ import React from "react";
 import styled from "styled-components";
 
 const stackLayers = [
-  "Skills 仓库",
-  "GoData 知识库",
-  "Memory OS",
-  "上下文管理",
-  "GoModel 路由",
-  "安全审计",
-  "权限管理",
   "私有化部署",
+  "权限管理",
+  "安全审计",
+  "模型路由",
+  "上下文管理",
+  "Memory OS",
+  "GoData 知识库",
+  "Skills 仓库",
 ];
 
 type LayerStyle = React.CSSProperties & {
@@ -42,17 +42,18 @@ export function AiosStackCard() {
 
 const StyledWrapper = styled.div`
   display: flex;
-  min-height: 410px;
+  min-height: 340px;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   overflow: visible;
+  padding-left: 20px;
 
   .stack-card {
     --w: min(250px, 62vw);
     --h: 300px;
-    --step: 20px;
-    --offset: 10px;
-    --hover-mult: 2;
+    --step: 18px;
+    --offset: 8px;
+    --hover-mult: 2.15;
     --active-mult: 5.2;
 
     position: relative;
@@ -63,10 +64,10 @@ const StyledWrapper = styled.div`
     background: rgba(28, 28, 31, 0.7);
     box-shadow:
       rgba(0, 0, 0, 0.28) 4px -4px 18px,
-      0 5rem 25px 10px rgba(0, 0, 0, 0.22);
+      0 4rem 24px 8px rgba(0, 0, 0, 0.2);
     font-family: inherit;
     perspective: 600px;
-    transform: rotateX(-15deg) rotateY(-35deg);
+    transform: translateY(-12px) translateX(18px) rotateX(-13deg) rotateY(-32deg);
     transition: 0.6s ease-in-out;
     user-select: none;
   }
@@ -77,15 +78,15 @@ const StyledWrapper = styled.div`
     box-shadow:
       rgba(0, 0, 0, 0.24) 4px -4px 18px,
       -1rem 5rem 25px 20px rgba(0, 0, 0, 0.2);
-    transform: translateY(-15px) translateX(15px) rotateX(-15deg) rotateY(-35deg);
+    transform: translateY(-12px) translateX(18px) rotateX(-13deg) rotateY(-32deg);
   }
 
   .stack-card:active {
-    height: 250px;
+    height: 230px;
     border-color: rgba(255, 255, 255, 0.34);
     box-shadow:
       rgba(0, 0, 0, 0.32) 4px -4px 18px,
-      -1rem 7rem 25px 32px rgba(0, 0, 0, 0.2);
+      -1rem 6rem 24px 28px rgba(0, 0, 0, 0.2);
     transition: 0.6s ease-in-out;
     transition-delay: 0.1s;
   }
@@ -102,8 +103,8 @@ const StyledWrapper = styled.div`
       linear-gradient(145deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0)),
       rgba(24, 24, 27, calc(0.72 - (var(--i) * 0.045)));
     box-shadow: rgba(0, 0, 0, 0.28) 4px -4px 12px;
-    transform: translateY(calc(var(--i) * var(--offset)))
-      translateX(calc(var(--i) * var(--offset) * -1));
+    transform: translateY(calc(var(--i) * var(--offset) * var(--hover-mult)))
+      translateX(calc(var(--i) * var(--offset) * var(--hover-mult) * -1));
     transition: 0.4s cubic-bezier(0.87, 0, 0.13, 1);
     transition-delay: 0.05s;
   }
@@ -129,15 +130,15 @@ const StyledWrapper = styled.div`
     content: var(--label);
     position: absolute;
     top: 50%;
-    left: calc(100% + 10px);
-    color: rgba(255, 255, 255, 0.64);
-    font-size: 0.84rem;
-    font-weight: 500;
-    opacity: 0;
+    left: 50%;
+    color: rgba(255, 255, 255, 0.88);
+    font-size: 0.76rem;
+    font-weight: 700;
+    opacity: 1;
     pointer-events: none;
-    text-shadow: none;
-    transform: translateY(-50%) scale(1);
-    transform-origin: left center;
+    text-shadow: 0 1px 10px rgba(0, 0, 0, 0.8);
+    transform: translate(-50%, -50%) scale(1);
+    transform-origin: center center;
     transition:
       color 0.3s,
       text-shadow 0.3s,
@@ -150,7 +151,7 @@ const StyledWrapper = styled.div`
     color: #fff;
     opacity: 1;
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.45);
-    transform: translateY(-50%) scale(1.18);
+    transform: translate(-50%, -50%) scale(1.08);
   }
 
   @media (max-width: 767px) {
@@ -159,16 +160,16 @@ const StyledWrapper = styled.div`
     padding-left: 34px;
 
     .stack-card {
-      --w: 220px;
-      --h: 260px;
+      --w: 240px;
+      --h: 292px;
       --step: 18px;
       transform: rotateX(-13deg) rotateY(-30deg);
     }
 
     .layer::after {
       opacity: 1;
-      font-size: 0.72rem;
-      transform: translateY(-50%) scale(1);
+      font-size: 0.68rem;
+      transform: translate(-50%, -50%) scale(1);
     }
   }
 `;

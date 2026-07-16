@@ -1,7 +1,7 @@
 "use client";
 
-import PortfolioShowcase from "@/components/PortfolioShowcase";
+import AppleStyleHome from "@/components/AppleStyleHome";
 
 export default function Home() {
-  return <PortfolioShowcase />;
+  return <AppleStyleHome />;
 }

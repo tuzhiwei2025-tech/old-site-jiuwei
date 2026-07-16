@@ -10,18 +10,7 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-// 不同的占位视频URL - 可以使用实际的视频URL替换
-const videoUrls = [
-  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
-  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
-  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
-  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
-  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4",
-  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",
-  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4",
-];
+const digitalEmployeeImage = "/数字员工.jpg";
 
 // 边框资源 - 创建更美观的边框SVG
 const cornerSVG = "data:image/svg+xml,%3Csvg width='64' height='64' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0 L64 0 L64 64 L0 64 Z' fill='none' stroke='%234932cc' stroke-width='3'/%3E%3Cpath d='M0 0 L20 0 L0 20 Z' fill='%234932cc'/%3E%3C/svg%3E";
@@ -31,7 +20,8 @@ const edgeVerticalSVG = "data:image/svg+xml,%3Csvg width='64' height='64' xmlns=
 const frames = [
   {
     id: 1,
-    video: videoUrls[0],
+    image: digitalEmployeeImage,
+    imagePosition: "14% 72%",
     defaultPos: { x: 0, y: 0, w: 4, h: 4 },
     corner: cornerSVG,
     edgeHorizontal: edgeHorizontalSVG,
@@ -45,7 +35,8 @@ const frames = [
   },
   {
     id: 2,
-    video: videoUrls[1],
+    image: digitalEmployeeImage,
+    imagePosition: "51% 34%",
     defaultPos: { x: 4, y: 0, w: 4, h: 4 },
     corner: cornerSVG,
     edgeHorizontal: edgeHorizontalSVG,
@@ -59,7 +50,8 @@ const frames = [
   },
   {
     id: 3,
-    video: videoUrls[2],
+    image: digitalEmployeeImage,
+    imagePosition: "76% 37%",
     defaultPos: { x: 8, y: 0, w: 4, h: 4 },
     corner: cornerSVG,
     edgeHorizontal: edgeHorizontalSVG,
@@ -73,7 +65,8 @@ const frames = [
   },
   {
     id: 4,
-    video: videoUrls[3],
+    image: digitalEmployeeImage,
+    imagePosition: "34% 54%",
     defaultPos: { x: 0, y: 4, w: 4, h: 4 },
     corner: cornerSVG,
     edgeHorizontal: edgeHorizontalSVG,
@@ -87,7 +80,8 @@ const frames = [
   },
   {
     id: 5,
-    video: videoUrls[4],
+    image: digitalEmployeeImage,
+    imagePosition: "54% 71%",
     defaultPos: { x: 4, y: 4, w: 4, h: 4 },
     corner: cornerSVG,
     edgeHorizontal: edgeHorizontalSVG,
@@ -101,7 +95,8 @@ const frames = [
   },
   {
     id: 6,
-    video: videoUrls[5],
+    image: digitalEmployeeImage,
+    imagePosition: "89% 63%",
     defaultPos: { x: 8, y: 4, w: 4, h: 4 },
     corner: cornerSVG,
     edgeHorizontal: edgeHorizontalSVG,
@@ -115,7 +110,8 @@ const frames = [
   },
   {
     id: 7,
-    video: videoUrls[6],
+    image: digitalEmployeeImage,
+    imagePosition: "22% 85%",
     defaultPos: { x: 0, y: 8, w: 4, h: 4 },
     corner: cornerSVG,
     edgeHorizontal: edgeHorizontalSVG,
@@ -129,7 +125,8 @@ const frames = [
   },
   {
     id: 8,
-    video: videoUrls[7],
+    image: digitalEmployeeImage,
+    imagePosition: "68% 74%",
     defaultPos: { x: 4, y: 8, w: 4, h: 4 },
     corner: cornerSVG,
     edgeHorizontal: edgeHorizontalSVG,
@@ -143,7 +140,8 @@ const frames = [
   },
   {
     id: 9,
-    video: videoUrls[8],
+    image: digitalEmployeeImage,
+    imagePosition: "94% 76%",
     defaultPos: { x: 8, y: 8, w: 4, h: 4 },
     corner: cornerSVG,
     edgeHorizontal: edgeHorizontalSVG,
@@ -260,4 +258,3 @@ export default function DigitalTeamVideo() {
     </section>
   );
 }
-

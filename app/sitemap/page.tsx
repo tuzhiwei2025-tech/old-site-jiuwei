@@ -17,7 +17,7 @@ export default function SitemapPage() {
         },
         {
           title: "主要内容",
-          body: "官网围绕九维图灵公司介绍、AIOS 架构、GoAgent AIPC 产品矩阵、五大数字员工、企业知识库、私有化部署和行业案例展开。",
+          body: "产品矩阵包含 AI机顶盒 Cloud 云轻盒与 Mix 轻终端、AIPC 消费级 Spark Solo 工作站与 Spark Cluster 集群，以及 8卡及以上服务器企业定制化方案。",
         },
       ]}
     />

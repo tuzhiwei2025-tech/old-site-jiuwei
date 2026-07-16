@@ -1,5 +1,5 @@
-import { CasesPage } from "@/components/CasesPage";
+import { CasesStoryPage } from "@/components/CasesStoryPage";
 
-export default function Page() {
-  return <CasesPage />;
+export default function CasesPage() {
+  return <CasesStoryPage />;
 }
