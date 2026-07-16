@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev --webpack",
     "build": "next build",
+    "deploy": "bash scripts/deploy-production.sh",
     "start": "next start",
     "lint": "eslint"
   },
