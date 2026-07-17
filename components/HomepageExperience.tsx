@@ -1,52 +1,124 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { ArrowUpRight } from "lucide-react";
-import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { KineticText } from "@/components/ui/kinetic-text";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { SeamlessLoopVideo, type SeamlessLoopVideoHandle } from "@/components/SeamlessLoopVideo";
+import { ScrollFrameCanvas, type ScrollFrameCanvasHandle, type ScrollFrameSequence } from "@/components/ScrollFrameCanvas";
 import styles from "./HomepageExperience.module.css";
 
 const AiosLanyard = dynamic(() => import("@/components/AiosLanyard").then((module) => module.AiosLanyard), {
   ssr: false,
 });
 
-type StoryCardData = readonly [title: string, body: string, label?: string];
-type Theme = "dark" | "light";
-type SceneVideoRefs = {
-  hero: React.RefObject<HTMLVideoElement | null>;
-  series: React.RefObject<HTMLVideoElement | null>;
-  workspace: React.RefObject<HTMLVideoElement | null>;
-  operations: React.RefObject<HTMLVideoElement | null>;
+type SceneCanvasRefs = {
+  hero: React.RefObject<ScrollFrameCanvasHandle | null>;
+  series: React.RefObject<ScrollFrameCanvasHandle | null>;
+  operations: React.RefObject<ScrollFrameCanvasHandle | null>;
 };
 type SceneOverlayRefs = {
   hero: React.RefObject<HTMLDivElement | null>;
   seriesCopy: React.RefObject<HTMLDivElement | null>;
   seriesCards: React.RefObject<HTMLDivElement | null>;
-  workspaceCopy: React.RefObject<HTMLDivElement | null>;
-  workspaceCards: React.RefObject<HTMLDivElement | null>;
-  operationsCopy: React.RefObject<HTMLDivElement | null>;
   operationsCards: React.RefObject<HTMLDivElement | null>;
   lanyard: React.RefObject<HTMLDivElement | null>;
   progress: React.RefObject<HTMLSpanElement | null>;
 };
 
-const aipcSeries: readonly StoryCardData[] = [
-  ["AI机顶盒", "Cloud 云轻盒与 Mix 轻终端，为个人与轻团队提供云端或混合模式的 AIOS 入口。", "01"],
-  ["AIPC 消费级产品", "GoAgent Spark Solo 工作站与 Spark Cluster 集群，覆盖单机与中小团队私有算力。", "02"],
-  ["AIPC 企业级产品", "8卡及以上服务器定制化方案，面向大型组织的高并发、本地化与安全管控需求。", "03"],
-];
+const productSeries = [
+  {
+    id: "box",
+    title: "AI机顶盒",
+    body: "面向个人及小微团队的轻量级 AI 智能终端，开箱即可调用全栈数字员工能力。",
+    label: "01",
+    products: [["Cloud 云轻盒 与 Mix 轻终端", "/product/box"]],
+  },
+  {
+    id: "consumer",
+    title: "AIPC 消费级产品",
+    body: "云地协同的本地化 AIPC，兼顾数据隐私安全、算力成本与小微团队协作。",
+    label: "02",
+    products: [["GoAgent Spark Solo", "/product/solo"], ["GoAgent Spark Cluster", "/product/cluster"]],
+  },
+  {
+    id: "enterprise",
+    title: "AIPC 企业级产品",
+    body: "面向中大型企业的全栈私有化 AIPC，覆盖数字员工协同、知识管理与安全管控。",
+    label: "03",
+    products: [["8卡及以上服务器定制方案", "/product/enterprise"]],
+  },
+] as const;
 
-const workspaceSignals: readonly StoryCardData[] = [
-  ["多 Agent 协作", "把调研、撰写、制图、复核拆给不同数字员工并行完成。"],
-  ["知识库唤醒", "资料、品牌规范、历史项目会被自动调出，减少重复解释。"],
-  ["交付流自动化", "从任务拆解到成稿归档，形成可复用的一人公司流水线。"],
-];
+const frameSequences: Record<keyof SceneCanvasRefs, ScrollFrameSequence> = {
+  hero: { path: "/homepage-experience/frames/hero", frameCount: 73, width: 864, height: 496 },
+  series: { path: "/homepage-experience/frames/series", frameCount: 55, width: 864, height: 496 },
+  operations: { path: "/homepage-experience/frames/operations", frameCount: 55, width: 864, height: 496 },
+};
 
-const opsSignals: readonly StoryCardData[] = [
-  ["任务雷达", "实时识别线索、风险和下一步动作，把杂乱输入变成清晰待办。"],
-  ["自动汇报", "数字员工完成阶段成果后自动生成纪要、报告和复盘。"],
-  ["持续进化", "每次交付都会沉淀为模板，让下一次执行更快、更准。"],
-];
+const digitalEmployees = [
+  {
+    name: "Amy",
+    role: "通用助手",
+    summary: "随时应答，全能协作",
+    capabilities: ["日常问题解答", "智能任务管理", "多场景支持"],
+    caseTitle: "企业行政与政企办公",
+    caseTagline: "把格式严苛的公文任务，变成两步可完成的工作。",
+    caseBody: "GoAgent 内置企业知识库，理解集团历年文档规范。从说清楚事由到生成格式合规的完整初稿，只需两步。",
+    quote: "以前最怕下班前接到紧急发文，对着十几项格式规范改到深夜，是常有的事。",
+    source: "某城市建设投资集团 · 行政办公室",
+    results: ["新员工公文上手周期缩短 80%", "文档品牌合规率 42% 至 96%", "单份项目汇报制作时长减少 62%"],
+  },
+  {
+    name: "Lina",
+    role: "Word 专家",
+    summary: "高效撰写，专业文档",
+    capabilities: ["智能文档生成", "格式自动优化", "多模板支持"],
+    caseTitle: "企业行政与政企办公",
+    caseTagline: "让企业文档规范成为可调用的工作能力。",
+    caseBody: "针对格式严苛、标准繁多的公文撰写，Lina 调用企业知识库和历史规范，输出格式合规的完整初稿。",
+    quote: "以前最怕下班前接到紧急发文，对着十几项格式规范改到深夜，是常有的事。",
+    source: "某城市建设投资集团 · 行政办公室",
+    results: ["新员工公文上手周期缩短 80%", "文档品牌合规率 42% 至 96%", "单份项目汇报制作时长减少 62%"],
+  },
+  {
+    name: "Aira",
+    role: "PPT 专家",
+    summary: "专业演示，秒出方案",
+    capabilities: ["内容排版与设计", "智能配色方案", "精美模板生成"],
+    caseTitle: "文化传媒与创意策划",
+    caseTagline: "把创意时间还给创意人。",
+    caseBody: "GoAgent 接管基础排版与标准化文案，让策划人从重复调整 PPT 的工作中抽离，回归策略与创意本身。",
+    quote: "比稿季同时接四五个项目，一半时间都在调 PPT 排版，创意都想不动了。",
+    source: "某文化传媒公司 · 策划部",
+    results: ["竞标方案周期从 3 天缩短至 4 小时", "基础人力投入减少 70%", "月度可承接项目量提升 2.3 倍"],
+  },
+  {
+    name: "Max",
+    role: "Excel 专家",
+    summary: "数据分析，图表可视化",
+    capabilities: ["数据分析与展示", "智能图表生成", "自动化报表"],
+    caseTitle: "教育行业教研办公",
+    caseTagline: "让老师把时间还给学生。",
+    caseBody: "针对备课、出卷、学情分析与评语撰写等案头工作，GoAgent 自动生成教案框架、试卷初稿与个性化评语。",
+    quote: "备课本、练习卷、学情分析、学生评语，经常把作业抱回家，改到半夜。",
+    source: "某市属重点中学 · 高二年级组老师",
+    results: ["单课备课时间平均减少 55%", "试卷与学情报告产出效率提升 3 倍", "让更多时间回到学生身上"],
+  },
+  {
+    name: "Lumi",
+    role: "开发专家",
+    summary: "想法变应用，低代码落地",
+    capabilities: ["快速应用开发", "网站原型生成", "低代码平台"],
+    caseTitle: "金融 制造 政企场景",
+    caseTagline: "高安全要求场景的本地化 AI 方案。",
+    caseBody: "面向数据合规要求严格的行业，GoAgent AIPC 支持完整本地化部署，数据不出内网，任务执行全程可追溯审计。",
+    quote: "云端 AI 往往寸步难行，本地化部署让高安全要求场景也能获得稳定的 AI 生产力。",
+    source: "金融 制造 政企行业落地场景",
+    results: ["研报与合规文件标准化输出", "产品手册与质检报告自动生成", "数据不出内网 全程可追溯"],
+  },
+] as const;
 
 const clamp = (value: number, minimum: number, maximum: number) => Math.min(Math.max(value, minimum), maximum);
 const fadeIn = (progress: number, start: number, end: number) => clamp((progress - start) / (end - start), 0, 1);
@@ -97,31 +169,36 @@ function setLayerState(element: HTMLElement | null, opacity: number, offset = 34
   element.style.pointerEvents = opacity > 0.72 ? "auto" : "none";
 }
 
-function setVideoOpacity(video: HTMLVideoElement | null, opacity: number) {
-  if (!video) return;
-  video.style.opacity = opacity.toFixed(3);
-  video.style.visibility = opacity > 0.01 ? "visible" : "hidden";
+function setCanvasOpacity(canvas: ScrollFrameCanvasHandle | null, opacity: number) {
+  const element = canvas?.element;
+  if (!element) return;
+  element.style.opacity = opacity.toFixed(3);
+  element.style.visibility = opacity > 0.01 ? "visible" : "hidden";
+}
+
+function setElementOpacity(element: HTMLElement | null, opacity: number) {
+  if (!element) return;
+  element.style.opacity = opacity.toFixed(3);
+  element.style.visibility = opacity > 0.01 ? "visible" : "hidden";
 }
 
 function useScrollDeck(
   sceneRef: React.RefObject<HTMLElement | null>,
-  videoRefs: SceneVideoRefs,
+  introVideoRef: React.RefObject<SeamlessLoopVideoHandle | null>,
+  canvasRefs: SceneCanvasRefs,
   overlayRefs: SceneOverlayRefs,
   setShowLanyard: React.Dispatch<React.SetStateAction<boolean>>,
 ) {
   useEffect(() => {
     const scene = sceneRef.current;
-    const heroVideo = videoRefs.hero.current;
-    const seriesVideo = videoRefs.series.current;
-    const workspaceVideo = videoRefs.workspace.current;
-    const operationsVideo = videoRefs.operations.current;
+    const introVideo = introVideoRef.current;
+    const heroCanvas = canvasRefs.hero.current;
+    const seriesCanvas = canvasRefs.series.current;
+    const operationsCanvas = canvasRefs.operations.current;
     const {
       hero: heroOverlayRef,
       seriesCopy: seriesCopyRef,
       seriesCards: seriesCardsRef,
-      workspaceCopy: workspaceCopyRef,
-      workspaceCards: workspaceCardsRef,
-      operationsCopy: operationsCopyRef,
       operationsCards: operationsCardsRef,
       lanyard: lanyardRef,
       progress: progressRef,
@@ -129,337 +206,226 @@ function useScrollDeck(
     const heroOverlay = heroOverlayRef.current;
     const seriesCopy = seriesCopyRef.current;
     const seriesCards = seriesCardsRef.current;
-    const workspaceCopy = workspaceCopyRef.current;
-    const workspaceCards = workspaceCardsRef.current;
-    const operationsCopy = operationsCopyRef.current;
     const operationsCards = operationsCardsRef.current;
     const lanyard = lanyardRef.current;
     const progressIndicator = progressRef.current;
-    if (!scene || !heroVideo || !seriesVideo || !workspaceVideo || !operationsVideo) return;
+    if (!scene || !introVideo || !heroCanvas || !seriesCanvas || !operationsCanvas) return;
 
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const controllers = [seriesVideo, workspaceVideo, operationsVideo].map((video) => ({
-      active: false,
-      lastSeekAt: 0,
-      targetTime: 0,
-      video,
-    }));
-
-    let animationFrame = 0;
-    let monitorFrame = 0;
-    let renderedProgress = 0;
+    let sceneStart = 0;
+    let scrollDistance = 1;
     let targetProgress = 0;
     let lanyardVisible = false;
-    let lastTouchY: number | null = null;
     let isMounted = true;
-
-    const pauseVideo = (video: HTMLVideoElement) => {
-      if (!video.paused) video.pause();
-      video.playbackRate = 1;
-    };
-
-    const playHero = () => {
-      if (!heroVideo.paused) return;
-      const playPromise = heroVideo.play();
-      if (playPromise && typeof playPromise.catch === "function") playPromise.catch(() => undefined);
-    };
-
-    const queuePlaybackMonitor = () => {
-      if (monitorFrame) return;
-
-      const monitor = () => {
-        monitorFrame = 0;
-        let shouldContinue = false;
-
-        controllers.forEach((controller) => {
-          const { video } = controller;
-          if (!controller.active || video.paused) return;
-
-          if (video.currentTime >= controller.targetTime - 0.035) {
-            pauseVideo(video);
-          } else {
-            shouldContinue = true;
-          }
-        });
-
-        if (shouldContinue) monitorFrame = window.requestAnimationFrame(monitor);
-      };
-
-      monitorFrame = window.requestAnimationFrame(monitor);
-    };
-
-    const syncScrubVideo = (video: HTMLVideoElement, localProgress: number, active: boolean) => {
-      const controller = controllers.find((item) => item.video === video);
-      if (!controller) return;
-
-      controller.active = active;
-      if (!active || !Number.isFinite(video.duration) || video.duration <= 0) {
-        pauseVideo(video);
-        return;
-      }
-
-      const maxTime = Math.max(0.04, video.duration - 0.04);
-      const targetTime = clamp(localProgress * maxTime, 0.04, maxTime);
-      const gap = targetTime - video.currentTime;
-      controller.targetTime = targetTime;
-
-      if (Math.abs(gap) <= 0.035) {
-        pauseVideo(video);
-        return;
-      }
-
-      // Forward scrolling follows the target by playback first; direct seeks are a fallback for jumps or reverse scroll.
-      if (gap > 0 && gap < 0.8 && video.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA) {
-        const playbackRate = clamp(1 + gap * 4.5, 1, 3.75);
-        if (Math.abs(video.playbackRate - playbackRate) > 0.05) {
-          video.playbackRate = playbackRate;
-        }
-        if (video.paused) {
-          const playPromise = video.play();
-          if (playPromise && typeof playPromise.catch === "function") playPromise.catch(() => undefined);
-        }
-        queuePlaybackMonitor();
-        return;
-      }
-
-      const now = performance.now();
-      if (now - controller.lastSeekAt < 75 && Math.abs(gap) < 0.55) return;
-
-      pauseVideo(video);
-      controller.lastSeekAt = now;
-      try {
-        if (typeof video.fastSeek === "function") {
-          video.fastSeek(targetTime);
-        } else {
-          video.currentTime = targetTime;
-        }
-      } catch {
-        // A transient media seek failure should not block native page scrolling.
-      }
-    };
+    const sceneCanvases = [heroCanvas, seriesCanvas, operationsCanvas];
 
     const renderScene = (progress: number) => {
-      const heroOpacity = 1 - Math.min(progress * 12, 1);
-      const seriesOpacity = rangeOpacity(progress, 0.03, 0.09, 0.44, 0.48);
-      const workspaceOpacity = rangeOpacity(progress, 0.48, 0.54, 0.74, 0.78);
-      const operationsOpacity = fadeIn(progress, 0.78, 0.84);
+      const introOpacity = fadeOut(progress, 0.025, 0.06);
+      const heroOpacity = fadeIn(progress, 0.004, 0.04) * fadeOut(progress, 0.17, 0.2);
+      const seriesOpacity = rangeOpacity(progress, 0.17, 0.21, 0.57, 0.62);
+      const operationsOpacity = fadeIn(progress, 0.57, 0.64);
 
-      const heroCopyOpacity = fadeOut(progress, 0.015, 0.12);
-      const seriesCopyOpacity = rangeOpacity(progress, 0.12, 0.27, 0.4, 0.46);
-      const seriesCardsOpacity = fadeIn(progress, 0.29, 0.4) * fadeOut(progress, 0.41, 0.47);
-      const workspaceCopyOpacity = rangeOpacity(progress, 0.54, 0.62, 0.72, 0.78);
-      const workspaceCardsOpacity = fadeIn(progress, 0.64, 0.71) * fadeOut(progress, 0.72, 0.78);
-      const operationsCopyOpacity = fadeIn(progress, 0.84, 0.91);
-      const operationsCardsOpacity = fadeIn(progress, 0.91, 0.97);
-      const lanyardOpacity = fadeIn(progress, 0.9, 0.96);
+      const heroCopyOpacity = fadeOut(progress, 0.08, 0.19);
+      const seriesCopyOpacity = rangeOpacity(progress, 0.22, 0.3, 0.48, 0.55);
+      const seriesCardsOpacity = fadeIn(progress, 0.31, 0.4) * fadeOut(progress, 0.51, 0.58);
+      const operationsCardsOpacity = fadeIn(progress, 0.66, 0.78);
+      const lanyardOpacity = fadeIn(progress, 0.97, 0.995);
 
-      setVideoOpacity(heroVideo, heroOpacity);
-      setVideoOpacity(seriesVideo, seriesOpacity);
-      setVideoOpacity(workspaceVideo, workspaceOpacity);
-      setVideoOpacity(operationsVideo, operationsOpacity);
+      setElementOpacity(introVideo.element, introOpacity);
+      setCanvasOpacity(heroCanvas, heroOpacity);
+      setCanvasOpacity(seriesCanvas, seriesOpacity);
+      setCanvasOpacity(operationsCanvas, operationsOpacity);
 
       setLayerState(heroOverlay, heroCopyOpacity, 18);
       setLayerState(seriesCopy, seriesCopyOpacity);
       setLayerState(seriesCards, seriesCardsOpacity, 42);
-      setLayerState(workspaceCopy, workspaceCopyOpacity);
-      setLayerState(workspaceCards, workspaceCardsOpacity, 42);
-      setLayerState(operationsCopy, operationsCopyOpacity);
       setLayerState(operationsCards, operationsCardsOpacity, 42);
-      setLayerState(lanyard, lanyardOpacity, 18);
+      setLayerState(lanyard, lanyardOpacity, 60);
 
       if (progressIndicator) {
         progressIndicator.style.transform = `scaleX(${progress.toFixed(4)})`;
       }
 
-      const shouldShowLanyard = progress >= 0.9;
+      const shouldShowLanyard = progress >= 0.97;
       if (shouldShowLanyard !== lanyardVisible && isMounted) {
         lanyardVisible = shouldShowLanyard;
         setShowLanyard(shouldShowLanyard);
       }
 
-      if (progress <= 0.015) {
-        playHero();
-      } else {
-        pauseVideo(heroVideo);
-      }
+      introVideo.setActive(introOpacity > 0.01 && !document.hidden);
+      heroCanvas.setActive(progress < 0.22 && !document.hidden);
+      seriesCanvas.setActive(progress >= 0.14 && progress < 0.64 && !document.hidden);
+      operationsCanvas.setActive(progress >= 0.54 && !document.hidden);
 
-      syncScrubVideo(seriesVideo, fadeIn(progress, 0.03, 0.44), seriesOpacity > 0.01);
-      syncScrubVideo(workspaceVideo, fadeIn(progress, 0.48, 0.74), workspaceOpacity > 0.01);
-      syncScrubVideo(operationsVideo, fadeIn(progress, 0.78, 1), operationsOpacity > 0.01);
-    };
-
-    const queueRender = () => {
-      if (animationFrame) return;
-
-      const render = () => {
-        animationFrame = 0;
-        const distance = targetProgress - renderedProgress;
-        renderedProgress = Math.abs(distance) < 0.0007 ? targetProgress : renderedProgress + distance * 0.22;
-        renderScene(renderedProgress);
-
-        if (Math.abs(targetProgress - renderedProgress) >= 0.0007) {
-          queueRender();
-        }
-      };
-
-      animationFrame = window.requestAnimationFrame(render);
+      heroCanvas.render(fadeIn(progress, 0.03, 0.19));
+      seriesCanvas.render(fadeIn(progress, 0.17, 0.57));
+      operationsCanvas.render(fadeIn(progress, 0.57, 1));
     };
 
     const updateTarget = (nextProgress: number) => {
       targetProgress = clamp(nextProgress, 0, 1);
-      queueRender();
+      renderScene(targetProgress);
     };
 
-    const sceneOwnsScroll = () => {
-      const rect = scene.getBoundingClientRect();
-      return rect.top <= 24 && rect.bottom >= window.innerHeight - 24;
+    const measureScene = () => {
+      sceneStart = scene.getBoundingClientRect().top + window.scrollY;
+      scrollDistance = Math.max(1, scene.offsetHeight - window.innerHeight);
     };
 
-    const canReleaseScroll = (direction: number) =>
-      (direction > 0 && targetProgress >= 0.999 && renderedProgress >= 0.995) ||
-      (direction < 0 && targetProgress <= 0.001 && renderedProgress <= 0.005);
-
-    const getProgressDelta = (deltaY: number, deltaMode: number) => {
-      const pixels = deltaMode === WheelEvent.DOM_DELTA_LINE ? deltaY * 16 : deltaY;
-      const magnitude = Math.abs(pixels);
-      const rawDelta = magnitude > 100 ? 0.018 : magnitude / 3800;
-      return Math.sign(pixels) * Math.min(rawDelta, 0.018);
+    const updateFromScroll = () => {
+      const scrollPosition = window.scrollY;
+      updateTarget(clamp((scrollPosition - sceneStart) / scrollDistance, 0, 1));
     };
 
-    const handleWheel = (event: WheelEvent) => {
-      if (reduceMotion || !sceneOwnsScroll() || event.deltaY === 0) return;
-      const direction = Math.sign(event.deltaY);
-      if (canReleaseScroll(direction)) return;
-
-      event.preventDefault();
-      updateTarget(targetProgress + getProgressDelta(event.deltaY, event.deltaMode));
+    const handleScroll = () => {
+      updateFromScroll();
     };
 
-    const handleKeydown = (event: KeyboardEvent) => {
-      if (reduceMotion || !sceneOwnsScroll()) return;
-
-      const keyDeltas: Record<string, number> = {
-        ArrowDown: 0.045,
-        ArrowUp: -0.045,
-        PageDown: 0.12,
-        PageUp: -0.12,
-        " ": event.shiftKey ? -0.12 : 0.12,
-      };
-      const delta = keyDeltas[event.key];
-      if (!delta || canReleaseScroll(Math.sign(delta))) return;
-
-      event.preventDefault();
-      updateTarget(targetProgress + delta);
-    };
-
-    const handleTouchStart = (event: TouchEvent) => {
-      lastTouchY = event.touches[0]?.clientY ?? null;
-    };
-
-    const handleTouchMove = (event: TouchEvent) => {
-      const nextTouchY = event.touches[0]?.clientY;
-      if (reduceMotion || lastTouchY === null || nextTouchY === undefined || !sceneOwnsScroll()) return;
-
-      const deltaY = lastTouchY - nextTouchY;
-      if (deltaY === 0 || canReleaseScroll(Math.sign(deltaY))) return;
-
-      event.preventDefault();
-      lastTouchY = nextTouchY;
-      updateTarget(targetProgress + clamp(deltaY / 2800, -0.032, 0.032));
-    };
-
-    const handleTouchEnd = () => {
-      lastTouchY = null;
+    const handleResize = () => {
+      measureScene();
+      updateFromScroll();
     };
 
     const handleVisibilityChange = () => {
       if (document.hidden) {
-        [heroVideo, seriesVideo, workspaceVideo, operationsVideo].forEach(pauseVideo);
+        introVideo.setActive(false);
+        sceneCanvases.forEach((canvas) => canvas.setActive(false));
       } else {
-        queueRender();
+        updateFromScroll();
       }
     };
 
-    const handleMetadata = () => queueRender();
-
-    [heroVideo, seriesVideo, workspaceVideo, operationsVideo].forEach((video) => {
-      video.addEventListener("loadedmetadata", handleMetadata);
-      if (video.readyState >= HTMLMediaElement.HAVE_METADATA) handleMetadata();
-    });
-
-    window.addEventListener("wheel", handleWheel, { passive: false });
-    window.addEventListener("keydown", handleKeydown);
-    window.addEventListener("resize", queueRender, { passive: true });
-    scene.addEventListener("touchstart", handleTouchStart, { passive: true });
-    scene.addEventListener("touchmove", handleTouchMove, { passive: false });
-    scene.addEventListener("touchend", handleTouchEnd, { passive: true });
-    scene.addEventListener("touchcancel", handleTouchEnd, { passive: true });
+    measureScene();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", handleResize, { passive: true });
     document.addEventListener("visibilitychange", handleVisibilityChange);
 
-    renderScene(0);
+    updateFromScroll();
 
     return () => {
       isMounted = false;
-      if (animationFrame) window.cancelAnimationFrame(animationFrame);
-      if (monitorFrame) window.cancelAnimationFrame(monitorFrame);
-      [heroVideo, seriesVideo, workspaceVideo, operationsVideo].forEach((video) => {
-        video.removeEventListener("loadedmetadata", handleMetadata);
-        pauseVideo(video);
-      });
-      window.removeEventListener("wheel", handleWheel);
-      window.removeEventListener("keydown", handleKeydown);
-      window.removeEventListener("resize", queueRender);
-      scene.removeEventListener("touchstart", handleTouchStart);
-      scene.removeEventListener("touchmove", handleTouchMove);
-      scene.removeEventListener("touchend", handleTouchEnd);
-      scene.removeEventListener("touchcancel", handleTouchEnd);
+      introVideo.setActive(false);
+      sceneCanvases.forEach((canvas) => canvas.setActive(false));
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleResize);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [overlayRefs, sceneRef, setShowLanyard, videoRefs]);
+  }, [canvasRefs, introVideoRef, overlayRefs, sceneRef, setShowLanyard]);
 }
 
-function GlassCard({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <article className={`${styles.glassCard} ${className}`}>{children}</article>;
-}
+function ProductExplorer() {
+  const [selectedId, setSelectedId] = useState<(typeof productSeries)[number]["id"]>(productSeries[0].id);
+  const selected = productSeries.find((series) => series.id === selectedId) ?? productSeries[0];
 
-function StoryCards({ cards, theme }: { cards: readonly StoryCardData[]; theme: Theme }) {
   return (
-    <div className={styles.cardRail}>
-      {cards.map(([title, body, label], index) => (
-        <GlassCard key={title} className={`${styles.storyCard} ${theme === "light" ? styles.lightCard : styles.darkCard}`}>
-          <div>
-            <div className={styles.cardIcon}>
-              <ArrowUpRight className="size-5" />
-            </div>
-            <h3>{title}</h3>
-            <p>{body}</p>
-          </div>
-          {label ? (
-            <div className={styles.cardFooter}>
-              <span>AIPC Series</span>
-              <span>{label}</span>
-            </div>
-          ) : (
-            <span className={styles.cardIndex}>{String(index + 1).padStart(2, "0")}</span>
-          )}
-        </GlassCard>
-      ))}
+    <div className={styles.productExplorer}>
+      <div className={styles.productTabs} role="tablist" aria-label="AIPC 产品系列">
+        {productSeries.map((series) => {
+          const isSelected = series.id === selected.id;
+          return (
+            <button
+              key={series.id}
+              id={`series-tab-${series.id}`}
+              type="button"
+              role="tab"
+              aria-selected={isSelected}
+              aria-controls="series-details"
+              className={`${styles.productTab} ${isSelected ? styles.productTabSelected : ""}`}
+              onClick={() => setSelectedId(series.id)}
+              onPointerEnter={() => setSelectedId(series.id)}
+            >
+              <span>{series.label}</span>
+              <strong>{series.title}</strong>
+              <small>{series.body}</small>
+            </button>
+          );
+        })}
+      </div>
+      <div id="series-details" role="tabpanel" aria-labelledby={`series-tab-${selected.id}`} className={styles.productDetails}>
+        <p>{selected.title}</p>
+        <div>
+          {selected.products.map(([name, href]) => (
+            <Link key={href} href={href} className={styles.productLink}>
+              {name}
+              <span aria-hidden="true">+</span>
+            </Link>
+          ))}
+        </div>
+      </div>
     </div>
+  );
+}
+
+function DigitalEmployeeCards() {
+  const [activeEmployee, setActiveEmployee] = useState<(typeof digitalEmployees)[number] | null>(null);
+
+  return (
+    <>
+      <div className={styles.employeeRail}>
+        {digitalEmployees.map((employee, index) => {
+          return (
+            <button
+              key={employee.name}
+              type="button"
+              onClick={() => setActiveEmployee(employee)}
+              className={styles.employeeCard}
+              aria-label={`查看${employee.name}案例`}
+            >
+              <span className={styles.employeeName}>{employee.name}</span>
+              <span className={styles.employeeRole}>{employee.role}</span>
+              <span className={styles.employeeSummary}>{employee.summary}</span>
+              <span className={styles.employeeIndex}>{String(index + 1).padStart(2, "0")}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      <Dialog open={Boolean(activeEmployee)} onOpenChange={(open) => !open && setActiveEmployee(null)}>
+        {activeEmployee && (
+          <DialogContent className="max-h-[calc(100dvh-2rem)] w-[min(92vw,80rem)] max-w-[80rem] overflow-x-hidden overflow-y-auto border border-white/85 bg-white/[0.68] p-0 text-[#1d1d1f] shadow-[0_30px_100px_rgba(0,0,0,0.28),inset_0_1px_0_rgba(255,255,255,0.95)] backdrop-blur-[38px] backdrop-saturate-150">
+            <div className="relative overflow-hidden px-6 py-7 sm:px-10 sm:py-9 lg:px-12 lg:py-10">
+              <div aria-hidden="true" className="absolute -right-20 -top-24 size-72 rounded-full bg-[#dbe9f0]/75 blur-3xl" />
+              <div aria-hidden="true" className="absolute -bottom-28 left-1/3 size-56 rounded-full bg-white/90 blur-3xl" />
+              <div className="relative">
+                <DialogHeader className="text-left">
+                  <div>
+                    <p className="text-sm font-semibold text-[#1d1d1f]">{activeEmployee.name} · {activeEmployee.role}</p>
+                    <p className="mt-1 text-xs tracking-[0.12em] text-[#86868b]">DIGITAL EMPLOYEE CASE</p>
+                  </div>
+                  <DialogTitle className="mt-7 max-w-[calc(100%-3rem)] text-[clamp(2rem,3.8vw,3.5rem)] font-semibold leading-[1.08] tracking-normal text-[#1d1d1f]">{activeEmployee.caseTitle}</DialogTitle>
+                  <p className="mt-3 text-base font-medium text-[#515154]">{activeEmployee.caseTagline}</p>
+                </DialogHeader>
+                <DialogDescription className="mt-5 max-w-4xl border-l border-black/[0.12] pl-5 text-[15px] leading-7 text-[#6e6e73]">{activeEmployee.caseBody}</DialogDescription>
+              </div>
+            </div>
+            <div className="grid gap-7 border-t border-black/[0.08] bg-white/[0.28] px-6 py-6 sm:px-10 sm:py-7 min-[480px]:grid-cols-[minmax(0,1.3fr)_minmax(17rem,0.7fr)] lg:px-12 lg:py-8">
+              <div>
+                <p className="text-xs font-bold tracking-[0.14em] text-[#86868b]">一线反馈</p>
+                <blockquote className="mt-3 max-w-xl text-[17px] leading-8 text-[#424245]">“{activeEmployee.quote}”</blockquote>
+                <p className="mt-3 text-xs text-[#86868b]">{activeEmployee.source}</p>
+              </div>
+              <div className="border-l border-black/[0.1] pl-5 min-[480px]:pl-7">
+                <p className="text-xs font-bold tracking-[0.14em] text-[#86868b]">落地效果</p>
+                <ul className="mt-3 space-y-3 text-sm leading-5 text-[#424245]">
+                  {activeEmployee.results.map((result, index) => <li key={result} className="grid grid-cols-[1.5rem_1fr] gap-2"><span className="text-xs font-semibold text-[#86868b]">0{index + 1}</span>{result}</li>)}
+                </ul>
+              </div>
+            </div>
+          </DialogContent>
+        )}
+      </Dialog>
+    </>
   );
 }
 
 export default function HomepageExperience() {
   const sceneRef = useRef<HTMLElement | null>(null);
-  const heroVideoRef = useRef<HTMLVideoElement | null>(null);
-  const seriesVideoRef = useRef<HTMLVideoElement | null>(null);
-  const workspaceVideoRef = useRef<HTMLVideoElement | null>(null);
-  const operationsVideoRef = useRef<HTMLVideoElement | null>(null);
+  const introVideoRef = useRef<SeamlessLoopVideoHandle | null>(null);
+  const heroCanvasRef = useRef<ScrollFrameCanvasHandle | null>(null);
+  const seriesCanvasRef = useRef<ScrollFrameCanvasHandle | null>(null);
+  const operationsCanvasRef = useRef<ScrollFrameCanvasHandle | null>(null);
   const heroOverlayRef = useRef<HTMLDivElement | null>(null);
   const seriesCopyRef = useRef<HTMLDivElement | null>(null);
   const seriesCardsRef = useRef<HTMLDivElement | null>(null);
-  const workspaceCopyRef = useRef<HTMLDivElement | null>(null);
-  const workspaceCardsRef = useRef<HTMLDivElement | null>(null);
-  const operationsCopyRef = useRef<HTMLDivElement | null>(null);
   const operationsCardsRef = useRef<HTMLDivElement | null>(null);
   const lanyardRef = useRef<HTMLDivElement | null>(null);
   const progressRef = useRef<HTMLSpanElement | null>(null);
@@ -467,12 +433,11 @@ export default function HomepageExperience() {
   const isWide = useWideViewport();
   const sceneInView = useSceneInView(sceneRef);
 
-  const videoRefs = useMemo(
+  const canvasRefs = useMemo(
     () => ({
-      hero: heroVideoRef,
-      series: seriesVideoRef,
-      workspace: workspaceVideoRef,
-      operations: operationsVideoRef,
+      hero: heroCanvasRef,
+      series: seriesCanvasRef,
+      operations: operationsCanvasRef,
     }),
     [],
   );
@@ -481,9 +446,6 @@ export default function HomepageExperience() {
       hero: heroOverlayRef,
       seriesCopy: seriesCopyRef,
       seriesCards: seriesCardsRef,
-      workspaceCopy: workspaceCopyRef,
-      workspaceCards: workspaceCardsRef,
-      operationsCopy: operationsCopyRef,
       operationsCards: operationsCardsRef,
       lanyard: lanyardRef,
       progress: progressRef,
@@ -491,98 +453,65 @@ export default function HomepageExperience() {
     [],
   );
 
-  useScrollDeck(sceneRef, videoRefs, overlayRefs, setShowLanyard);
+  useScrollDeck(sceneRef, introVideoRef, canvasRefs, overlayRefs, setShowLanyard);
 
   return (
     <section ref={sceneRef} id="homepage-experience" className={styles.experience} aria-label="GoAgent AIOS 首页互动展示">
-      <video
-        ref={heroVideoRef}
-        className={`${styles.sceneVideo} ${styles.heroVideo}`}
-        src="/homepage-experience/videos/hero-aios-1784019472625.mp4"
-        autoPlay
-        loop
-        muted
-        playsInline
-        preload="auto"
-      />
-      <video
-        ref={seriesVideoRef}
-        className={styles.sceneVideo}
-        src="/homepage-experience/videos/story-scroll-1784020223514.mp4"
-        muted
-        playsInline
-        preload="auto"
-      />
-      <video
-        ref={workspaceVideoRef}
-        className={styles.sceneVideo}
-        src="/homepage-experience/videos/workspace-background.mp4"
-        muted
-        playsInline
-        preload="auto"
-      />
-      <video
-        ref={operationsVideoRef}
-        className={styles.sceneVideo}
-        src="/homepage-experience/videos/agent-ops-background.mp4"
-        muted
-        playsInline
-        preload="auto"
-      />
+      <div className={styles.scene}>
+        <SeamlessLoopVideo
+          ref={introVideoRef}
+          className={styles.introLoop}
+          videoClassName={styles.introLoopVideo}
+          src="/视频-1.mp4"
+        />
+        <ScrollFrameCanvas
+          ref={heroCanvasRef}
+          className={`${styles.sceneVideo} ${styles.heroVideo}`}
+          sequence={frameSequences.hero}
+        />
+        <ScrollFrameCanvas
+          ref={seriesCanvasRef}
+          className={styles.sceneVideo}
+          sequence={frameSequences.series}
+        />
+        <ScrollFrameCanvas
+          ref={operationsCanvasRef}
+          className={styles.sceneVideo}
+          sequence={frameSequences.operations}
+        />
 
-      <div className={styles.sceneShade} />
+        <div className={styles.sceneShade} />
 
-      <div ref={lanyardRef} className={styles.lanyardSlot} aria-hidden="true">
-        {showLanyard && sceneInView && isWide && <AiosLanyard />}
-      </div>
-
-      <div ref={heroOverlayRef} className={`${styles.sceneOverlay} ${styles.heroOverlay}`}>
-        <div className={styles.heroContent}>
-          <KineticText
-            as="h1"
-            text="用AIOS重新定义人与世界交互的方式"
-            className={styles.heroKineticTitle}
-          />
+        <div ref={lanyardRef} className={styles.lanyardSlot} aria-hidden="true">
+          {showLanyard && sceneInView && isWide && <AiosLanyard />}
         </div>
-      </div>
 
-      <div ref={seriesCopyRef} className={`${styles.sceneOverlay} ${styles.stageCopy} ${styles.seriesCopy}`}>
-        <p>下一部分 · AIPC 产品体系</p>
-        <h2>AIPC三大序列</h2>
-        <span>从家庭到个人，再到企业组织，为不同场景提供自然、稳定的 AIOS 入口。</span>
-      </div>
-      <div ref={seriesCardsRef} className={`${styles.sceneOverlay} ${styles.stageCards}`}>
-        <StoryCards cards={aipcSeries} theme="dark" />
-      </div>
+        <div ref={heroOverlayRef} className={`${styles.sceneOverlay} ${styles.heroOverlay}`}>
+          <div className={styles.heroContent}>
+            <KineticText
+              as="h1"
+              text="用AIOS重新定义人与世界交互的方式"
+              className={styles.heroKineticTitle}
+            />
+          </div>
+        </div>
 
-      <div ref={workspaceCopyRef} className={`${styles.sceneOverlay} ${styles.stageCopy} ${styles.workspaceCopy}`}>
-        <p>下一部分 · 一人公司工作台</p>
-        <h2>
-          从一个想法
-          <br />
-          到完整交付
-        </h2>
-        <span>GoGo 负责理解目标、拆解任务、调度数字员工，并把每一步沉淀为可复用的工作流。</span>
-      </div>
-      <div ref={workspaceCardsRef} className={`${styles.sceneOverlay} ${styles.stageCards}`}>
-        <StoryCards cards={workspaceSignals} theme="light" />
-      </div>
+        <div ref={seriesCopyRef} className={`${styles.sceneOverlay} ${styles.stageCopy} ${styles.seriesCopy}`}>
+          <p>下一部分 · AIPC 产品体系</p>
+          <h2>AIPC三大序列</h2>
+          <span>从家庭到个人，再到企业组织，为不同场景提供自然、稳定的 AIOS 入口。</span>
+        </div>
+        <div ref={seriesCardsRef} className={`${styles.sceneOverlay} ${styles.stageCards}`}>
+          <ProductExplorer />
+        </div>
 
-      <div ref={operationsCopyRef} className={`${styles.sceneOverlay} ${styles.stageCopy} ${styles.operationsCopy}`}>
-        <p>下一部分 · 数字员工调度中心</p>
-        <h2>
-          让工作
-          <br />
-          自己向前推进
-        </h2>
-        <span>把目标交给 GoGo，系统会持续追踪进度、唤起合适的数字员工，并在关键节点把结果推到你面前。</span>
-      </div>
-      <div ref={operationsCardsRef} className={`${styles.sceneOverlay} ${styles.stageCards}`}>
-        <StoryCards cards={opsSignals} theme="dark" />
-      </div>
+        <div ref={operationsCardsRef} className={`${styles.sceneOverlay} ${styles.stageCards} ${styles.employeeCardsStage}`}>
+          <DigitalEmployeeCards />
+        </div>
 
-      <div className={styles.progressTrack} aria-hidden="true">
-        <span ref={progressRef} />
+        <div className={styles.progressTrack} aria-hidden="true">
+          <span ref={progressRef} />
+        </div>
       </div>
     </section>
   );

@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useEffect, useRef } from "react";
 import type * as React from "react";
 import { ArrowDown, ArrowUpRight } from "lucide-react";
@@ -8,11 +9,27 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { siteNavigate } from "@/components/AppleSubpageShell";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
-import type { ProductStory } from "@/lib/productStories";
+import type { ProductMedia, ProductStory } from "@/lib/productStories";
+
+const ProductModelViewer = dynamic(
+  () => import("@/components/ProductModelViewer").then((module) => module.ProductModelViewer),
+  {
+    ssr: false,
+    loading: () => <div className="product-model-viewer product-model-viewer--loading" aria-hidden="true" />,
+  },
+);
 
 type ProductStoryPageProps = {
   product: ProductStory;
 };
+
+function ProductMediaElement({ media, className }: { media: ProductMedia; className?: string }) {
+  if (media.kind === "video") {
+    return <video className={className} src={media.src} autoPlay loop muted playsInline preload="metadata" aria-hidden="true" />;
+  }
+
+  return <img src={media.src} alt="" className={className} />;
+}
 
 function scrollToId(event: React.MouseEvent<HTMLAnchorElement>, id: string) {
   event.preventDefault();
@@ -205,11 +222,16 @@ export function ProductStoryPage({ product }: ProductStoryPageProps) {
           </div>
         </div>
 
-        <div className={`product-hero-visual product-hero-reveal ${product.heroMedia.length > 0 ? "product-hero-visual--cutout" : "product-hero-visual--placeholder"}`} aria-hidden="true">
-          {product.heroMedia.length > 0 ? (
+        <div
+          className={`product-hero-visual product-hero-reveal ${product.interactiveModel ? "product-hero-visual--model" : product.heroMedia.length > 0 ? "product-hero-visual--cutout" : "product-hero-visual--placeholder"}`}
+          aria-hidden={product.interactiveModel ? undefined : true}
+        >
+          {product.interactiveModel ? (
+            <ProductModelViewer model={product.interactiveModel.src} productName={product.name} />
+          ) : product.heroMedia.length > 0 ? (
             <div className={`product-hero-media-grid product-hero-media-grid--${product.heroMedia.length}`}>
               {product.heroMedia.map((media) => (
-                <img key={media.src} src={media.src} alt="" className={media.fit === "contain" ? "product-hero-media--contain" : undefined} />
+                <ProductMediaElement key={media.src} media={media} className={media.fit === "contain" ? "product-hero-media--contain" : undefined} />
               ))}
             </div>
           ) : (
@@ -232,7 +254,7 @@ export function ProductStoryPage({ product }: ProductStoryPageProps) {
           <div className={`product-story-media product-story-media--${product.storyMedia.length || 0}`} aria-hidden="true">
             {product.storyMedia.length > 0 ? (
               product.storyMedia.map((media) => (
-                <img key={media.src} src={media.src} alt="" className={media.fit === "contain" ? "product-story-media--contain" : undefined} />
+                <ProductMediaElement key={media.src} media={media} className={media.fit === "contain" ? "product-story-media--contain" : undefined} />
               ))
             ) : (
               <div className="product-story-placeholder">
@@ -277,7 +299,7 @@ export function ProductStoryPage({ product }: ProductStoryPageProps) {
             {product.variants.map((variant) => (
               <article id={variant.id} key={variant.id} className="product-variant-card">
                 <div className="product-variant-media">
-                  <img src={variant.media.src} alt="" className={variant.media.fit === "contain" ? "product-variant-media--contain" : undefined} />
+                  <ProductMediaElement media={variant.media} className={variant.media.fit === "contain" ? "product-variant-media--contain" : undefined} />
                 </div>
                 <p>{variant.id}</p>
                 <h3>{variant.name}</h3>
@@ -303,10 +325,9 @@ export function ProductStoryPage({ product }: ProductStoryPageProps) {
             <article key={highlight.title} className="product-highlight-panel product-highlight-feature">
               <div className={`product-highlight-image-wrap ${highlight.media?.fit === "contain" ? "product-highlight-image-wrap--cutout" : ""}`}>
                 {highlight.media ? (
-                  <img
-                    src={highlight.media.src}
-                    alt=""
-                    className={`product-highlight-media ${highlight.media.fit === "contain" ? "product-highlight-media--contain" : ""}`}
+                  <ProductMediaElement
+                    media={highlight.media}
+                    className={`product-highlight-media ${highlight.media.fit === "contain" || highlight.media.kind === "video" ? "product-highlight-media--contain" : ""}`}
                   />
                 ) : (
                   <div className="product-highlight-placeholder" aria-hidden="true">
@@ -328,9 +349,8 @@ export function ProductStoryPage({ product }: ProductStoryPageProps) {
       <section id="performance" ref={performanceSectionRef} className="product-performance-section">
         <div className="product-performance-sticky">
           {product.performanceMedia ? (
-            <img
-              src={product.performanceMedia.src}
-              alt=""
+            <ProductMediaElement
+              media={product.performanceMedia}
               className={`product-performance-media ${product.performanceMedia.fit === "contain" ? "product-performance-media--contain" : ""}`}
             />
           ) : (

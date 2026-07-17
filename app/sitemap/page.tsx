@@ -9,7 +9,7 @@ export default function SitemapPage() {
       sections={[
         {
           title: "核心页面",
-          body: "首页 /home，产品矩阵 /product，技术架构 /technology，应用案例 /cases，联系咨询 /home#contact。",
+          body: "首页 /home，产品矩阵 /product，应用案例 /cases，新闻动态 /news，联系咨询 /home#contact。",
         },
         {
           title: "法务页面",
@@ -17,7 +17,7 @@ export default function SitemapPage() {
         },
         {
           title: "主要内容",
-          body: "产品矩阵包含 AI机顶盒 Cloud 云轻盒与 Mix 轻终端、AIPC 消费级 Spark Solo 工作站与 Spark Cluster 集群，以及 8卡及以上服务器企业定制化方案。",
+          body: "产品矩阵包含面向个人及小微团队的 AI机顶盒、云地协同的消费级 AIPC，以及面向中大型企业的全栈私有化 AIPC 方案。",
         },
       ]}
     />

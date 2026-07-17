@@ -137,6 +137,12 @@ function LanyardBand() {
       point.set(state.pointer.x, state.pointer.y, 0.5).unproject(state.camera);
       direction.copy(point).sub(state.camera.position).normalize();
       point.add(direction.multiplyScalar(state.camera.position.length()));
+      const viewport = state.viewport.getCurrentViewport(state.camera, point);
+      // Keep the physical card inside the Canvas when it is dragged to an edge.
+      const horizontalLimit = Math.max(1.2, viewport.width / 2 - 1.35);
+      const verticalLimit = Math.max(1.6, viewport.height / 2 - 1.65);
+      point.x = THREE.MathUtils.clamp(point.x - dragged.x, -horizontalLimit, horizontalLimit) + dragged.x;
+      point.y = THREE.MathUtils.clamp(point.y - dragged.y, -verticalLimit, verticalLimit) + dragged.y;
       [cardBody, one, two, three, fixedBody].forEach((body) => body.wakeUp());
       cardBody.setNextKinematicTranslation({ x: point.x - dragged.x, y: point.y - dragged.y, z: point.z - dragged.z });
     }

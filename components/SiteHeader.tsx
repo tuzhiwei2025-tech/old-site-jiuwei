@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import type * as React from "react";
-import { ArrowUpRight, BarChart3, Boxes, ChevronDown, Cloud, Code2, Database, ExternalLink, HardDrive, House, Layers3, Menu, MonitorCog, Server, Shield, Sparkles, UsersRound, X } from "lucide-react";
+import Image from "next/image";
+import { ChevronDown, Cloud, HardDrive, Menu, MonitorCog, Server, X } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 type HeaderProps = {
@@ -11,71 +12,18 @@ type HeaderProps = {
   mode?: "floating" | "home";
 };
 
-type MenuCard = [title: string, href: string, desc: string, Icon: LucideIcon];
-type MenuLink = [title: string, href: string, Icon: LucideIcon];
-type MenuGroup = {
-  cards: MenuCard[];
-  links: MenuLink[];
-};
 type ProductChild = [title: string, href: string, desc: string, Icon: LucideIcon];
-type ProductNavItem = {
-  label: string;
-  href: string;
-  children?: ProductChild[];
-};
-
-const menuGroups: Record<string, MenuGroup> = {
-  公司: {
-    cards: [
-      ["Skills 仓库", "/technology", "通过 Function Call 组合可执行能力", Sparkles],
-      ["GoData 知识库", "/technology", "私有化检索与企业知识沉淀", Database],
-      ["合作生态", "/contact", "渠道、行业方案与技术生态合作", UsersRound],
-    ],
-    links: [
-      ["AIOS 五层架构", "/technology", Layers3],
-      ["上下文工程", "/technology", Code2],
-      ["模型接入", "/technology", Boxes],
-      ["安全审计", "/technology#security", Shield],
-      ["案例验证", "/cases", BarChart3],
-    ],
-  },
-};
-
-const productNav: ProductNavItem[] = [
-  {
-    label: "AI机顶盒",
-    href: "/product/box",
-    children: [
-      ["Cloud 云轻盒", "/product/box#cloud", "纯云端形态，注册登录即可使用数字员工工作台。", Cloud],
-      ["Mix 轻终端", "/product/box#mix", "本地知识库加云端模型，兼顾资料边界与使用效率。", HardDrive],
-    ],
-  },
-  {
-    label: "AIPC 消费级产品",
-    href: "/product/solo",
-    children: [
-      ["GoAgent Spark Solo 工作站", "/product/solo", "面向个人与核心岗位的单机本地 AIOS 工作站。", MonitorCog],
-      ["GoAgent Spark Cluster 集群", "/product/cluster", "为中小团队提供可共享的私有算力池。", Server],
-    ],
-  },
-  {
-    label: "AIPC 企业级产品",
-    href: "/product/enterprise",
-  },
-] as const;
-
-const demoNav = [
-  ["goagent.store", "https://goagent.store"],
-  ["smartguys.ai", "https://smartguys.ai"],
-] as const;
+const productNav: ProductChild[] = [
+  ["AI机顶盒", "/product/box", "面向个人及小微团队的轻量级 AI 智能终端，开箱启用数字员工能力。", Cloud],
+  ["AIPC 消费级产品", "/product/solo", "云地协同的本地化 AIPC，兼顾数据隐私、算力成本与多人协同。", MonitorCog],
+  ["AIPC 企业级产品", "/product/enterprise", "面向中大型企业的全栈私有化方案，提供安全管控与系统集成能力。", Server],
+];
 
 export function SiteHeader({ onNavigate, onLogoClick, mode = "floating" }: HeaderProps) {
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const activeGroup = openMenu && openMenu in menuGroups ? menuGroups[openMenu as keyof typeof menuGroups] : null;
-  const activeProduct = productNav.find((product) => product.label === openMenu && product.children);
-  const activePanel = activeGroup ?? activeProduct;
+  const activeProduct = openMenu === "产品";
   const isAtTop = !isScrolled;
   const isHomeTop = mode === "home" && isAtTop;
 
@@ -89,115 +37,80 @@ export function SiteHeader({ onNavigate, onLogoClick, mode = "floating" }: Heade
   return (
     <div
       className={`mx-auto transition-all duration-300 ${
-        isAtTop ? "w-full px-0 pt-0" : "w-[min(76rem,calc(100vw-2rem))] pt-4"
+        isAtTop ? "w-full px-0 pt-0" : "w-[min(34rem,calc(100vw-2rem))] pt-4"
       }`}
       onMouseLeave={() => setOpenMenu(null)}
     >
       <div
-        className={`flex h-[56px] items-center justify-between gap-2 transition-all duration-300 md:h-[58px] ${
+        className={`flex h-[56px] items-center gap-2 transition-all duration-300 md:h-[58px] ${
           isHomeTop
-            ? "rounded-none border-b border-white/14 bg-white/[0.08] px-5 text-white shadow-none backdrop-blur-2xl sm:px-8"
+            ? "justify-between rounded-none bg-gradient-to-b from-black/40 to-transparent px-5 text-white shadow-none sm:px-8"
             : isAtTop
-              ? "rounded-none border-b border-neutral-200/80 bg-white/72 px-5 text-neutral-950 shadow-none backdrop-blur-2xl sm:px-8"
-              : "rounded-2xl border border-neutral-200 bg-white/88 px-5 text-neutral-950 shadow-sm backdrop-blur-2xl sm:px-6"
+              ? "justify-between rounded-none bg-white/72 px-5 text-neutral-950 shadow-none backdrop-blur-2xl sm:px-8"
+              : "justify-center rounded-2xl border border-white/16 bg-slate-950/16 px-5 text-white shadow-[0_14px_36px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-2xl sm:px-6"
         }`}
       >
         <a
           href="/home"
           onClick={onLogoClick}
-          className="flex shrink-0 items-center gap-2.5 whitespace-nowrap text-base font-black tracking-tight md:text-lg"
+          className={`flex h-8 shrink-0 items-center whitespace-nowrap ${isAtTop ? "" : "hidden"}`}
         >
-          <span className={`grid size-7 place-items-center rounded-lg border-2 text-sm leading-none md:size-8 md:text-base ${
-            isHomeTop ? "border-white text-white" : "border-neutral-950 text-neutral-950"
-          }`}>
-            G
-          </span>
-          GoAgent AIPC
+          <Image
+            src="/jiuweituling-logo.png"
+            alt="九维图灵"
+            width={1105}
+            height={272}
+            priority
+            className={`h-6 w-auto transition-[filter] md:h-7 ${isHomeTop ? "brightness-0 invert" : "brightness-0"}`}
+          />
         </a>
 
-        <nav className="hidden shrink-0 items-center gap-1 whitespace-nowrap min-[1200px]:flex">
+        <nav className="hidden shrink-0 items-center justify-center gap-1 whitespace-nowrap min-[1200px]:flex">
           <a
             href="/home"
             onClick={onLogoClick}
-            aria-label="首页"
-            title="首页"
-            className={`grid size-9 place-items-center rounded-xl transition-colors ${
-              isHomeTop ? "text-white/82 hover:bg-white/10 hover:text-white" : "text-neutral-950 hover:bg-neutral-100"
+            className={`rounded-xl px-2.5 py-2 text-[13px] font-bold transition-colors min-[1360px]:px-3.5 min-[1360px]:text-sm ${
+              isHomeTop || !isAtTop ? "text-white/78 hover:bg-white/10 hover:text-white" : "text-neutral-950 hover:bg-neutral-100"
             }`}
           >
-            <House className="size-4" />
+            首页
           </a>
-          {productNav.map((product) => (
-            <div
-              key={product.label}
-              className="shrink-0"
-              onMouseEnter={() => product.children && setOpenMenu(product.label)}
-              onFocus={() => product.children && setOpenMenu(product.label)}
-            >
-              <a
-                href={product.href}
-                onClick={(event) => onNavigate(event, product.href)}
-                className={`inline-flex items-center gap-1 whitespace-nowrap rounded-xl px-2.5 py-2 text-[13px] font-bold transition-colors min-[1360px]:px-3.5 min-[1360px]:text-sm ${
-                  openMenu === product.label
-                    ? isHomeTop
-                      ? "bg-white/14 text-white"
-                      : "bg-neutral-100 text-neutral-950"
-                    : isHomeTop
-                      ? "text-white/82 hover:bg-white/10 hover:text-white"
-                      : "text-neutral-950 hover:bg-neutral-100"
-                }`}
-              >
-                {product.label}
-                {product.children && <ChevronDown className={`size-3.5 transition-transform ${openMenu === product.label ? "rotate-180" : ""}`} />}
-              </a>
-            </div>
-          ))}
-          {(Object.keys(menuGroups) as Array<keyof typeof menuGroups>).map((label) => (
+          <div className="shrink-0" onMouseEnter={() => setOpenMenu("产品")} onFocus={() => setOpenMenu("产品")}>
             <button
-              key={label}
               type="button"
-              onMouseEnter={() => setOpenMenu(label)}
-              onFocus={() => setOpenMenu(label)}
-              className={`inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-xl px-2.5 py-2 text-[13px] font-bold transition-colors min-[1360px]:px-3.5 min-[1360px]:text-sm ${
-                openMenu === label
-                  ? isHomeTop
-                    ? "bg-white/14 text-white"
-                    : "bg-neutral-100 text-neutral-950"
-                  : isHomeTop
-                    ? "text-white/82 hover:bg-white/10 hover:text-white"
-                    : "text-neutral-950 hover:bg-neutral-100"
+              aria-expanded={activeProduct}
+              onClick={() => setOpenMenu((menu) => menu === "产品" ? null : "产品")}
+              className={`inline-flex items-center gap-1 whitespace-nowrap rounded-xl px-2.5 py-2 text-[13px] font-bold transition-colors min-[1360px]:px-3.5 min-[1360px]:text-sm ${
+                activeProduct
+                  ? isHomeTop || !isAtTop ? "bg-white/14 text-white" : "bg-neutral-100 text-neutral-950"
+                  : isHomeTop || !isAtTop ? "text-white/78 hover:bg-white/10 hover:text-white" : "text-neutral-950 hover:bg-neutral-100"
               }`}
             >
-              {label}
-              <ChevronDown className={`size-3.5 transition-transform ${openMenu === label ? "rotate-180" : ""}`} />
+              产品
+              <ChevronDown className={`size-3.5 transition-transform ${activeProduct ? "rotate-180" : ""}`} />
             </button>
-          ))}
+          </div>
           <a
-            href="/cases"
-            onClick={(event) => onNavigate(event, "/cases")}
+            href="/contact#company"
+            onClick={(event) => onNavigate(event, "/contact#company")}
             className={`shrink-0 whitespace-nowrap rounded-xl px-2.5 py-2 text-[13px] font-bold transition-colors min-[1360px]:px-3.5 min-[1360px]:text-sm ${
-              isHomeTop ? "text-white/82 hover:bg-white/10 hover:text-white" : "text-neutral-950 hover:bg-neutral-100"
+              isHomeTop || !isAtTop ? "text-white/78 hover:bg-white/10 hover:text-white" : "text-neutral-950 hover:bg-neutral-100"
             }`}
           >
-            案例
+            公司
           </a>
-          {demoNav.map(([label, href]) => (
-            <a
-              key={href}
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-xl px-2.5 py-2 text-[13px] font-bold transition-colors min-[1360px]:px-3.5 min-[1360px]:text-sm ${
-                isHomeTop ? "text-white/82 hover:bg-white/10 hover:text-white" : "text-neutral-950 hover:bg-neutral-100"
-              }`}
-            >
-              {label}
-              <ExternalLink className="size-3.5 opacity-60" />
-            </a>
-          ))}
+          <a
+            href="/news"
+            onClick={(event) => onNavigate(event, "/news")}
+            className={`shrink-0 whitespace-nowrap rounded-xl px-2.5 py-2 text-[13px] font-bold transition-colors min-[1360px]:px-3.5 min-[1360px]:text-sm ${
+              isHomeTop || !isAtTop ? "text-white/78 hover:bg-white/10 hover:text-white" : "text-neutral-950 hover:bg-neutral-100"
+            }`}
+          >
+            新闻
+          </a>
         </nav>
 
-        <div className="flex shrink-0 items-center gap-2">
+        <div className={`flex shrink-0 items-center gap-2 ${isAtTop ? "" : "hidden"}`}>
           <button
             type="button"
             aria-label={mobileMenuOpen ? "关闭导航" : "打开导航"}
@@ -212,14 +125,13 @@ export function SiteHeader({ onNavigate, onLogoClick, mode = "floating" }: Heade
           <a
             href="/contact"
             onClick={(event) => onNavigate(event, "/contact")}
-            className={`group inline-flex h-9 shrink-0 items-center gap-2 whitespace-nowrap rounded-full px-4 text-sm font-semibold tracking-normal transition-all duration-200 md:h-10 md:px-[18px] ${
+            className={`inline-flex shrink-0 items-center whitespace-nowrap text-sm font-semibold tracking-normal transition-colors ${
               isHomeTop
-                ? "border border-white/22 bg-white/[0.075] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.18)] backdrop-blur-xl hover:border-white/38 hover:bg-white/[0.13]"
-                : "border border-neutral-950 bg-neutral-950 text-white shadow-[0_10px_24px_rgba(0,0,0,0.12)] hover:-translate-y-0.5 hover:bg-neutral-800"
+                ? "text-white/82 hover:text-white"
+                : "text-neutral-950 hover:text-neutral-600"
             }`}
           >
             联系我们
-            <ArrowUpRight className="size-3.5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </a>
         </div>
       </div>
@@ -227,101 +139,46 @@ export function SiteHeader({ onNavigate, onLogoClick, mode = "floating" }: Heade
       <div className={`overflow-hidden transition-all duration-200 min-[1200px]:hidden ${mobileMenuOpen ? "max-h-[32rem] opacity-100" : "max-h-0 opacity-0"}`}>
         <nav className="mt-2 grid gap-2 rounded-2xl border border-neutral-200 bg-white p-3 shadow-lg" aria-label="移动端导航">
           <a href="/home" onClick={(event) => { setMobileMenuOpen(false); onLogoClick(event); }} className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-neutral-950 hover:bg-neutral-100">
-            <House className="size-4 text-neutral-500" />
             首页
           </a>
-          {productNav.map((product) => (
-            <div key={product.label} className="rounded-xl bg-neutral-50 p-2">
-              <a href={product.href} onClick={(event) => { setMobileMenuOpen(false); onNavigate(event, product.href); }} className="block px-2 py-1.5 text-sm font-bold text-neutral-950">
-                {product.label}
-              </a>
-              {product.children && (
-                <div className="mt-1 grid gap-1 border-t border-neutral-200 pt-1">
-                  {product.children.map(([label, href]) => (
-                    <a key={label} href={href} onClick={(event) => { setMobileMenuOpen(false); onNavigate(event, href); }} className="rounded-lg px-2 py-2 text-sm font-medium text-neutral-600 hover:bg-white hover:text-neutral-950">
-                      {label}
-                    </a>
-                  ))}
-                </div>
-              )}
+          <div className="rounded-xl bg-neutral-50 p-2">
+            <p className="px-2 py-1.5 text-sm font-bold text-neutral-950">
+              产品
+            </p>
+            <div className="mt-1 grid gap-1 border-t border-neutral-200 pt-1">
+              {productNav.map(([label, href]) => (
+                <a key={label} href={href} onClick={(event) => { setMobileMenuOpen(false); onNavigate(event, href); }} className="rounded-lg px-2 py-2 text-sm font-medium text-neutral-600 hover:bg-white hover:text-neutral-950">
+                  {label}
+                </a>
+              ))}
             </div>
-          ))}
-          <a href="/technology" onClick={(event) => { setMobileMenuOpen(false); onNavigate(event, "/technology"); }} className="rounded-xl px-3 py-2.5 text-sm font-bold text-neutral-950 hover:bg-neutral-100">技术能力</a>
-          <a href="/cases" onClick={(event) => { setMobileMenuOpen(false); onNavigate(event, "/cases"); }} className="rounded-xl px-3 py-2.5 text-sm font-bold text-neutral-950 hover:bg-neutral-100">案例</a>
-          {demoNav.map(([label, href]) => (
-            <a
-              key={href}
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center justify-between rounded-xl px-3 py-2.5 text-sm font-bold text-neutral-950 hover:bg-neutral-100"
-            >
-              {label}
-              <ExternalLink className="size-3.5 text-neutral-500" />
-            </a>
-          ))}
+          </div>
+          <a href="/contact#company" onClick={(event) => { setMobileMenuOpen(false); onNavigate(event, "/contact#company"); }} className="rounded-xl px-3 py-2.5 text-sm font-bold text-neutral-950 hover:bg-neutral-100">公司</a>
+          <a href="/news" onClick={(event) => { setMobileMenuOpen(false); onNavigate(event, "/news"); }} className="rounded-xl px-3 py-2.5 text-sm font-bold text-neutral-950 hover:bg-neutral-100">新闻</a>
         </nav>
       </div>
 
       <div
-        className={`mx-auto overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-lg transition-all duration-200 ${
-          activeProduct ? "w-[min(42rem,calc(100vw-2rem))]" : "w-[min(58rem,calc(100vw-2rem))]"
+        className={`mx-auto overflow-hidden rounded-xl border border-white/16 bg-slate-950/16 shadow-[0_18px_48px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-2xl transition-all duration-200 ${
+          "w-[min(56rem,calc(100vw-2rem))]"
         } ${
-          activePanel ? "mt-2 hidden max-h-[260px] opacity-100 min-[1200px]:block" : "mt-0 hidden max-h-0 border-transparent opacity-0 min-[1200px]:block"
+          activeProduct ? "mt-2 hidden max-h-[220px] opacity-100 min-[1200px]:block" : "mt-0 hidden max-h-0 border-transparent opacity-0 min-[1200px]:block"
         }`}
       >
-        {activeGroup && (
-          <div className="grid grid-cols-[1fr_190px]">
-            <div className="grid grid-cols-3 gap-2.5 p-3">
-              {activeGroup.cards.map(([title, href, desc, Icon]) => (
-                <a
-                  key={`${title}-${href}`}
-                  href={href}
-                  onClick={(event) => onNavigate(event, href)}
-                  className="group relative min-h-[150px] overflow-hidden rounded-lg border border-neutral-200 bg-white p-4 transition-colors hover:bg-neutral-50"
-                >
-                  <div className="absolute inset-0 opacity-70 [background-image:linear-gradient(105deg,transparent_0_45%,rgba(0,0,0,0.04)_45%_55%,transparent_55%),linear-gradient(#e9e9e9_1px,transparent_1px),linear-gradient(90deg,#e9e9e9_1px,transparent_1px)] [background-size:100%_100%,38px_38px,38px_38px]" />
-                  <Icon className="relative size-5 text-neutral-700" />
-                  <div className="relative mt-10">
-                    <h3 className="text-base font-bold text-neutral-800">{title}</h3>
-                    <p className="mt-1.5 max-w-sm text-xs leading-5 text-neutral-500">{desc}</p>
-                  </div>
-                </a>
-              ))}
-            </div>
-
-            <div className="border-l border-neutral-200 p-4">
-              <div className="space-y-3">
-                {activeGroup.links.map(([title, href, Icon]) => (
-                  <a
-                    key={`${title}-${href}`}
-                    href={href}
-                    onClick={(event) => onNavigate(event, href)}
-                    className="flex items-center gap-2.5 text-sm font-medium text-neutral-950 transition-colors hover:text-neutral-600"
-                  >
-                    <Icon className="size-4 text-neutral-500" />
-                    {title}
-                  </a>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-        {activeProduct?.children && (
-          <div className="grid grid-cols-2 gap-2.5 p-3">
-            {activeProduct.children.map(([title, href, desc, Icon]) => (
+        {activeProduct && (
+          <div className="grid grid-cols-3 gap-2 p-2.5">
+            {productNav.map(([title, href, desc, Icon]) => (
               <a
                 key={`${title}-${href}`}
                 href={href}
                 onClick={(event) => onNavigate(event, href)}
-                className="group relative min-h-[150px] overflow-hidden rounded-lg border border-neutral-200 bg-white p-4 transition-colors hover:bg-neutral-50"
+                className="group relative min-h-[124px] overflow-hidden rounded-lg border border-white/14 bg-white/[0.06] p-3.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] transition duration-200 hover:-translate-y-0.5 hover:border-white/24 hover:bg-white/[0.12]"
               >
-                <div className="absolute inset-0 opacity-70 [background-image:linear-gradient(105deg,transparent_0_45%,rgba(0,0,0,0.04)_45%_55%,transparent_55%),linear-gradient(#e9e9e9_1px,transparent_1px),linear-gradient(90deg,#e9e9e9_1px,transparent_1px)] [background-size:100%_100%,38px_38px,38px_38px]" />
-                <Icon className="relative size-5 text-neutral-700" />
-                <div className="relative mt-10">
-                  <h3 className="text-base font-bold text-neutral-800">{title}</h3>
-                  <p className="mt-1.5 text-xs leading-5 text-neutral-500">{desc}</p>
+                <div className="absolute inset-0 opacity-45 [background-image:linear-gradient(105deg,transparent_0_45%,rgba(255,255,255,0.2)_45%_55%,transparent_55%),linear-gradient(rgba(255,255,255,0.2)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.2)_1px,transparent_1px)] [background-size:100%_100%,38px_38px,38px_38px]" />
+                <Icon className="relative size-[18px] text-white/72" />
+                <div className="relative mt-6">
+                  <h3 className="text-[15px] font-bold text-white/90">{title}</h3>
+                  <p className="mt-1 text-[11px] leading-[1.125rem] text-white/55">{desc}</p>
                 </div>
               </a>
             ))}
