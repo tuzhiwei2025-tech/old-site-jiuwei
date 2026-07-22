@@ -382,6 +382,14 @@
     text-align: center;
   }
 
+  .product-hero-section--variants {
+    min-height: max(620px, 76svh);
+  }
+
+  .product-hero-section--enterprise {
+    min-height: max(980px, 118svh);
+  }
+
   .product-hero-copy {
     position: relative;
     z-index: 2;
@@ -556,6 +564,27 @@
     padding: clamp(0.9rem, 2.2vw, 2.2rem);
   }
 
+  .product-hero-section--enterprise .product-hero-visual--cutout {
+    height: auto;
+    aspect-ratio: 1328 / 1003;
+  }
+
+  .product-hero-section--enterprise .product-hero-media-grid,
+  .product-hero-section--enterprise .product-hero-media-grid img {
+    min-width: 0;
+    min-height: 0;
+  }
+
+  .product-hero-section--enterprise .product-hero-media-grid {
+    position: relative;
+  }
+
+  .product-hero-section--enterprise .product-hero-media-grid img {
+    box-sizing: border-box;
+    position: absolute;
+    inset: 0;
+  }
+
   .product-hero-media-grid {
     display: grid;
     width: 100%;
@@ -710,6 +739,10 @@
   .product-story-media .product-story-media--contain {
     object-fit: contain;
     padding: clamp(1.5rem, 6vw, 8rem);
+  }
+
+  .product-story-media:has(.product-story-media--contain) {
+    background: radial-gradient(circle at 50% 40%, #2a2b2e 0, #080809 72%);
   }
 
   .product-film-shade {
@@ -878,7 +911,9 @@
 
   .product-variant-media {
     display: grid;
-    height: 19rem;
+    position: relative;
+    aspect-ratio: 1 / 1;
+    min-height: 22rem;
     place-items: center;
     overflow: hidden;
     border-radius: 1.5rem;
@@ -886,18 +921,28 @@
   }
 
   .product-variant-media img {
+    box-sizing: border-box;
+    display: block;
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
+    min-width: 0;
+    min-height: 0;
+    max-width: 100%;
+    max-height: 100%;
     object-fit: contain;
     object-position: center;
     padding: 1.5rem;
   }
 
   .product-variant-media .product-variant-media--contain {
-    width: 88%;
-    height: 88%;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
     object-fit: contain;
-    padding: 2rem;
+    padding: clamp(1rem, 2.2vw, 2rem);
   }
 
   .product-variant-card > p {
@@ -1249,6 +1294,14 @@
       padding: 8.4rem 1.25rem 4rem;
     }
 
+    .product-hero-section--variants {
+      min-height: 38rem;
+    }
+
+    .product-hero-section--enterprise {
+      min-height: 53rem;
+    }
+
     .product-hero-title {
       font-size: clamp(1rem, 5.6vw, 2.15rem);
       line-height: 1.05;
@@ -1283,6 +1336,11 @@
 
     .product-hero-visual--cutout {
       height: 16rem;
+    }
+
+    .product-hero-section--enterprise .product-hero-visual--cutout {
+      height: auto;
+      aspect-ratio: 1328 / 1003;
     }
 
     .product-hero-visual--model {
@@ -1394,7 +1452,7 @@
     }
 
     .product-variant-media {
-      height: 15.5rem;
+      min-height: 0;
       border-radius: 1.25rem;
     }
 

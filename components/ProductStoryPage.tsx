@@ -190,6 +190,50 @@ export function ProductStoryPage({ product }: ProductStoryPageProps) {
     };
   }, [product]);
 
+  const primarySectionId = product.slug === "enterprise" ? "performance" : "story";
+  const performanceModule = (
+    <section id="performance" ref={performanceSectionRef} className="product-performance-section">
+      <div className="product-performance-sticky">
+        {product.performanceMedia ? (
+          <ProductMediaElement
+            media={product.performanceMedia}
+            className={`product-performance-media ${product.performanceMedia.fit === "contain" ? "product-performance-media--contain" : ""}`}
+          />
+        ) : (
+          <div className="product-performance-placeholder" aria-hidden="true">
+            <span>GOAGENT</span>
+            <b>ENTERPRISE AIOS</b>
+          </div>
+        )}
+        <div className="product-performance-shade" />
+
+        <div className="product-performance-heading">
+          <p>AIOS inside</p>
+          <h2>{product.featureTitle}</h2>
+        </div>
+
+        <div className="product-performance-frames">
+          {product.scenes.map((scene, index) => (
+            <article key={scene.title} className="product-performance-frame">
+              <span>0{index + 1}</span>
+              <h3>{scene.title}</h3>
+              <p>{scene.desc}</p>
+            </article>
+          ))}
+        </div>
+
+        <div className="product-performance-stats">
+          {product.quickStats.slice(0, 3).map(([label, value]) => (
+            <div key={label}>
+              <span>{label}</span>
+              <b>{value}</b>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+
   return (
     <main ref={rootRef} className="min-h-screen overflow-x-clip bg-white text-[#1d1d1f] selection:bg-black selection:text-white">
       <header className="fixed inset-x-0 top-0 z-50">
@@ -202,7 +246,7 @@ export function ProductStoryPage({ product }: ProductStoryPageProps) {
         />
       </header>
 
-      <section id="overview" className="product-hero-section">
+      <section id="overview" className={`product-hero-section ${product.variants ? "product-hero-section--variants" : ""} ${product.slug === "enterprise" ? "product-hero-section--enterprise" : ""}`}>
         <div className="product-hero-copy">
           <p className="product-hero-reveal product-eyebrow">{product.eyebrow}</p>
           <h1 className="product-hero-title product-hero-reveal">
@@ -211,7 +255,7 @@ export function ProductStoryPage({ product }: ProductStoryPageProps) {
           </h1>
           <p className="product-hero-description product-hero-reveal">{product.subline}</p>
           <div className="product-hero-actions product-hero-reveal">
-            <a href="#story" onClick={(event) => scrollToId(event, "story")} className="product-primary-button">
+            <a href={`#${primarySectionId}`} onClick={(event) => scrollToId(event, primarySectionId)} className="product-primary-button">
               浏览产品方案
               <ArrowDown className="size-3.5" />
             </a>
@@ -222,67 +266,71 @@ export function ProductStoryPage({ product }: ProductStoryPageProps) {
           </div>
         </div>
 
-        <div
-          className={`product-hero-visual product-hero-reveal ${product.interactiveModel ? "product-hero-visual--model" : product.heroMedia.length > 0 ? "product-hero-visual--cutout" : "product-hero-visual--placeholder"}`}
-          aria-hidden={product.interactiveModel ? undefined : true}
-        >
-          {product.interactiveModel ? (
-            <ProductModelViewer model={product.interactiveModel.src} productName={product.name} />
-          ) : product.heroMedia.length > 0 ? (
-            <div className={`product-hero-media-grid product-hero-media-grid--${product.heroMedia.length}`}>
-              {product.heroMedia.map((media) => (
-                <ProductMediaElement key={media.src} media={media} className={media.fit === "contain" ? "product-hero-media--contain" : undefined} />
-              ))}
-            </div>
-          ) : (
-            <div className="product-hero-placeholder">
-              <span>GOAGENT</span>
-              <b>SPARK CLUSTER</b>
-              <i>产品视觉素材待确认</i>
-            </div>
-          )}
-        </div>
+        {!product.variants && (
+          <div
+            className={`product-hero-visual product-hero-reveal ${product.interactiveModel ? "product-hero-visual--model" : product.heroMedia.length > 0 ? "product-hero-visual--cutout" : "product-hero-visual--placeholder"}`}
+            aria-hidden={product.interactiveModel ? undefined : true}
+          >
+            {product.interactiveModel ? (
+              <ProductModelViewer model={product.interactiveModel.src} productName={product.name} />
+            ) : product.heroMedia.length > 0 ? (
+              <div className={`product-hero-media-grid product-hero-media-grid--${product.heroMedia.length}`}>
+                {product.heroMedia.map((media) => (
+                  <ProductMediaElement key={media.src} media={media} className={media.fit === "contain" ? "product-hero-media--contain" : undefined} />
+                ))}
+              </div>
+            ) : (
+              <div className="product-hero-placeholder">
+                <span>GOAGENT</span>
+                <b>SPARK CLUSTER</b>
+                <i>产品视觉素材待确认</i>
+              </div>
+            )}
+          </div>
+        )}
 
-        <a href="#story" onClick={(event) => scrollToId(event, "story")} className="product-scroll-cue">
+        <a href={`#${primarySectionId}`} onClick={(event) => scrollToId(event, primarySectionId)} className="product-scroll-cue">
           向下浏览
           <ArrowDown className="size-4" />
         </a>
       </section>
 
-      <section id="story" ref={filmSectionRef} className="product-film-section">
-        <div className="product-film-sticky">
-          <div className={`product-story-media product-story-media--${product.storyMedia.length || 0}`} aria-hidden="true">
-            {product.storyMedia.length > 0 ? (
-              product.storyMedia.map((media) => (
-                <ProductMediaElement key={media.src} media={media} className={media.fit === "contain" ? "product-story-media--contain" : undefined} />
-              ))
-            ) : (
-              <div className="product-story-placeholder">
-                <span>AIOS ENTERPRISE</span>
-                <b>GOAGENT SPARK CLUSTER</b>
-                <i>企业级产品视觉素材待确认</i>
-              </div>
-            )}
-          </div>
-          <div className="product-film-shade" />
+      {product.slug === "enterprise" ? performanceModule : (
+        <section id="story" ref={filmSectionRef} className="product-film-section">
+          <div className="product-film-sticky">
+            <div className={`product-story-media product-story-media--${product.storyMedia.length || 0}`} aria-hidden="true">
+              {product.storyMedia.length > 0 ? (
+                product.storyMedia.map((media) => (
+                  <ProductMediaElement key={media.src} media={media} className={media.fit === "contain" ? "product-story-media--contain" : undefined} />
+                ))
+              ) : (
+                <div className="product-story-placeholder">
+                  <span>AIOS ENTERPRISE</span>
+                  <b>GOAGENT SPARK CLUSTER</b>
+                  <i>企业级产品视觉素材待确认</i>
+                </div>
+              )}
+            </div>
+            <div className="product-film-shade" />
 
-          <div className="product-film-caption-wrap">
-            {product.storyFrames.map((frame, index) => (
-              <article key={frame.kicker} className="product-film-frame">
-                <p>{frame.kicker}</p>
-                <h2>{frame.title}</h2>
-                <span>{frame.desc}</span>
-                <b>0{index + 1}</b>
-              </article>
-            ))}
-          </div>
+            <div className="product-film-caption-wrap">
+              {product.storyFrames.map((frame, index) => (
+                <article key={frame.kicker} className="product-film-frame">
+                  <p>{frame.kicker}</p>
+                  <h2>{frame.title}</h2>
+                  <span>{frame.desc}</span>
+                  <b>0{index + 1}</b>
+                </article>
+              ))}
+            </div>
 
-          <div className="product-film-utility" aria-hidden="true">
-            <span>SCROLL TO EXPLORE</span>
-            <div><i /><i /><i /></div>
+            <div className="product-film-utility" aria-hidden="true">
+              <span>SCROLL TO EXPLORE</span>
+              <div><i /><i /><i /></div>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <section className="product-intro-band">
         <p>{product.priceNote}</p>
@@ -346,46 +394,7 @@ export function ProductStoryPage({ product }: ProductStoryPageProps) {
         </div>
       </section>
 
-      <section id="performance" ref={performanceSectionRef} className="product-performance-section">
-        <div className="product-performance-sticky">
-          {product.performanceMedia ? (
-            <ProductMediaElement
-              media={product.performanceMedia}
-              className={`product-performance-media ${product.performanceMedia.fit === "contain" ? "product-performance-media--contain" : ""}`}
-            />
-          ) : (
-            <div className="product-performance-placeholder" aria-hidden="true">
-              <span>GOAGENT</span>
-              <b>ENTERPRISE AIOS</b>
-            </div>
-          )}
-          <div className="product-performance-shade" />
-
-          <div className="product-performance-heading">
-            <p>AIOS inside</p>
-            <h2>{product.featureTitle}</h2>
-          </div>
-
-          <div className="product-performance-frames">
-            {product.scenes.map((scene, index) => (
-              <article key={scene.title} className="product-performance-frame">
-                <span>0{index + 1}</span>
-                <h3>{scene.title}</h3>
-                <p>{scene.desc}</p>
-              </article>
-            ))}
-          </div>
-
-          <div className="product-performance-stats">
-            {product.quickStats.slice(0, 3).map(([label, value]) => (
-              <div key={label}>
-                <span>{label}</span>
-                <b>{value}</b>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {product.slug !== "enterprise" && performanceModule}
 
       <section id="specs" className="product-specs-section">
         <div className="product-specs-intro">

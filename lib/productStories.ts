@@ -47,28 +47,19 @@ export type ProductStory = {
 };
 
 const assets = {
-  cloud: "/product-assets/cloud-clean-cutout.png",
-  mix: "/product-assets/mix-front-clean-cutout.png",
-  mixBack: "/product-assets/mix-back-clean-cutout.png",
-  soloFront: "/Spark Solo-正视图.jpg",
-  soloRear: "/Spark Solo-后视图.jpg",
-  soloAngle: "/Spark Solo-斜视图.jpg",
-  soloSide: "/Spark Solo-侧上方图.jpg",
-  clusterFront: "/Spark Cluster集群-正视图.png",
-  clusterSide: "/Spark Cluster集群-侧视图.png",
-  enterprise: "/product-assets/enterprise-server-clean-cutout.png",
-};
-
-const featureVideos = {
-  boxWorkspace: "/官网文案及素材/2、不同系列展示2-3个核心功能页面/AI机顶盒-展示功能点及视频/对话工作台-功能视频.mov",
-  boxAudit: "/官网文案及素材/2、不同系列展示2-3个核心功能页面/AI机顶盒-展示功能点及视频/积分审计-功能视频.mov",
-  boxHistory: "/官网文案及素材/2、不同系列展示2-3个核心功能页面/AI机顶盒-展示功能点及视频/历史对话回溯-功能视频.mov",
-  consumerModels: "/官网文案及素材/2、不同系列展示2-3个核心功能页面/消费级产品-展示功能点及视频/灵活切换本地及云端模型-功能视频.mov",
-  consumerKnowledge: "/官网文案及素材/2、不同系列展示2-3个核心功能页面/消费级产品-展示功能点及视频/向量知识库构建-功能视频.mov",
-  consumerAttach: "/官网文案及素材/2、不同系列展示2-3个核心功能页面/消费级产品-展示功能点及视频/关联知识库-功能视频.mov",
-  enterpriseUsers: "/官网文案及素材/2、不同系列展示2-3个核心功能页面/企业级产品-展示功能点及视频/用户管理-功能视频.mov",
-  enterpriseApproval: "/官网文案及素材/2、不同系列展示2-3个核心功能页面/企业级产品-展示功能点及视频/资源审批-功能视频.mov",
-  enterpriseRequest: "/官网文案及素材/2、不同系列展示2-3个核心功能页面/企业级产品-展示功能点及视频/资源申请-功能视频.mov",
+  cloud: "/透明spark/云轻盒-俯视图.png",
+  cloudSide: "/透明spark/云轻盒-侧视图.png",
+  mix: "/透明spark/Mix轻终端-正视图.png",
+  mixAngle: "/透明spark/Mix轻终端-斜视图.png",
+  mixSide: "/透明spark/Mix轻终端-侧视图.png",
+  soloFront: "/透明机顶盒/Spark Solo-正视图.png",
+  soloRear: "/透明机顶盒/Spark Solo-后视图.png",
+  soloAngle: "/透明机顶盒/Spark Solo-斜视图.png",
+  clusterFront: "/透明机顶盒/Spark Cluster集群-正视图.png",
+  clusterStack: "/透明机顶盒/Spark Cluster集群-正视图（4层）.png",
+  enterpriseAngle: "/透明企业素材/8卡-侧上方.png",
+  enterpriseSide: "/透明企业素材/8卡-侧视图.png",
+  enterpriseTop: "/透明企业素材/8卡-俯视图.png",
 };
 
 export const productStories: ProductStory[] = [
@@ -84,10 +75,10 @@ export const productStories: ProductStory[] = [
       { src: assets.mix, fit: "contain" },
     ],
     storyMedia: [
-      { src: assets.cloud, fit: "contain" },
-      { src: assets.mix, fit: "contain" },
+      { src: assets.cloudSide, fit: "contain" },
+      { src: assets.mixAngle, fit: "contain" },
     ],
-    performanceMedia: { src: assets.mixBack, fit: "contain" },
+    performanceMedia: { src: assets.mixSide, fit: "contain" },
     storyFrames: [
       {
         kicker: "开箱即用",
@@ -130,17 +121,17 @@ export const productStories: ProductStory[] = [
       {
         title: "Cloud 云轻盒",
         desc: "提供用户交互的统一入口，以自然语言串联全链路工作流，预置五大专业数字员工，覆盖办公、文档、演示、数据与应用开发任务。",
-        media: { src: featureVideos.boxWorkspace, kind: "video" },
+        media: { src: assets.cloud, fit: "contain" },
       },
       {
         title: "积分审计",
         desc: "精准量化推理消耗与知识库资源占用，提供分钟级审计信息，关联任务上下文与消耗明细，支持全周期追溯与效能分析。",
-        media: { src: featureVideos.boxAudit, kind: "video" },
+        media: { src: assets.mix, fit: "contain" },
       },
       {
         title: "历史对话回溯",
         desc: "全量会话按时间轴自动沉淀，支持任务快照式上下文恢复与标题、任务 ID 多维检索，快速复用过往工作成果。",
-        media: { src: featureVideos.boxHistory, kind: "video" },
+        media: { src: assets.mixAngle, fit: "contain" },
       },
     ],
     featureTitle: "让每一次办公更直接",
@@ -172,7 +163,7 @@ export const productStories: ProductStory[] = [
       { src: assets.soloAngle, fit: "contain" },
       { src: assets.soloRear, fit: "contain" },
     ],
-    performanceMedia: { src: assets.soloSide, fit: "contain" },
+    performanceMedia: { src: assets.soloRear, fit: "contain" },
     storyFrames: [
       {
         kicker: "云地协同",
@@ -201,17 +192,17 @@ export const productStories: ProductStory[] = [
       {
         title: "灵活切换本地及云端模型",
         desc: "支持本地私有化模型与云端大模型按需无缝切换，智能路由引擎将根据任务复杂度、算力成本与上下文长度动态决策。",
-        media: { src: featureVideos.consumerModels, kind: "video" },
+        media: { src: assets.soloFront, fit: "contain" },
       },
       {
         title: "向量知识库构建",
         desc: "支持 10+ 种办公文档智能解析，融合稠密向量、稀疏词项与多向量交互检索，知识更新周期从天级缩短至分钟级。",
-        media: { src: featureVideos.consumerKnowledge, kind: "video" },
+        media: { src: assets.soloAngle, fit: "contain" },
       },
       {
         title: "关联知识库",
         desc: "数字员工可按任务挂载专属知识库，并在多轮对话中持续调用企业私有知识，保障复杂长周期任务的信息一致性。",
-        media: { src: featureVideos.consumerAttach, kind: "video" },
+        media: { src: assets.soloRear, fit: "contain" },
       },
     ],
     featureTitle: "让本地 AI 为真实工作服务",
@@ -237,9 +228,8 @@ export const productStories: ProductStory[] = [
     eyebrow: "AIPC 消费级产品",
     heroLine: "云地协同的本地化 AIPC",
     subline: "面向小微团队的云地协同 AIPC 解决方案，支持最高 4 人共享本地模型、知识库与数字员工能力。",
-    interactiveModel: { src: "/product-assets/models/goagent-spark-cluster.glb" },
     heroMedia: [{ src: assets.clusterFront, fit: "contain" }],
-    storyMedia: [{ src: assets.clusterSide, fit: "contain" }],
+    storyMedia: [{ src: assets.clusterStack, fit: "contain" }],
     performanceMedia: { src: assets.clusterFront, fit: "contain" },
     storyFrames: [
       {
@@ -269,17 +259,17 @@ export const productStories: ProductStory[] = [
       {
         title: "灵活切换本地及云端模型",
         desc: "本地与云端模型按需无缝切换，基于安全等级、任务复杂度与算力成本动态匹配效果与成本最优的模型资源。",
-        media: { src: featureVideos.consumerModels, kind: "video" },
+        media: { src: assets.clusterFront, fit: "contain" },
       },
       {
         title: "向量知识库构建",
         desc: "多格式办公文档智能解析，兼顾语义相似度与精确关键词匹配，支持知识增量更新与动态扩容。",
-        media: { src: featureVideos.consumerKnowledge, kind: "video" },
+        media: { src: assets.clusterStack, fit: "contain" },
       },
       {
         title: "关联知识库",
         desc: "让数字员工按需调用团队专属知识，在复杂长周期任务中保持上下文一致与专业输出。",
-        media: { src: featureVideos.consumerAttach, kind: "video" },
+        media: { src: assets.clusterFront, fit: "contain" },
       },
     ],
     featureTitle: "让团队共享 AI 能力",
@@ -305,9 +295,9 @@ export const productStories: ProductStory[] = [
     eyebrow: "Enterprise AIPC",
     heroLine: "8卡及以上服务器定制化方案",
     subline: "面向中大型企业的全栈私有化 AIPC 解决方案，以本地化部署为核心，构建数字员工协同体系与知识管理底座，支撑 AI 在全业务流程规模化落地。",
-    heroMedia: [{ src: assets.enterprise, fit: "contain" }],
-    storyMedia: [{ src: assets.enterprise, fit: "contain" }],
-    performanceMedia: { src: assets.enterprise, fit: "contain" },
+    heroMedia: [{ src: assets.enterpriseAngle, fit: "contain" }],
+    storyMedia: [{ src: assets.enterpriseTop, fit: "contain" }],
+    performanceMedia: { src: assets.enterpriseAngle, fit: "contain" },
     storyFrames: [
       {
         kicker: "Enterprise 01",
@@ -336,17 +326,17 @@ export const productStories: ProductStory[] = [
       {
         title: "用户管理",
         desc: "构建个人用户与管理员双角色体系，覆盖账号全生命周期管理。管理员可配置资源额度、启用禁用账号与重置密码，按需分配 Token 算力。",
-        media: { src: featureVideos.enterpriseUsers, kind: "video" },
+        media: { src: assets.enterpriseAngle, fit: "contain" },
       },
       {
         title: "资源审批",
         desc: "内置 Token 额度与知识库空间的标准化审批流程，支持筛选、批量操作并留存完整申请与审批记录。",
-        media: { src: featureVideos.enterpriseApproval, kind: "video" },
+        media: { src: assets.enterpriseSide, fit: "contain" },
       },
       {
         title: "资源申请",
         desc: "普通用户可在线申请 Token 算力与知识点存储额度，个人中心实时展示用量占比与申请进度。",
-        media: { src: featureVideos.enterpriseRequest, kind: "video" },
+        media: { src: assets.enterpriseTop, fit: "contain" },
       },
     ],
     featureTitle: "为企业构建完整 AI 基础设施",
