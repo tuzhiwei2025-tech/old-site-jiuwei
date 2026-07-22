@@ -1,7 +1,6 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { KineticText } from "@/components/ui/kinetic-text";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -33,21 +32,24 @@ const productSeries = [
     title: "AI机顶盒",
     body: "面向个人及小微团队的轻量级 AI 智能终端，开箱即可调用全栈数字员工能力。",
     label: "01",
-    products: [["Cloud 云轻盒 与 Mix 轻终端", "/product/box"]],
+    image: "/透明spark/云轻盒-俯视图.png",
+    products: ["Cloud 云轻盒 与 Mix 轻终端"],
   },
   {
     id: "consumer",
     title: "AIPC 消费级产品",
     body: "云地协同的本地化 AIPC，兼顾数据隐私安全、算力成本与小微团队协作。",
     label: "02",
-    products: [["GoAgent Spark Solo", "/product/solo"], ["GoAgent Spark Cluster", "/product/cluster"]],
+    image: "/透明机顶盒/Spark Solo-斜视图.png",
+    products: ["GoAgent Spark Solo", "GoAgent Spark Cluster"],
   },
   {
     id: "enterprise",
     title: "AIPC 企业级产品",
     body: "面向中大型企业的全栈私有化 AIPC，覆盖数字员工协同、知识管理与安全管控。",
     label: "03",
-    products: [["8卡及以上服务器定制方案", "/product/enterprise"]],
+    image: "/透明企业素材/8卡-侧上方.png",
+    products: ["8卡及以上服务器定制方案"],
   },
 ] as const;
 
@@ -62,6 +64,7 @@ const digitalEmployees = [
     name: "Amy",
     role: "通用助手",
     summary: "随时应答，全能协作",
+    avatar: "/digital-employees/amy.png",
     capabilities: ["日常问题解答", "智能任务管理", "多场景支持"],
     caseTitle: "企业行政与政企办公",
     caseTagline: "把格式严苛的公文任务，变成两步可完成的工作。",
@@ -74,6 +77,7 @@ const digitalEmployees = [
     name: "Lina",
     role: "Word 专家",
     summary: "高效撰写，专业文档",
+    avatar: "/digital-employees/lina.png",
     capabilities: ["智能文档生成", "格式自动优化", "多模板支持"],
     caseTitle: "企业行政与政企办公",
     caseTagline: "让企业文档规范成为可调用的工作能力。",
@@ -86,6 +90,7 @@ const digitalEmployees = [
     name: "Aira",
     role: "PPT 专家",
     summary: "专业演示，秒出方案",
+    avatar: "/digital-employees/aira.png",
     capabilities: ["内容排版与设计", "智能配色方案", "精美模板生成"],
     caseTitle: "文化传媒与创意策划",
     caseTagline: "把创意时间还给创意人。",
@@ -98,6 +103,7 @@ const digitalEmployees = [
     name: "Max",
     role: "Excel 专家",
     summary: "数据分析，图表可视化",
+    avatar: "/digital-employees/max.png",
     capabilities: ["数据分析与展示", "智能图表生成", "自动化报表"],
     caseTitle: "教育行业教研办公",
     caseTagline: "让老师把时间还给学生。",
@@ -110,6 +116,7 @@ const digitalEmployees = [
     name: "Lumi",
     role: "开发专家",
     summary: "想法变应用，低代码落地",
+    avatar: "/digital-employees/lumi.png",
     capabilities: ["快速应用开发", "网站原型生成", "低代码平台"],
     caseTitle: "金融 制造 政企场景",
     caseTagline: "高安全要求场景的本地化 AI 方案。",
@@ -333,6 +340,7 @@ function ProductExplorer() {
               onClick={() => setSelectedId(series.id)}
               onPointerEnter={() => setSelectedId(series.id)}
             >
+              <img src={series.image} alt="" className={styles.productTabMedia} aria-hidden="true" />
               <span>{series.label}</span>
               <strong>{series.title}</strong>
               <small>{series.body}</small>
@@ -343,11 +351,11 @@ function ProductExplorer() {
       <div id="series-details" role="tabpanel" aria-labelledby={`series-tab-${selected.id}`} className={styles.productDetails}>
         <p>{selected.title}</p>
         <div>
-          {selected.products.map(([name, href]) => (
-            <Link key={href} href={href} className={styles.productLink}>
+          {selected.products.map((name) => (
+            <span key={name} className={styles.productLink}>
               {name}
               <span aria-hidden="true">+</span>
-            </Link>
+            </span>
           ))}
         </div>
       </div>
@@ -370,6 +378,7 @@ function DigitalEmployeeCards() {
               className={styles.employeeCard}
               aria-label={`查看${employee.name}案例`}
             >
+              <img src={employee.avatar} alt="" className={styles.employeeAvatar} aria-hidden="true" />
               <span className={styles.employeeName}>{employee.name}</span>
               <span className={styles.employeeRole}>{employee.role}</span>
               <span className={styles.employeeSummary}>{employee.summary}</span>
