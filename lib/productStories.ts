@@ -62,6 +62,18 @@ const assets = {
   enterpriseTop: "/透明企业素材/8卡-俯视图.png",
 };
 
+const featureVideos = {
+  boxWorkspace: "/官网文案及素材/2、不同系列展示2-3个核心功能页面/AI机顶盒-展示功能点及视频/对话工作台-功能视频.mov",
+  boxAudit: "/官网文案及素材/2、不同系列展示2-3个核心功能页面/AI机顶盒-展示功能点及视频/积分审计-功能视频.mov",
+  boxHistory: "/官网文案及素材/2、不同系列展示2-3个核心功能页面/AI机顶盒-展示功能点及视频/历史对话回溯-功能视频.mov",
+  consumerModels: "/官网文案及素材/2、不同系列展示2-3个核心功能页面/消费级产品-展示功能点及视频/灵活切换本地及云端模型-功能视频.mov",
+  consumerKnowledge: "/官网文案及素材/2、不同系列展示2-3个核心功能页面/消费级产品-展示功能点及视频/向量知识库构建-功能视频.mov",
+  consumerAttach: "/官网文案及素材/2、不同系列展示2-3个核心功能页面/消费级产品-展示功能点及视频/关联知识库-功能视频.mov",
+  enterpriseUsers: "/官网文案及素材/2、不同系列展示2-3个核心功能页面/企业级产品-展示功能点及视频/用户管理-功能视频.mov",
+  enterpriseApproval: "/官网文案及素材/2、不同系列展示2-3个核心功能页面/企业级产品-展示功能点及视频/资源审批-功能视频.mov",
+  enterpriseRequest: "/官网文案及素材/2、不同系列展示2-3个核心功能页面/企业级产品-展示功能点及视频/资源申请-功能视频.mov",
+};
+
 export const productStories: ProductStory[] = [
   {
     slug: "box",
@@ -121,17 +133,17 @@ export const productStories: ProductStory[] = [
       {
         title: "Cloud 云轻盒",
         desc: "提供用户交互的统一入口，以自然语言串联全链路工作流，预置五大专业数字员工，覆盖办公、文档、演示、数据与应用开发任务。",
-        media: { src: assets.cloud, fit: "contain" },
+        media: { src: featureVideos.boxWorkspace, kind: "video" },
       },
       {
         title: "积分审计",
         desc: "精准量化推理消耗与知识库资源占用，提供分钟级审计信息，关联任务上下文与消耗明细，支持全周期追溯与效能分析。",
-        media: { src: assets.mix, fit: "contain" },
+        media: { src: featureVideos.boxAudit, kind: "video" },
       },
       {
         title: "历史对话回溯",
         desc: "全量会话按时间轴自动沉淀，支持任务快照式上下文恢复与标题、任务 ID 多维检索，快速复用过往工作成果。",
-        media: { src: assets.mixAngle, fit: "contain" },
+        media: { src: featureVideos.boxHistory, kind: "video" },
       },
     ],
     featureTitle: "让每一次办公更直接",
@@ -192,17 +204,17 @@ export const productStories: ProductStory[] = [
       {
         title: "灵活切换本地及云端模型",
         desc: "支持本地私有化模型与云端大模型按需无缝切换，智能路由引擎将根据任务复杂度、算力成本与上下文长度动态决策。",
-        media: { src: assets.soloFront, fit: "contain" },
+        media: { src: featureVideos.consumerModels, kind: "video" },
       },
       {
         title: "向量知识库构建",
         desc: "支持 10+ 种办公文档智能解析，融合稠密向量、稀疏词项与多向量交互检索，知识更新周期从天级缩短至分钟级。",
-        media: { src: assets.soloAngle, fit: "contain" },
+        media: { src: featureVideos.consumerKnowledge, kind: "video" },
       },
       {
         title: "关联知识库",
         desc: "数字员工可按任务挂载专属知识库，并在多轮对话中持续调用企业私有知识，保障复杂长周期任务的信息一致性。",
-        media: { src: assets.soloRear, fit: "contain" },
+        media: { src: featureVideos.consumerAttach, kind: "video" },
       },
     ],
     featureTitle: "让本地 AI 为真实工作服务",
@@ -259,17 +271,17 @@ export const productStories: ProductStory[] = [
       {
         title: "灵活切换本地及云端模型",
         desc: "本地与云端模型按需无缝切换，基于安全等级、任务复杂度与算力成本动态匹配效果与成本最优的模型资源。",
-        media: { src: assets.clusterFront, fit: "contain" },
+        media: { src: featureVideos.consumerModels, kind: "video" },
       },
       {
         title: "向量知识库构建",
         desc: "多格式办公文档智能解析，兼顾语义相似度与精确关键词匹配，支持知识增量更新与动态扩容。",
-        media: { src: assets.clusterStack, fit: "contain" },
+        media: { src: featureVideos.consumerKnowledge, kind: "video" },
       },
       {
         title: "关联知识库",
         desc: "让数字员工按需调用团队专属知识，在复杂长周期任务中保持上下文一致与专业输出。",
-        media: { src: assets.clusterFront, fit: "contain" },
+        media: { src: featureVideos.consumerAttach, kind: "video" },
       },
     ],
     featureTitle: "让团队共享 AI 能力",
@@ -326,17 +338,17 @@ export const productStories: ProductStory[] = [
       {
         title: "用户管理",
         desc: "构建个人用户与管理员双角色体系，覆盖账号全生命周期管理。管理员可配置资源额度、启用禁用账号与重置密码，按需分配 Token 算力。",
-        media: { src: assets.enterpriseAngle, fit: "contain" },
+        media: { src: featureVideos.enterpriseUsers, kind: "video" },
       },
       {
         title: "资源审批",
         desc: "内置 Token 额度与知识库空间的标准化审批流程，支持筛选、批量操作并留存完整申请与审批记录。",
-        media: { src: assets.enterpriseSide, fit: "contain" },
+        media: { src: featureVideos.enterpriseApproval, kind: "video" },
       },
       {
         title: "资源申请",
         desc: "普通用户可在线申请 Token 算力与知识点存储额度，个人中心实时展示用量占比与申请进度。",
-        media: { src: assets.enterpriseTop, fit: "contain" },
+        media: { src: featureVideos.enterpriseRequest, kind: "video" },
       },
     ],
     featureTitle: "为企业构建完整 AI 基础设施",
