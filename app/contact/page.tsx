@@ -38,7 +38,16 @@ export default function ContactPage() {
     >
       <section id="company" className="border-t border-black/[0.08] bg-white px-6 py-24 md:px-10 md:py-36">
         <div className="mx-auto grid max-w-[112rem] gap-12 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)] lg:gap-24">
-          <p className="text-sm font-semibold tracking-[0.16em] text-[#86868b]">COMPANY</p>
+          <div>
+            <p className="mb-6 text-sm font-semibold tracking-[0.16em] text-[#86868b]">COMPANY</p>
+            <figure className="aspect-[4/3] overflow-hidden rounded-2xl bg-[#f5f5f7] lg:aspect-[5/6]">
+              <img
+                src="/company-team-disneyland.jpg"
+                alt="九维图灵团队合影"
+                className="size-full object-cover object-[center_72%]"
+              />
+            </figure>
+          </div>
           <div>
             <h2 className="max-w-5xl text-balance text-4xl font-semibold leading-[1.04] tracking-normal md:text-6xl">
               让专家级 AI 能力，成为每个人都能直接调用的工作方式。
